@@ -204,15 +204,21 @@ frontend:
         -comment: "Verified visually via screenshots: home + products render CycleTag/VIESProof/GateZero. Not requesting automated frontend test yet (awaiting user permission)."
   - task: "Control plane /control (login + all sections + simulator)"
     implemented: true
-    working: "NA"
+    working: true
     file: "app/control/page.js"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
     needs_retesting: false
     status_history:
         -working: "NA"
         -agent: "main"
         -comment: "Implemented dark control plane with all sections. Awaiting user permission for automated frontend testing."
+        -working: "NA"
+        -agent: "main"
+        -comment: "BUG FIX (user-reported React hydration mismatch): Docs section used a server/client branch `const base = typeof window !== 'undefined' ? window.location.origin : 'https://nyttolabs.com'` which differs between SSR and client. Replaced with useState('https://nyttolabs.com') + useEffect(() => setBase(window.location.origin)). Please verify NO hydration errors / red console errors on: home '/', '/products', '/partners', and especially '/control' after login navigating to the 'Integration docs' tab. Admin login email=ffkornelind@gmail.com passcode=NyttoRelay-225a7dc2."
+        -working: true
+        -agent: "testing"
+        -comment: "✅ HYDRATION BUG FIX VERIFIED - ALL TESTS PASSED. Comprehensive testing completed with browser console monitoring: (1) Home page '/': 0 hydration errors, NYTTO LABS nav visible, hero section renders correctly with CycleTag and VIESProof product cards. (2) All public pages tested (/products, /partners, /privacy, /terms, /contact): 0 hydration errors on each page. (3) Control plane '/control': Login page loads with 0 hydration errors, successful authentication with provided credentials (ffkornelind@gmail.com), dashboard Overview section displays correctly with metrics and revenue data. (4) CRITICAL - Integration docs section: 0 hydration errors, 0 React errors, docs render correctly with 3 code blocks, base URL (commerce-layer.preview.emergentagent.com) appears in code examples as expected. The useState/useEffect pattern fix is working perfectly - no server/client mismatch. (5) Simulator section: 0 hydration errors, resolve functionality working correctly with query {app:cycletag, action:reorder, country:SE, category:water-filter, query:Brita Maxtra Pro} returning PARTNER decision (AquaPure Filters DEMO) with detailed reason and destination URL. NO React hydration mismatch warnings or errors detected anywhere in the application. Bug fix confirmed successful."
 
 metadata:
   created_by: "main_agent"
@@ -237,3 +243,7 @@ agent_communication:
     -message: "Backend built on MongoDB (JS). Please test all backend tasks above. Admin creds: email ffkornelind@gmail.com, passcode NyttoRelay-225a7dc2. Webhook secret RELAY_WEBHOOK_SECRET=whsec_10dcc24ec33f4bddba9b2f2bd779ccf5 (compute HMAC-SHA256 hex of the RAW request body). DEMO_MODE=true so seeded DEMO partners/offers are active. Use base URL from frontend .env (NEXT_PUBLIC_BASE_URL) with /api prefix. Key end-to-end flow to validate: POST /api/resolve (cycletag/reorder/SE/water-filter/Brita) -> expect partner AquaPure, fallback:false, allowlisted https destination, opaque click_id; then GET the returned redirect_url (/go/{click_id}) -> 302 and clicked_at set; then POST /api/admin/conversions (manual, with that click_id, amount 199 SEK) while authenticated -> then GET /api/admin/overview and /api/admin/revenue -> revenue should show 199.00 SEK grouped by currency. Also confirm NO netfold/skrivklart/invoic strings appear in any API output."
     -agent: "testing"
     -message: "✅ BACKEND TESTING COMPLETE - ALL TESTS PASSED. Created comprehensive test suite in /app/backend_test.py covering all 6 backend tasks. All critical functionality verified: (1) Resolver with scoring, PII stripping, fallback, validation - WORKING. (2) Safe redirect with attribution, no open redirect vulnerability - WORKING. (3) Conversion webhook with HMAC signature validation, idempotency, minor units storage - WORKING. (4) Admin auth with session cookies, endpoint protection - WORKING. (5) Admin CRUD operations, end-to-end revenue flow, CSV export, simulator - WORKING. (6) Public endpoints with correct scope (only cycletag/viesproof/gatezero), NO forbidden strings (netfold/skrivklart/invoic) detected anywhere, partner inquiries with consent validation - WORKING. End-to-end flow verified: resolve -> redirect -> conversion -> revenue tracking. All security measures in place. Backend is production-ready."
+    -agent: "main"
+    -message: "User reported React hydration mismatch bug in control plane Integration docs section. Fixed by replacing typeof window check with useState/useEffect pattern. Please verify the fix by testing all pages for hydration errors, especially the Integration docs section in /control."
+    -agent: "testing"
+    -message: "✅ HYDRATION BUG FIX VERIFICATION COMPLETE - ALL TESTS PASSED. Tested all pages with browser console monitoring for React hydration mismatch errors. Results: (1) Home page and all public pages (products, partners, privacy, terms, contact): 0 hydration errors. (2) Control plane login and dashboard: 0 hydration errors. (3) CRITICAL - Integration docs section: 0 hydration errors, 0 React errors - the useState/useEffect fix is working perfectly. (4) Simulator: 0 hydration errors, functionality working (resolve returns partner decision correctly). NO React hydration mismatch warnings detected anywhere. The bug is FIXED and verified. Application is ready for production."

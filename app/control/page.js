@@ -593,7 +593,11 @@ function SettingsTab() {
 
 // ---------- Docs ----------
 function Docs() {
-  const base = typeof window !== 'undefined' ? window.location.origin : 'https://nyttolabs.com'
+  // Start with a stable SSR value, then upgrade to the real origin after mount
+  // to avoid a hydration mismatch (server has no window).
+  const [base, setBase] = useState('https://nyttolabs.com')
+  useEffect(() => { setBase(window.location.origin) }, [])
+
   const example = `// CycleTag \u2192 Nytto Relay (client helper, TypeScript)
 export async function resolveReorder(ctx: {
   query: string; country: string; language?: string;
