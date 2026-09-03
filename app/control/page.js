@@ -585,6 +585,16 @@ function SettingsTab() {
           <Field key={k} label={label}><input className={inputCls} value={s[k] || ''} onChange={(e) => setS({ ...s, [k]: e.target.value })} /></Field>
         ))}
         <div className="sm:col-span-2"><Field label="Affiliate disclosure"><textarea rows={2} className={inputCls} value={s.affiliateDisclosure || ''} onChange={(e) => setS({ ...s, affiliateDisclosure: e.target.value })} /></Field></div>
+        <div className="sm:col-span-2 flex items-center justify-between rounded-md border border-white/10 bg-[#141412] px-3 py-2">
+          <div>
+            <div className="text-sm font-medium text-white">Demo mode</div>
+            <div className="text-xs text-stone-400">When ON, clearly-labelled DEMO partners/offers participate in routing. Turn OFF for production so only real partners route.</div>
+          </div>
+          <button onClick={() => setS({ ...s, demoMode: !s.demoMode })}
+            className={`rounded-full px-3 py-1 text-xs font-medium ${s.demoMode ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30' : 'bg-emerald-600/20 text-emerald-300 ring-1 ring-emerald-500/30'}`}>
+            {s.demoMode ? 'Demo ON' : 'Production'}
+          </button>
+        </div>
       </div>
       <button className={`${btn} mt-3`} onClick={save}>{saved ? 'Saved' : 'Save settings'}</button>
     </div>

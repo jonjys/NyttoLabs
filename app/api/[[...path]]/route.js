@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { NextResponse } from 'next/server'
-import { getDb, COLLECTIONS, clean, isDemoMode, audit } from '@/lib/relay/db'
+import { getDb, COLLECTIONS, clean, isDemoMode, getDemoMode, audit } from '@/lib/relay/db'
 import { resolveInputSchema, conversionSchema, partnerInquirySchema, ACTION_TYPES } from '@/lib/relay/schema'
 import { sanitizeResolveInput } from '@/lib/relay/sanitize'
 import { buildDestination, buildFallback } from '@/lib/relay/urltemplate'
@@ -85,7 +85,7 @@ function clickFilter(sp) {
 // ---------------------------------------------------------------------------
 async function resolveIntent(db, input, { simulate = false } = {}) {
   const { clean: sane, rejected } = sanitizeResolveInput(input)
-  const demo = isDemoMode()
+  const demo = await getDemoMode(db)
   const clickId = crypto.randomUUID()
 
   const app = await db.collection(COLLECTIONS.applications).findOne({ slug: sane.app })
@@ -266,7 +266,7 @@ async function handleRoute(request, { params }) {
         partnerEmail: s?.partnerEmail || 'partners@nyttolabs.com',
         defaultCurrency: s?.defaultCurrency || 'SEK',
         affiliateDisclosure: s?.affiliateDisclosure || '',
-        demoMode: isDemoMode(),
+        demoMode: await getDemoMode(db),
       })
     }
 
@@ -351,7 +351,7 @@ async function handleRoute(request, { params }) {
     if (route === '/auth/me' && method === 'GET') {
       const session = await getSessionFromRequest(request)
       if (!session) return json({ authenticated: false }, 200)
-      return json({ authenticated: true, email: session.email, demoMode: isDemoMode() })
+      return json({ authenticated: true, email: session.email, demoMode: await getDemoMode(db) })
     }
 
     // ================= ADMIN (protected) =================
@@ -388,7 +388,7 @@ async function handleRoute(request, { params }) {
           revenueByApp: byField('app', convs),
           revenueByPartner: byField('partner_slug', convs),
           revenueByCountry: byField('country', convs),
-          demoMode: isDemoMode(),
+          demoMode: await getDemoMode(db),
         })
       }
 
