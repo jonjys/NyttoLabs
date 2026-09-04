@@ -1,6 +1,7 @@
 import './globals.css'
 import { Instrument_Sans, Instrument_Serif } from 'next/font/google'
 import { Providers } from './providers'
+import { SITE_ORIGIN } from '@/lib/site'
 
 const sans = Instrument_Sans({
   subsets: ['latin'],
@@ -16,7 +17,7 @@ const serif = Instrument_Serif({
 })
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://nyttolabs.vercel.app'),
+  metadataBase: new URL(SITE_ORIGIN),
   title: 'Nytto Labs — Focused software. Invisible infrastructure.',
   description: 'Nytto Labs builds focused digital products and quietly connects people to the right next product, service, or action.',
   openGraph: {

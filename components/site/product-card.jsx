@@ -6,9 +6,10 @@ import { ArrowUpRight } from 'lucide-react'
 const statusStyle = {
   live: 'bg-emerald-100 text-emerald-800 ring-emerald-600/20',
   building: 'bg-amber-100 text-amber-800 ring-amber-600/20',
+  'public-beta': 'bg-sky-100 text-sky-800 ring-sky-600/20',
   ventures: 'bg-stone-200 text-stone-700 ring-stone-500/20',
 }
-const statusLabel = { live: 'Live', building: 'Building', ventures: 'Ventures' }
+const statusLabel = { live: 'Live', building: 'Building', 'public-beta': 'Public beta', ventures: 'Ventures' }
 
 function hostLabel(url) {
   try {

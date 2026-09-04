@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { defaultPublicProducts, DEFAULT_PUBLIC_SETTINGS } from '@/lib/relay/catalog'
+import { defaultPublicProducts, DEFAULT_PUBLIC_SETTINGS, mergePublicCatalog } from '@/lib/relay/catalog'
 
 export function usePublicProducts() {
   const [products, setProducts] = useState(defaultPublicProducts)
@@ -9,7 +9,8 @@ export function usePublicProducts() {
     fetch('/api/public/products')
       .then((r) => r.json())
       .then((d) => {
-        if (Array.isArray(d?.products) && d.products.length) setProducts(d.products)
+        const next = mergePublicCatalog(d?.products)
+        if (next.length) setProducts(next)
       })
       .catch(() => {})
   }, [])
@@ -22,7 +23,13 @@ export function usePublicSettings() {
     fetch('/api/public/settings')
       .then((r) => r.json())
       .then((d) => {
-        if (d && !d.error) setSettings({ ...DEFAULT_PUBLIC_SETTINGS, ...d })
+        if (d && !d.error) setSettings({ ...DEFAULT_PUBLIC_SETTINGS, ...d, ...{
+          helloEmail: DEFAULT_PUBLIC_SETTINGS.helloEmail,
+          supportEmail: DEFAULT_PUBLIC_SETTINGS.supportEmail,
+          partnerEmail: DEFAULT_PUBLIC_SETTINGS.partnerEmail,
+          privacyEmail: DEFAULT_PUBLIC_SETTINGS.privacyEmail,
+          billingEmail: DEFAULT_PUBLIC_SETTINGS.billingEmail,
+        } })
       })
       .catch(() => {})
   }, [])
