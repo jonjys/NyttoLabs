@@ -23,7 +23,7 @@ const inboxes = [
     icon: LifeBuoy,
     title: 'Support',
     email: PUBLIC_SUPPORT_EMAIL,
-    body: 'Product support for CycleTag, VIESProof, GateZero, and related tools.',
+    body: 'Product support for CycleTag, VIESProof, GateZero, Failclosed, and related tools.',
   },
   {
     icon: Shield,

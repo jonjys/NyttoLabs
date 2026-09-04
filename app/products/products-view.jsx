@@ -11,6 +11,7 @@ export default function ProductsView() {
   const groups = [
     { key: 'live', title: 'Live', desc: 'Available today.' },
     { key: 'public-beta', title: 'Public beta', desc: 'Usable, still being shaped.' },
+    { key: 'private-beta', title: 'Private beta', desc: 'Invite-only — not a public beta.' },
     { key: 'building', title: 'Building', desc: 'In active development — not live.' },
   ]
 

@@ -221,7 +221,7 @@ function Applications() {
   const toggle = async (a, key) => { await api.put(`/admin/applications/${a.id}`, { [key]: !a[key] }); load() }
   return (
     <div>
-      <Head title="Applications" desc="Products and internal apps that call Relay. Public visibility drives the website product grid. CycleTag, VIESProof and GateZero URLs are repaired from canonical values on seed." />
+      <Head title="Applications" desc="Products and internal apps that call Relay. Public visibility drives the website product grid. CycleTag, VIESProof, GateZero and Failclosed URLs are repaired from canonical values on seed." />
       <Table
         empty="No applications."
         rows={items}
