@@ -10,11 +10,21 @@ const statusStyle = {
 }
 const statusLabel = { live: 'Live', building: 'Building', ventures: 'Ventures' }
 
+function hostLabel(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return ''
+  }
+}
+
 export default function ProductCard({ product }) {
   const Icon = Icons[product.icon] || Icons.Box
   const st = product.status
+  const href = product.url
+  const host = href ? hostLabel(href) : ''
   return (
-    <div className="group flex flex-col rounded-xl border border-black/10 bg-white p-6 transition hover:border-black/20 hover:shadow-sm">
+    <article className="group flex flex-col rounded-xl border border-black/10 bg-white p-6 transition hover:border-black/20 hover:shadow-sm">
       <div className="flex items-start justify-between">
         <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#1b1b16] text-emerald-400">
           <Icon className="h-5 w-5" />
@@ -33,10 +43,15 @@ export default function ProductCard({ product }) {
           ))}
         </div>
       )}
-      <a href={product.url} target="_blank" rel="noopener noreferrer"
-        className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-emerald-800 hover:text-emerald-900">
-        Visit {product.name} <ArrowUpRight className="h-4 w-4" />
-      </a>
-    </div>
+      {href ? (
+        <a href={href} target="_blank" rel="noopener noreferrer"
+          className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-emerald-800 hover:text-emerald-900">
+          Visit {product.name}{host ? <span className="font-normal text-[#8a8778]"> · {host}</span> : null}
+          <ArrowUpRight className="h-4 w-4" />
+        </a>
+      ) : (
+        <p className="mt-5 text-sm text-[#8a8778]">Site coming soon</p>
+      )}
+    </article>
   )
 }

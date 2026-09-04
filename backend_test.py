@@ -8,15 +8,16 @@ import requests
 import json
 import hmac
 import hashlib
+import os
 import time
 from urllib.parse import urlparse
 
-# Configuration
-BASE_URL = "https://commerce-layer.preview.emergentagent.com"
+# Configuration — pass secrets via env; do not hardcode credentials.
+BASE_URL = os.environ.get("RELAY_BASE_URL", "http://localhost:3000")
 API_BASE = f"{BASE_URL}/api"
-ADMIN_EMAIL = "ffkornelind@gmail.com"
-ADMIN_PASSCODE = "NyttoRelay-225a7dc2"
-WEBHOOK_SECRET = "whsec_10dcc24ec33f4bddba9b2f2bd779ccf5"
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "")
+ADMIN_PASSCODE = os.environ.get("ADMIN_PASSCODE", "")
+WEBHOOK_SECRET = os.environ.get("RELAY_WEBHOOK_SECRET", "")
 
 # Session storage
 session_cookie = None

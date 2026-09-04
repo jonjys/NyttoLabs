@@ -221,13 +221,14 @@ function Applications() {
   const toggle = async (a, key) => { await api.put(`/admin/applications/${a.id}`, { [key]: !a[key] }); load() }
   return (
     <div>
-      <Head title="Applications" desc="Products and internal apps that call Relay. Public visibility drives the website product grid." />
+      <Head title="Applications" desc="Products and internal apps that call Relay. Public visibility drives the website product grid. CycleTag, VIESProof and GateZero URLs are repaired from canonical values on seed." />
       <Table
         empty="No applications."
         rows={items}
         cols={[
           { k: 'name', label: 'Name', render: (r) => <span className="font-medium text-white">{r.name} {r.isDemo && <DemoBadge />}</span> },
           { k: 'slug', label: 'Slug' },
+          { k: 'url', label: 'URL', render: (r) => r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-emerald-300 hover:underline">{r.url.replace(/^https:\/\//, '')}</a> : '—' },
           { k: 'status', label: 'Status' },
           { k: 'section', label: 'Section' },
           { k: 'actions', label: 'Actions', render: (r) => (r.actions || []).join(', ') },

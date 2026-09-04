@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Menu, X, Radio } from 'lucide-react'
 
@@ -13,6 +14,8 @@ const links = [
 
 export default function SiteNav() {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+  const isActive = (href) => (href === '/' ? pathname === '/' : pathname?.startsWith(href))
   return (
     <header className="sticky top-0 z-40 border-b border-black/10 bg-[#f7f5f0]/85 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
@@ -24,7 +27,7 @@ export default function SiteNav() {
         </Link>
         <nav className="hidden items-center gap-8 md:flex">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className="text-sm font-medium text-[#3a3a30] transition-colors hover:text-[#1b1b16]">
+            <Link key={l.href} href={l.href} className={`text-sm font-medium transition-colors hover:text-[#1b1b16] ${isActive(l.href) ? 'text-[#1b1b16]' : 'text-[#3a3a30]'}`}>
               {l.label}
             </Link>
           ))}
@@ -32,14 +35,14 @@ export default function SiteNav() {
             Become a partner
           </Link>
         </nav>
-        <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
+        <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
       {open && (
         <div className="border-t border-black/10 bg-[#f7f5f0] px-5 py-3 md:hidden">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-2 text-sm font-medium text-[#3a3a30]">
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className={`block py-2 text-sm font-medium ${isActive(l.href) ? 'text-[#1b1b16]' : 'text-[#3a3a30]'}`}>
               {l.label}
             </Link>
           ))}

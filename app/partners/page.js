@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { CheckCircle2, Boxes, Handshake, BadgeCheck, Layers } from 'lucide-react'
 import SiteNav from '@/components/site/nav'
 import SiteFooter from '@/components/site/footer'
+import { usePublicSettings } from '@/hooks/use-public-catalog'
 
 const points = [
   { icon: Boxes, title: 'No inventory held by Nytto Labs', body: 'You keep checkout, payment, VAT, delivery, returns, and product support. We never touch your stock.' },
@@ -13,17 +14,13 @@ const points = [
 ]
 
 export default function PartnersPage() {
-  const [settings, setSettings] = useState(null)
+  const settings = usePublicSettings()
   const [form, setForm] = useState({
     company: '', contactName: '', workEmail: '', website: '', markets: '', categories: '',
     affiliateNetwork: '', proposedPartnership: '', message: '', consent: false,
   })
   const [status, setStatus] = useState(null)
   const [submitting, setSubmitting] = useState(false)
-
-  useEffect(() => {
-    fetch('/api/public/settings').then((r) => r.json()).then(setSettings).catch(() => {})
-  }, [])
 
   const submit = async (e) => {
     e.preventDefault()
@@ -37,6 +34,8 @@ export default function PartnersPage() {
       if (res.ok) {
         setStatus({ ok: true, msg: 'Thank you — your inquiry has been received and stored. Our partnerships team will be in touch.' })
         setForm({ company: '', contactName: '', workEmail: '', website: '', markets: '', categories: '', affiliateNetwork: '', proposedPartnership: '', message: '', consent: false })
+      } else if (res.status === 503) {
+        setStatus({ ok: false, msg: `Inquiries cannot be stored right now. Email ${settings?.partnerEmail || 'partners@nyttolabs.com'} instead.` })
       } else {
         setStatus({ ok: false, msg: data.error === 'validation' ? 'Please complete the required fields and consent.' : 'Something went wrong. Please try again.' })
       }

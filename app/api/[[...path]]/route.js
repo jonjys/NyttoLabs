@@ -1,12 +1,13 @@
 import crypto from 'crypto'
 import { NextResponse } from 'next/server'
-import { getDb, COLLECTIONS, clean, isDemoMode, getDemoMode, audit } from '@/lib/relay/db'
+import { getDb, COLLECTIONS, clean, isDemoMode, getDemoMode, audit, isMongoConfigured, MongoConfigError } from '@/lib/relay/db'
 import { resolveInputSchema, conversionSchema, partnerInquirySchema, ACTION_TYPES } from '@/lib/relay/schema'
 import { sanitizeResolveInput } from '@/lib/relay/sanitize'
 import { buildDestination, buildFallback } from '@/lib/relay/urltemplate'
 import { selectOffer } from '@/lib/relay/scoring'
 import { toMinor, groupByCurrency } from '@/lib/relay/money'
 import { ensureSeed, purgeDemo } from '@/lib/relay/seed'
+import { loadPublicProducts, loadPublicSettings } from '@/lib/relay/public-site'
 import {
   adminEmailsAllow, verifyPasscode, createSession, getSessionFromRequest, destroySession, SESSION_COOKIE,
 } from '@/lib/relay/auth'
@@ -226,49 +227,47 @@ async function resolveIntent(db, input, { simulate = false } = {}) {
 // ---------------------------------------------------------------------------
 // router
 // ---------------------------------------------------------------------------
-async function handleRoute(request, { params }) {
-  const { path = [] } = await params
+async function handleRoute(request, context) {
+  let path = []
+  try {
+    const params = context?.params ? await context.params : {}
+    path = Array.isArray(params?.path) ? params.path : []
+  } catch (error) {
+    console.error('API params error:', error)
+  }
   const route = `/${path.join('/')}`
   const seg = path
   const method = request.method
-  const sp = request.nextUrl.searchParams
+  const sp = request.nextUrl?.searchParams || new URLSearchParams()
 
   try {
-    const db = await getDb()
-    await ensureSeed(db)
-
-    // ---- health ----
-    if ((route === '/' || route === '/root') && method === 'GET') {
-      return json({ service: 'Nytto Relay', status: 'ok', demo: isDemoMode() })
+    // Public catalog + health do not require Mongo. Production was 500ing here
+    // because MongoClient(undefined) calls `.startsWith` on a missing MONGO_URL.
+    if ((route === '/' || route === '/root' || route === '') && method === 'GET') {
+      return json({
+        service: 'Nytto Relay',
+        status: 'ok',
+        demo: isDemoMode(),
+        mongo: isMongoConfigured(),
+      })
     }
 
-    // ================= PUBLIC =================
-    if (route === '/public/products' && method === 'GET') {
-      const apps = await db.collection(COLLECTIONS.applications)
-        .find({ publicVisible: true }).sort({ section: 1 }).toArray()
-      const safe = apps.map((a) => ({
-        name: a.name, slug: a.slug, description: a.description, url: a.url,
-        category: a.category, status: a.status, section: a.section,
-        primaryMarket: a.primaryMarket, icon: a.icon, actions: a.actions,
-      }))
-      return json({ products: safe })
+    if ((route === '/public/products' || route === '/products') && method === 'GET') {
+      return json({ products: await loadPublicProducts() })
     }
 
     if (route === '/public/settings' && method === 'GET') {
-      const s = await db.collection(COLLECTIONS.settings).findOne({ key: 'global' })
-      return json({
-        businessName: process.env.NEXT_PUBLIC_BUSINESS_NAME || 'Nytto Labs',
-        legalName: s?.legalName || '',
-        orgNumber: s?.orgNumber || '',
-        vatNumber: s?.vatNumber || '',
-        registeredAddress: s?.registeredAddress || '',
-        supportEmail: s?.supportEmail || 'hello@nyttolabs.com',
-        partnerEmail: s?.partnerEmail || 'partners@nyttolabs.com',
-        defaultCurrency: s?.defaultCurrency || 'SEK',
-        affiliateDisclosure: s?.affiliateDisclosure || '',
-        demoMode: await getDemoMode(db),
-      })
+      return json(await loadPublicSettings())
     }
+
+    if (!isMongoConfigured()) {
+      return json({ error: 'service_unavailable', reason: 'database_not_configured' }, 503)
+    }
+
+    const db = await getDb()
+    await ensureSeed(db)
+
+    // ================= PUBLIC =================
 
     if (route === '/partner-inquiries' && method === 'POST') {
       if (!rateLimit('inquiry', 20)) return json({ error: 'rate_limited' }, 429)
@@ -355,7 +354,7 @@ async function handleRoute(request, { params }) {
     }
 
     // ================= ADMIN (protected) =================
-    if (route.startsWith('/admin')) {
+    if (typeof route === 'string' && route.startsWith('/admin')) {
       const session = await getSessionFromRequest(request)
       if (!session) return json({ error: 'unauthorized' }, 401)
       const actor = session.email
@@ -588,6 +587,9 @@ async function handleRoute(request, { params }) {
     return json({ error: `Route ${route} not found` }, 404)
   } catch (error) {
     console.error('API Error:', error)
+    if (error instanceof MongoConfigError || error?.code === 'MONGO_NOT_CONFIGURED') {
+      return json({ error: 'service_unavailable', reason: 'database_not_configured' }, 503)
+    }
     return json({ error: 'internal_server_error' }, 500)
   }
 }

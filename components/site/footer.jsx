@@ -1,15 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { usePublicSettings } from '@/hooks/use-public-catalog'
 
 export default function SiteFooter() {
-  const [s, setS] = useState(null)
-  useEffect(() => {
-    fetch('/api/public/settings').then((r) => r.json()).then(setS).catch(() => {})
-  }, [])
-  const partnerEmail = s?.partnerEmail || 'partners@nyttolabs.com'
-  const supportEmail = s?.supportEmail || 'hello@nyttolabs.com'
+  const s = usePublicSettings()
+  const partnerEmail = s.partnerEmail
+  const supportEmail = s.supportEmail
   return (
     <footer className="border-t border-black/10 bg-[#1b1b16] text-[#d6d4c8]">
       <div className="mx-auto max-w-6xl px-5 py-12">
@@ -20,8 +17,7 @@ export default function SiteFooter() {
               Focused software. Invisible infrastructure. Practical outcomes.
             </p>
             <p className="mt-4 text-xs leading-relaxed text-[#7c7a6e]">
-              {s?.affiliateDisclosure ||
-                'Some links on Nytto Labs products are partner links. Nytto Labs may earn compensation when you choose a partner, at no additional cost to you unless clearly stated.'}
+              {s.affiliateDisclosure}
             </p>
           </div>
           <div>
@@ -43,8 +39,8 @@ export default function SiteFooter() {
           </div>
         </div>
         <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-[#7c7a6e] md:flex-row md:items-center md:justify-between">
-          <span>© {new Date().getFullYear()} {s?.legalName || 'Nytto Labs'}. All rights reserved.</span>
-          <span>{s?.orgNumber ? `Org. no. ${s.orgNumber}` : 'Swedish sole proprietorship (registration in progress).'}</span>
+          <span>© {new Date().getFullYear()} {s.legalName || 'Nytto Labs'}. All rights reserved.</span>
+          <span>{s.orgNumber ? `Org. no. ${s.orgNumber}` : 'Swedish sole proprietorship (registration in progress).'}</span>
         </div>
       </div>
     </footer>

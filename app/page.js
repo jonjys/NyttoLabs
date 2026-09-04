@@ -1,18 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, ShieldCheck, Route, Layers } from 'lucide-react'
 import SiteNav from '@/components/site/nav'
 import SiteFooter from '@/components/site/footer'
 import ProductCard from '@/components/site/product-card'
+import { usePublicProducts } from '@/hooks/use-public-catalog'
 
 function App() {
-  const [products, setProducts] = useState([])
-  useEffect(() => {
-    fetch('/api/public/products').then((r) => r.json()).then((d) => setProducts(d.products || [])).catch(() => {})
-  }, [])
-
+  const products = usePublicProducts()
   const flagship = products.filter((p) => ['cycletag', 'viesproof'].includes(p.slug))
   const building = products.filter((p) => p.status === 'building')
 
@@ -20,13 +16,12 @@ function App() {
     <div className="min-h-screen bg-[#f7f5f0] text-[#1b1b16]">
       <SiteNav />
 
-      {/* Hero */}
       <section className="mx-auto max-w-6xl px-5 pt-20 pb-16">
         <div className="max-w-3xl">
           <span className="inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-[#6a6858]">
             Nytto Labs · European software studio
           </span>
-          <h1 className="mt-6 text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
+          <h1 className="mt-6 font-serif text-4xl font-normal leading-[1.1] tracking-tight sm:text-5xl">
             Focused software.<br />Invisible infrastructure.<br />
             <span className="text-emerald-800">Practical outcomes.</span>
           </h1>
@@ -45,15 +40,20 @@ function App() {
         </div>
       </section>
 
-      {/* Featured products */}
       <section className="mx-auto max-w-6xl px-5 pb-8">
         <div className="flex items-end justify-between">
           <h2 className="text-xl font-semibold">Products</h2>
           <Link href="/products" className="text-sm font-medium text-emerald-800 hover:text-emerald-900">View all</Link>
         </div>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          {flagship.map((p) => <ProductCard key={p.slug} product={p} />)}
-        </div>
+        {flagship.length > 0 ? (
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+            {flagship.map((p) => <ProductCard key={p.slug} product={p} />)}
+          </div>
+        ) : (
+          <p className="mt-5 rounded-xl border border-dashed border-black/15 bg-white px-5 py-8 text-sm text-[#6a6858]">
+            Product listings are temporarily unavailable. See <Link href="/products" className="underline">all products</Link> or try again shortly.
+          </p>
+        )}
         {building.length > 0 && (
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
             {building.map((p) => <ProductCard key={p.slug} product={p} />)}
@@ -61,7 +61,6 @@ function App() {
         )}
       </section>
 
-      {/* Principles */}
       <section className="mx-auto max-w-6xl px-5 py-16">
         <div className="grid gap-6 md:grid-cols-3">
           {[
@@ -78,7 +77,6 @@ function App() {
         </div>
       </section>
 
-      {/* Partner band */}
       <section className="border-y border-black/10 bg-white">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 py-12 md:flex-row md:items-center">
           <div className="max-w-xl">

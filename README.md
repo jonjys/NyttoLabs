@@ -19,31 +19,38 @@ Affiliate commission, direct referral agreements, revenue share, disclosed spons
 No inventory, no packaging, no third-party checkout, no shipping, no returns, no dropshipping, no warehouse. Partners keep checkout, payment, VAT, delivery, returns, and product support. No fake products/partners/prices/conversions/integrations.
 
 ## Active portfolio (authoritative)
-1. **CycleTag** — Live, flagship, first real Relay integration (reorder, replace, print, compare)
-2. **VIESProof** — Live, B2B verification (verify, export, compare)
-3. **GateZero** — Building, developer infrastructure (monitor, compare, route)
-4. **AI Venture Worker** — Ventures/internal (launch, host, register, compare)
+1. **CycleTag** — Live, flagship (`https://www.cycletag.eu/`)
+2. **VIESProof** — Live (`https://www.viesproof.eu/`)
+3. **GateZero** — Building (`https://www.getgatezero.com/`)
+4. **AI Venture Worker** — Ventures/internal (not on the public grid)
 5. **Nytto Relay** — internal infrastructure (not shown on the public product grid)
 
 > Netfold, Skrivklart, and Invoic are intentionally out of scope and absent everywhere.
 
+Live product URLs for CycleTag, VIESProof, and GateZero are defined in `lib/relay/catalog.js` and applied on every public catalog response, so a stale Mongo document cannot send visitors to the wrong host. Optional env overrides: `PRODUCT_URL_CYCLETAG`, `PRODUCT_URL_VIESPROOF`, `PRODUCT_URL_GATEZERO`.
+
 ## Data store note
 The reference spec suggests Supabase Postgres. **This deployment runs on MongoDB** (per the hosting environment) with the same logical tables/collections, RLS-equivalent server-side authorization, and the same routing/attribution/revenue logic. Auth uses an email + passcode admin session (allowlisted via `ADMIN_EMAILS`) instead of Supabase magic links. All business logic lives in `lib/relay/*` and is store-agnostic.
+
+The **public website** (product grid, settings, health) works without Mongo: it serves the in-code catalog. Relay (`/api/resolve`, `/go`, `/control`, partner inquiries) needs `MONGO_URL`.
 
 ## Run locally
 ```bash
 yarn install
-# ensure MongoDB is running and /app/.env is set (see .env.example)
-yarn dev        # http://localhost:3000  (managed by supervisor in this env)
+# copy env.example → .env.local and fill in values
+yarn test       # catalog + Mongo URI guards (no database required)
+yarn dev        # http://localhost:3000
 ```
-Applications self-seed on first API call. DEMO partners/offers seed only when `DEMO_MODE=true`.
+Applications self-seed on first API call that uses Mongo. DEMO partners/offers seed only when `DEMO_MODE=true`.
 
 ## Configure admin access
-Set in `.env`:
+Set in `.env.local` (see `env.example`):
 ```
 ADMIN_EMAILS=you@nyttolabs.com,@nyttolabs.com
 ADMIN_PASSCODE=<strong passcode>
 RELAY_WEBHOOK_SECRET=<random hex>
+MONGO_URL=mongodb+srv://...
+DB_NAME=nyttolabs
 ```
 Sign in at `/control`.
 
@@ -60,7 +67,9 @@ curl -s -X POST $BASE/api/resolve -H 'Content-Type: application/json' \
 ```
 
 ## Deploy to Vercel
-Relay is Vercel-compatible (App Router server routes). Set the environment variables from `.env.example` in the Vercel project (use a hosted MongoDB such as MongoDB Atlas for `MONGO_URL`). Point `nyttolabs.com` at the deployment; `/control` is the private plane.
+Project: **nyttolabs**. Set the variables from `env.example` on the Vercel project (use MongoDB Atlas for `MONGO_URL`).
+
+Current production host is `nyttolabs.vercel.app`. `nyttolabs.com` is not attached to this project yet — add the domain in Vercel and set `NEXT_PUBLIC_BASE_URL=https://nyttolabs.com` after DNS works.
 
 ## Connect an existing Nytto Labs app
 Every app calls the same API with its own `app` slug and an `action`. See `docs/CYCLETAG-INTEGRATION.md` and `docs/PARTNER-INTEGRATION.md`.
