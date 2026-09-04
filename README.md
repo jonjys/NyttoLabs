@@ -20,7 +20,7 @@ No inventory, no packaging, no third-party checkout, no shipping, no returns, no
 
 ## Active portfolio (authoritative)
 1. **CycleTag** — Live, flagship (`https://www.cycletag.eu/`)
-2. **VIESProof** — Live (`https://www.viesproof.eu/`)
+2. **VIESProof** — Live (`https://viesproof.eu/`)
 3. **GateZero** — Building (`https://www.getgatezero.com/`)
 4. **AI Venture Worker** — Ventures/internal (not on the public grid)
 5. **Nytto Relay** — internal infrastructure (not shown on the public product grid)
