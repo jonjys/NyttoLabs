@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Mail, LifeBuoy, Shield, Receipt } from 'lucide-react'
 import SiteNav from '@/components/site/nav'
 import SiteFooter from '@/components/site/footer'
-import { OPERATOR_LINE } from '@/lib/site'
+import { FTAX_LINE, OPERATOR_LINE } from '@/lib/site'
 import {
   PUBLIC_HELLO_EMAIL,
   PUBLIC_SUPPORT_EMAIL,
@@ -45,7 +45,7 @@ export default function ContactView() {
       <SiteNav />
       <section className="mx-auto max-w-3xl px-5 py-16">
         <h1 className="font-serif text-3xl font-normal tracking-tight">Contact</h1>
-        <p className="mt-4 text-[#4a4a3e]">Reach the right inbox directly. {OPERATOR_LINE}</p>
+        <p className="mt-4 text-[#4a4a3e]">Reach the right inbox directly. {OPERATOR_LINE} {FTAX_LINE}</p>
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {inboxes.map((item) => (
             <div key={item.email} className="rounded-xl border border-black/10 bg-white p-6">

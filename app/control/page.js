@@ -577,7 +577,7 @@ function SettingsTab() {
   ]
   return (
     <div>
-      <Head title="Settings" desc="Business & legal configuration. Legal pages avoid claiming registration until these are filled.">
+      <Head title="Settings" desc="Private business configuration. Public pages state F-tax approval and VAT registration without publishing organisation numbers, VAT IDs, or addresses.">
         <button className={btnGhost} onClick={async () => { await api.post('/admin/seed-demo', {}); alert('Demo data ensured.') }}>Seed demo</button>
         <button className={btnGhost} onClick={async () => { if (confirm('Remove all DEMO partners/offers/experiments?')) { await api.post('/admin/purge-demo', {}); alert('Demo data purged.') } }}>Purge demo</button>
       </Head>

@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { usePublicSettings } from '@/hooks/use-public-catalog'
-import { OPERATOR_LINE } from '@/lib/site'
+import { FOOTER_IDENTITY_LINE } from '@/lib/site'
 import { PUBLIC_HELLO_EMAIL, defaultPublicProducts } from '@/lib/relay/catalog'
 
 export default function SiteFooter() {
   const s = usePublicSettings()
   const helloEmail = s.helloEmail || PUBLIC_HELLO_EMAIL
   const products = defaultPublicProducts()
-  const registered = Boolean(s.orgNumber && s.legalName)
   return (
     <footer className="border-t border-black/10 bg-[#1b1b16] text-[#d6d4c8]">
       <div className="mx-auto max-w-6xl px-5 py-12">
@@ -48,9 +47,7 @@ export default function SiteFooter() {
         <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-[#7c7a6e] md:flex-row md:items-center md:justify-between">
           <span>© {new Date().getFullYear()} Nytto Labs. All rights reserved.</span>
           <span>
-            {registered
-              ? `${s.legalName} — ${s.orgNumber}${s.vatNumber ? `, VAT ${s.vatNumber}` : ''}`
-              : OPERATOR_LINE}
+            {FOOTER_IDENTITY_LINE}
             {' · '}
             <a href={`mailto:${helloEmail}`} className="hover:text-white">{helloEmail}</a>
           </span>

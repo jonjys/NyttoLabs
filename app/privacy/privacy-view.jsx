@@ -2,7 +2,7 @@
 
 import SiteNav from '@/components/site/nav'
 import SiteFooter from '@/components/site/footer'
-import { OPERATOR_LINE } from '@/lib/site'
+import { FTAX_LINE, OPERATOR_LINE } from '@/lib/site'
 import { PUBLIC_PRIVACY_EMAIL } from '@/lib/relay/catalog'
 import { usePublicSettings } from '@/hooks/use-public-catalog'
 
@@ -14,7 +14,7 @@ export default function PrivacyView() {
       <article className="mx-auto max-w-3xl px-5 py-16">
         <h1 className="font-serif text-3xl font-normal tracking-tight">Privacy</h1>
         <div className="prose prose-stone mt-6 space-y-5 text-[#3a3a30]">
-          <p>{OPERATOR_LINE} Nytto Labs is built to be privacy-first. Our routing infrastructure is designed to operate on the minimum anonymous commercial context required to route a request — nothing more.</p>
+          <p>{OPERATOR_LINE} {FTAX_LINE} Nytto Labs is built to be privacy-first. Our routing infrastructure is designed to operate on the minimum anonymous commercial context required to route a request — nothing more.</p>
           <h2 className="text-lg font-semibold text-[#1b1b16]">What we do not store</h2>
           <ul className="list-disc space-y-1 pl-5">
             <li>Names or email addresses of anonymous product users</li>
