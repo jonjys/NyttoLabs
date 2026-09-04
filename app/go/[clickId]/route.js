@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
-import { getDb, COLLECTIONS } from '@/lib/relay/db'
+import { getDb, COLLECTIONS, isMongoConfigured } from '@/lib/relay/db'
 
 // Safe outbound redirect.
 // The destination was validated & stored server-side at resolve time.
 // The public request supplies ONLY an opaque click_id — never a URL — so an
 // open redirect is impossible here.
-export async function GET(request, { params }) {
-  const { clickId } = await params
+export async function GET(request, context) {
+  const params = context?.params ? await context.params : {}
+  const clickId = params?.clickId
+  if (!clickId || !isMongoConfigured()) {
+    return NextResponse.redirect(new URL('/?relay=error', request.url), 302)
+  }
   try {
     const db = await getDb()
     const click = await db.collection(COLLECTIONS.clickEvents).findOne({ id: clickId })
