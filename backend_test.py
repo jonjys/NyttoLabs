@@ -819,6 +819,7 @@ def test_public_endpoints():
         assert "cycletag" in slugs, "Should include cycletag"
         assert "viesproof" in slugs, "Should include viesproof"
         assert "gatezero" in slugs, "Should include gatezero"
+        assert "failclosed" in slugs, "Should include failclosed"
         
         # Should NOT include internal products
         assert "ai-venture-worker" not in slugs, "Should NOT include ai-venture-worker"

@@ -10,7 +10,7 @@ import { usePublicProducts } from '@/hooks/use-public-catalog'
 export default function HomeView() {
   const products = usePublicProducts()
   const live = products.filter((p) => p.status === 'live')
-  const building = products.filter((p) => p.status === 'building' || p.status === 'public-beta')
+  const building = products.filter((p) => p.status === 'building' || p.status === 'public-beta' || p.status === 'private-beta')
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] text-[#1b1b16]">

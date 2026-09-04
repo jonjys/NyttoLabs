@@ -22,12 +22,13 @@ No inventory, no packaging, no third-party checkout, no shipping, no returns, no
 1. **CycleTag** — Building (`https://cycletag.eu/`)
 2. **VIESProof** — Live (`https://viesproof.eu/`)
 3. **GateZero** — Public beta (`https://getgatezero.com/`)
-4. **AI Venture Worker** — Ventures/internal (not on the public grid)
-5. **Nytto Relay** — internal infrastructure (not shown on the public product grid)
+4. **Failclosed** — Private beta (`https://failclosed.nyttolabs.com/`)
+5. **AI Venture Worker** — Ventures/internal (not on the public grid)
+6. **Nytto Relay** — internal infrastructure (not shown on the public product grid)
 
 > Netfold, Skrivklart, and Invoic are intentionally out of scope and absent everywhere.
 
-Live product URLs for CycleTag, VIESProof, and GateZero are defined in `lib/relay/catalog.js` and applied on every public catalog response, so a stale Mongo document cannot send visitors to the wrong host. Optional env overrides: `PRODUCT_URL_CYCLETAG`, `PRODUCT_URL_VIESPROOF`, `PRODUCT_URL_GATEZERO`.
+Live product URLs for CycleTag, VIESProof, GateZero, and Failclosed are defined in `lib/relay/catalog.js` and applied on every public catalog response, so a stale Mongo document cannot send visitors to the wrong host. Optional env overrides: `PRODUCT_URL_CYCLETAG`, `PRODUCT_URL_VIESPROOF`, `PRODUCT_URL_GATEZERO`, `PRODUCT_URL_FAILCLOSED`.
 
 ## Data store note
 The reference spec suggests Supabase Postgres. **This deployment runs on MongoDB** (per the hosting environment) with the same logical tables/collections, RLS-equivalent server-side authorization, and the same routing/attribution/revenue logic. Auth uses an email + passcode admin session (allowlisted via `ADMIN_EMAILS`) instead of Supabase magic links. All business logic lives in `lib/relay/*` and is store-agnostic.
