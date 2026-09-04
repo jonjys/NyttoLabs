@@ -19,7 +19,7 @@ Affiliate commission, direct referral agreements, revenue share, disclosed spons
 No inventory, no packaging, no third-party checkout, no shipping, no returns, no dropshipping, no warehouse. Partners keep checkout, payment, VAT, delivery, returns, and product support. No fake products/partners/prices/conversions/integrations.
 
 ## Active portfolio (authoritative)
-1. **CycleTag** — Building (`https://www.cycletag.eu/`)
+1. **CycleTag** — Building (`https://cycletag.eu/`)
 2. **VIESProof** — Live (`https://viesproof.eu/`)
 3. **GateZero** — Building (`https://www.getgatezero.com/`)
 4. **AI Venture Worker** — Ventures/internal (not on the public grid)
