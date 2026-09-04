@@ -69,7 +69,7 @@ curl -s -X POST $BASE/api/resolve -H 'Content-Type: application/json' \
 ## Deploy to Vercel
 Project: **nyttolabs**. Set the variables from `env.example` on the Vercel project (use MongoDB Atlas for `MONGO_URL`).
 
-Current production host is `nyttolabs.vercel.app`. `nyttolabs.com` is not attached to this project yet — add the domain in Vercel and set `NEXT_PUBLIC_BASE_URL=https://nyttolabs.com` after DNS works.
+Current production host is `https://www.nyttolabs.com` (apex `nyttolabs.com` redirects there). Set `NEXT_PUBLIC_BASE_URL=https://www.nyttolabs.com`.
 
 ## Connect an existing Nytto Labs app
 Every app calls the same API with its own `app` slug and an `action`. See `docs/CYCLETAG-INTEGRATION.md` and `docs/PARTNER-INTEGRATION.md`.

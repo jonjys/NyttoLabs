@@ -13,7 +13,7 @@ affiliate · direct referral · revenue share · embedded partnership (CycleTag 
 ## Attribution & conversions
 Each resolution issues an opaque `click_id`. Report conversions server-to-server:
 ```
-POST https://nyttolabs.com/api/event
+POST https://www.nyttolabs.com/api/event
 X-Relay-Signature: hex(hmac_sha256(rawBody, RELAY_WEBHOOK_SECRET))
 { "click_id": "<from resolve>", "event_id": "<unique/idempotent>", "amount": 199, "currency": "SEK", "status": "approved" }
 ```
@@ -25,4 +25,4 @@ Map the network's postback fields to `click_id`, `event_id`, `amount`, `currency
 ## Scoring
 User relevance and product compatibility always outweigh commission. Factors: category/brand/SKU match, market availability, partner reliability, verified conversion performance, revenue-per-click, commission (low weight), disclosed sponsored bonus. Every decision stores a human-readable reason.
 
-Contact: partners@nyttolabs.com
+Contact: hello@nyttolabs.com

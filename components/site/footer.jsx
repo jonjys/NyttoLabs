@@ -2,19 +2,22 @@
 
 import Link from 'next/link'
 import { usePublicSettings } from '@/hooks/use-public-catalog'
+import { OPERATOR_LINE } from '@/lib/site'
+import { PUBLIC_HELLO_EMAIL, defaultPublicProducts } from '@/lib/relay/catalog'
 
 export default function SiteFooter() {
   const s = usePublicSettings()
-  const partnerEmail = s.partnerEmail
-  const supportEmail = s.supportEmail
+  const helloEmail = s.helloEmail || PUBLIC_HELLO_EMAIL
+  const products = defaultPublicProducts()
+  const registered = Boolean(s.orgNumber && s.legalName)
   return (
     <footer className="border-t border-black/10 bg-[#1b1b16] text-[#d6d4c8]">
       <div className="mx-auto max-w-6xl px-5 py-12">
-        <div className="grid gap-8 md:grid-cols-4">
-          <div className="md:col-span-2">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="sm:col-span-2">
             <div className="text-sm font-semibold tracking-[0.14em] text-white">NYTTO LABS</div>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#9c9a8c]">
-              Focused software. Invisible infrastructure. Practical outcomes.
+              A Swedish software company. Products on this site are proof of what we build — each one keeps its own identity.
             </p>
             <p className="mt-4 text-xs leading-relaxed text-[#7c7a6e]">
               {s.affiliateDisclosure}
@@ -23,24 +26,34 @@ export default function SiteFooter() {
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-[#7c7a6e]">Company</div>
             <ul className="mt-3 space-y-2 text-sm">
+              <li><Link href="/" className="hover:text-white">Home</Link></li>
               <li><Link href="/products" className="hover:text-white">Products</Link></li>
               <li><Link href="/partners" className="hover:text-white">Partners</Link></li>
               <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
+              <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
+              <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
             </ul>
           </div>
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-[#7c7a6e]">Legal</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-[#7c7a6e]">What we build</div>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
-              <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
-              <li><a href={`mailto:${partnerEmail}`} className="hover:text-white">{partnerEmail}</a></li>
-              <li><a href={`mailto:${supportEmail}`} className="hover:text-white">{supportEmail}</a></li>
+              {products.map((p) => (
+                <li key={p.slug}>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="hover:text-white">{p.name}</a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
         <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-[#7c7a6e] md:flex-row md:items-center md:justify-between">
-          <span>© {new Date().getFullYear()} {s.legalName || 'Nytto Labs'}. All rights reserved.</span>
-          <span>{s.orgNumber ? `Org. no. ${s.orgNumber}` : 'Swedish sole proprietorship (registration in progress).'}</span>
+          <span>© {new Date().getFullYear()} Nytto Labs. All rights reserved.</span>
+          <span>
+            {registered
+              ? `${s.legalName} — ${s.orgNumber}${s.vatNumber ? `, VAT ${s.vatNumber}` : ''}`
+              : OPERATOR_LINE}
+            {' · '}
+            <a href={`mailto:${helloEmail}`} className="hover:text-white">{helloEmail}</a>
+          </span>
         </div>
       </div>
     </footer>
