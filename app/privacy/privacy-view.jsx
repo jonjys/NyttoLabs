@@ -20,7 +20,7 @@ export default function PrivacyView() {
             <li>Names or email addresses of anonymous product users</li>
             <li>Full IP addresses or full user-agent strings</li>
             <li>Complete QR payloads from CycleTag labels</li>
-            <li>Personal document content, invoice content, or VAT-number lists</li>
+            <li>Personal document content, payment records, or VAT-number lists</li>
             <li>API keys or secrets belonging to product users</li>
           </ul>
           <h2 className="text-lg font-semibold text-[#1b1b16]">What we do store</h2>

@@ -35,7 +35,7 @@ const inboxes = [
     icon: Receipt,
     title: 'Billing',
     email: PUBLIC_BILLING_EMAIL,
-    body: 'Invoices, receipts, and payment questions.',
+    body: 'Charges, receipts, and payment questions.',
   },
 ]
 
