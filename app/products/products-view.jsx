@@ -4,19 +4,12 @@ import SiteNav from '@/components/site/nav'
 import SiteFooter from '@/components/site/footer'
 import ProductCard from '@/components/site/product-card'
 import { usePublicProducts } from '@/hooks/use-public-catalog'
+import { groupPublicProductsByStatus } from '@/lib/relay/catalog'
 
 export default function ProductsView() {
   const products = usePublicProducts()
-
-  const groups = [
-    { key: 'live', title: 'Live', desc: 'Available today.' },
-    { key: 'public-beta', title: 'Public beta', desc: 'Usable, still being shaped.' },
-    { key: 'private-beta', title: 'Private beta', desc: 'Invite-only — not a public beta.' },
-    { key: 'building', title: 'Building', desc: 'In active development — not live.' },
-  ]
-
-  const grouped = groups.map((g) => ({ ...g, list: products.filter((p) => p.status === g.key) }))
-  const hasAny = grouped.some((g) => g.list.length > 0)
+  const grouped = groupPublicProductsByStatus(products)
+  const hasAny = grouped.length > 0
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] text-[#1b1b16]">
