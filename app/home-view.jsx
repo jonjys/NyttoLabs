@@ -6,11 +6,11 @@ import SiteNav from '@/components/site/nav'
 import SiteFooter from '@/components/site/footer'
 import ProductCard from '@/components/site/product-card'
 import { usePublicProducts } from '@/hooks/use-public-catalog'
+import { groupPublicProductsByStatus } from '@/lib/relay/catalog'
 
 export default function HomeView() {
   const products = usePublicProducts()
-  const live = products.filter((p) => p.status === 'live')
-  const building = products.filter((p) => p.status === 'building' || p.status === 'public-beta' || p.status === 'private-beta')
+  const groups = groupPublicProductsByStatus(products)
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] text-[#1b1b16]">
@@ -48,23 +48,20 @@ export default function HomeView() {
           </div>
           <Link href="/products" className="shrink-0 text-sm font-medium text-emerald-800 hover:text-emerald-900">View all</Link>
         </div>
-        {live.length > 0 ? (
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            {live.map((p) => <ProductCard key={p.slug} product={p} />)}
-          </div>
+        {groups.length > 0 ? (
+          groups.map((group) => (
+            <div key={group.key} className="mt-10 first:mt-5">
+              <h3 className="text-lg font-semibold">{group.title}</h3>
+              <p className="text-sm text-[#8a8778]">{group.desc}</p>
+              <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                {group.list.map((p) => <ProductCard key={p.slug} product={p} />)}
+              </div>
+            </div>
+          ))
         ) : (
           <p className="mt-5 rounded-xl border border-dashed border-black/15 bg-white px-5 py-8 text-sm text-[#6a6858]">
             Product listings are temporarily unavailable. See <Link href="/products" className="underline">all products</Link> or try again shortly.
           </p>
-        )}
-        {building.length > 0 && (
-          <div className="mt-10">
-            <h3 className="text-lg font-semibold">Building</h3>
-            <p className="text-sm text-[#8a8778]">In active development — not marked live.</p>
-            <div className="mt-5 grid gap-5 sm:grid-cols-2">
-              {building.map((p) => <ProductCard key={p.slug} product={p} />)}
-            </div>
-          </div>
         )}
       </section>
 
