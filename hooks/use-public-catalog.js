@@ -23,13 +23,19 @@ export function usePublicSettings() {
     fetch('/api/public/settings')
       .then((r) => r.json())
       .then((d) => {
-        if (d && !d.error) setSettings({ ...DEFAULT_PUBLIC_SETTINGS, ...d, ...{
-          helloEmail: DEFAULT_PUBLIC_SETTINGS.helloEmail,
-          supportEmail: DEFAULT_PUBLIC_SETTINGS.supportEmail,
-          partnerEmail: DEFAULT_PUBLIC_SETTINGS.partnerEmail,
-          privacyEmail: DEFAULT_PUBLIC_SETTINGS.privacyEmail,
-          billingEmail: DEFAULT_PUBLIC_SETTINGS.billingEmail,
-        } })
+        if (d && !d.error) {
+          const hidden = new Set(['legalName', 'orgNumber', 'vatNumber', 'registeredAddress'])
+          const safe = Object.fromEntries(Object.entries(d).filter(([key]) => !hidden.has(key)))
+          setSettings({
+            ...DEFAULT_PUBLIC_SETTINGS,
+            ...safe,
+            helloEmail: DEFAULT_PUBLIC_SETTINGS.helloEmail,
+            supportEmail: DEFAULT_PUBLIC_SETTINGS.supportEmail,
+            partnerEmail: DEFAULT_PUBLIC_SETTINGS.partnerEmail,
+            privacyEmail: DEFAULT_PUBLIC_SETTINGS.privacyEmail,
+            billingEmail: DEFAULT_PUBLIC_SETTINGS.billingEmail,
+          })
+        }
       })
       .catch(() => {})
   }, [])
