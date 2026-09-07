@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Menu, X, Radio } from 'lucide-react'
 
 const links = [
@@ -14,11 +14,13 @@ const links = [
 
 export default function SiteNav() {
   const [open, setOpen] = useState(false)
+  const toggleRef = useRef(null)
   const pathname = usePathname()
+  useEffect(() => { setOpen(false) }, [pathname])
   const isActive = (href) => (href === '/' ? pathname === '/' : pathname?.startsWith(href))
   const showCta = pathname !== '/contact'
   return (
-    <header className="sticky top-0 z-40 border-b border-black/10 bg-[#f7f5f0]/85 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-black/10 bg-[#f7f5f0]/95 backdrop-blur" onKeyDown={(event) => { if (event.key === 'Escape' && open) { setOpen(false); toggleRef.current?.focus() } }}>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
         <Link href="/" className="flex min-h-11 items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#1b1b16] text-emerald-400">
@@ -28,7 +30,7 @@ export default function SiteNav() {
         </Link>
         <nav className="hidden items-center gap-8 md:flex" aria-label="Company">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className={`text-sm font-medium transition-colors hover:text-[#1b1b16] ${isActive(l.href) ? 'text-[#1b1b16]' : 'text-[#3a3a30]'}`}>
+            <Link key={l.href} href={l.href} aria-current={isActive(l.href) ? 'page' : undefined} className={`inline-flex min-h-11 items-center text-sm font-medium transition-colors hover:text-[#1b1b16] ${isActive(l.href) ? 'text-[#1b1b16]' : 'text-[#3a3a30]'}`}>
               {l.label}
             </Link>
           ))}
@@ -39,6 +41,7 @@ export default function SiteNav() {
           )}
         </nav>
         <button
+          ref={toggleRef}
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-md md:hidden"
           onClick={() => setOpen(!open)}
@@ -52,7 +55,7 @@ export default function SiteNav() {
       {open && (
         <div id="mobile-nav" className="border-t border-black/10 bg-[#f7f5f0] px-5 py-3 md:hidden">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className={`block min-h-11 py-3 text-sm font-medium ${isActive(l.href) ? 'text-[#1b1b16]' : 'text-[#3a3a30]'}`}>
+            <Link key={l.href} href={l.href} aria-current={isActive(l.href) ? 'page' : undefined} onClick={() => setOpen(false)} className={`block min-h-11 py-3 text-sm font-medium ${isActive(l.href) ? 'text-[#1b1b16]' : 'text-[#3a3a30]'}`}>
               {l.label}
             </Link>
           ))}

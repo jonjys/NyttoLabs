@@ -1,12 +1,12 @@
-import ProductsView from './products-view'
+import PortalView from '@/components/portal/portal-view'
 import { pageMetadata } from '@/lib/site'
 
 export const metadata = pageMetadata({
   title: 'Products — Nytto Labs',
-  description: 'The public Nytto Labs portfolio: CycleTag, VIESProof, GateZero, and Failclosed — proof of what the company builds.',
+  description: 'Explore all nine Nytto Labs products. Search by task, save your favorites and open each independent tool directly.',
   path: '/products',
 })
 
 export default function Page() {
-  return <ProductsView />
+  return <PortalView directory />
 }
