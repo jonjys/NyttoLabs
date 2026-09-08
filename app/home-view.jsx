@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, ShieldCheck, Route, Layers } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Route, Layers, FileUp } from 'lucide-react'
 import SiteNav from '@/components/site/nav'
 import SiteFooter from '@/components/site/footer'
 import ProductCard from '@/components/site/product-card'
@@ -33,6 +33,9 @@ export default function HomeView() {
             <Link href="/products" className="inline-flex min-h-11 items-center gap-2 rounded-md bg-[#1b1b16] px-5 py-2.5 text-sm font-medium text-[#f7f5f0] transition hover:bg-black">
               See what we build <ArrowRight className="h-4 w-4" />
             </Link>
+            <a href="https://pay.nyttolabs.com/upload" className="inline-flex min-h-11 items-center gap-2 rounded-md bg-emerald-800 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-900">
+              <FileUp className="h-4 w-4" /> Sell a file
+            </a>
             <Link href="/contact" className="inline-flex min-h-11 items-center gap-2 rounded-md border border-black/15 bg-white px-5 py-2.5 text-sm font-medium text-[#1b1b16] transition hover:border-black/30">
               Contact
             </Link>
@@ -40,7 +43,25 @@ export default function HomeView() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 pb-8">
+      {/* Curl-to-Buy promo strip */}
+      <section className="border-y border-emerald-900/15 bg-emerald-50">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-5 py-5 sm:flex-row sm:items-center">
+          <div>
+            <p className="text-sm font-semibold text-emerald-900">Curl-to-Buy is live →</p>
+            <p className="mt-0.5 text-sm text-emerald-800/80">
+              Upload any file, set a price in kr, share the link. Buyers pay with card or Klarna. No account needed.
+            </p>
+          </div>
+          <a
+            href="https://pay.nyttolabs.com/upload"
+            className="shrink-0 inline-flex min-h-10 items-center gap-2 rounded-md bg-emerald-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-black"
+          >
+            Start selling <ArrowRight className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-5 pb-8 pt-10">
         <div className="flex items-end justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold">What we build</h2>
