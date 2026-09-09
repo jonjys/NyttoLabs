@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-const STORAGE = 'nytto-locale'
+const STORAGE = 'nytto-locale-v2'
 
 export function useLocale() {
   const [locale, setLocaleState] = useState('en')
