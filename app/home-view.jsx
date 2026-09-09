@@ -13,6 +13,9 @@ const COPY = {
     kicker: 'Swedish software · F-tax',
     hero: 'Two things you can pay for today.',
     lede: 'Nytto Labs builds small tools for reordering and VAT evidence. CycleTag and VIESproof take payment. The rest of the lab is on Products.',
+    heroAlt: 'A QR reorder label stuck to a water filter.',
+    cycleAlt: 'Printed CycleTag labels on filters and toner.',
+    viesAlt: 'A VAT evidence sheet stamped valid.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace. Print, stick, scan. No app.',
     cyclePrice: '$5',
     cycleNote: '49 SEK at checkout · starter sheet',
@@ -35,6 +38,9 @@ const COPY = {
     kicker: 'Svensk mjukvara · F-skatt',
     hero: 'Två saker du kan betala för idag.',
     lede: 'Nytto Labs bygger små verktyg för återbeställning och momsbevis. CycleTag och VIESproof tar betalt. Resten av labbet ligger under Produkter.',
+    heroAlt: 'En QR-återbeställningsetikett på ett vattenfilter.',
+    cycleAlt: 'Utskrivna CycleTag-etiketter på filter och toner.',
+    viesAlt: 'Ett momsbevis stämplat giltigt.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter. Skriv ut, klistra, skanna. Ingen app.',
     cyclePrice: '49 kr',
     cycleNote: 'startark · engångsköp',
@@ -55,61 +61,31 @@ const COPY = {
   },
 }
 
-const QR = [
-  [1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1],
-  [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1],
-  [1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1],
-  [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-  [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1],
-  [0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0],
-  [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0],
-  [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0],
-  [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1],
-  [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0],
-  [1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1],
-]
-
-function TagMock() {
+function PayCard({ img, alt, name, price, note, body, actions }) {
   return (
-    <div className="rounded-xl border border-dashed border-black/20 bg-[#f7f5f0] p-3">
-      <div className="flex items-center gap-3">
-        <div
-          className="grid shrink-0 gap-px bg-[#1b1b16] p-1"
-          style={{ gridTemplateColumns: `repeat(${QR.length}, 3px)` }}
-          aria-hidden
-        >
-          {QR.flat().map((bit, i) => (
-            <span key={i} className={`size-[3px] ${bit ? 'bg-[#1b1b16]' : 'bg-[#f7f5f0]'}`} />
-          ))}
-        </div>
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-800">CycleTag · live</p>
-          <p className="mt-1 font-serif text-lg leading-tight">Filter 10 µm</p>
-          <p className="text-xs text-[#6a6858]">Scan. Reorder. Repeat.</p>
-        </div>
+    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white">
+      <div className="aspect-[16/10] overflow-hidden bg-[#ece8de]">
+        <img src={img} alt={alt} width={1200} height={750} className="h-full w-full object-cover" />
       </div>
-    </div>
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex items-end justify-between gap-3">
+          <h2 className="text-xl font-semibold tracking-tight">{name}</h2>
+          <p className="font-serif text-3xl leading-none tracking-tight">{price}</p>
+        </div>
+        <p className="mt-1 text-right text-xs text-[#6a6858]">{note}</p>
+        <p className="mt-4 flex-1 text-sm leading-relaxed text-[#4a4a3e]">{body}</p>
+        <div className="mt-6 flex flex-col gap-2">{actions}</div>
+      </div>
+    </article>
   )
 }
 
-function ViesMock() {
-  return (
-    <div className="rounded-xl border border-black/10 bg-[#f7f5f0] p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-800">VIES consultation</p>
-      <p className="mt-2 font-mono text-xs tracking-wide text-[#1b1b16]">SE556012345601</p>
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <p className="text-[11px] text-[#6a6858]">PDF + CSV · SHA-256</p>
-        <span className="rounded-sm bg-emerald-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">Valid</span>
-      </div>
-    </div>
-  )
-}
+const payBtn =
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-800 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-900'
+const ghostBtn =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-black/15 bg-white px-5 py-2.5 text-sm font-medium text-[#1b1b16] transition hover:border-black/30'
+const freeBtn =
+  'inline-flex min-h-11 items-center justify-center gap-1 text-sm text-[#6a6858] hover:text-[#1b1b16]'
 
 export default function HomeView() {
   const [locale] = useLocale()
@@ -123,67 +99,69 @@ export default function HomeView() {
     <div className="min-h-screen bg-[#f7f5f0] text-[#1b1b16]">
       <SiteNav />
 
-      <section className="mx-auto max-w-5xl px-5 pt-16 pb-10 sm:pt-20">
-        <div className="max-w-2xl">
+      <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-12 pt-10 sm:pt-14 lg:grid-cols-2">
+        <div>
           <span className="inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-[#6a6858]">
             {t.kicker}
           </span>
-          <h1 className="mt-6 font-serif text-4xl font-normal leading-[1.1] tracking-tight sm:text-5xl">
+          <h1 className="mt-5 font-serif text-4xl font-normal leading-[1.08] tracking-tight sm:text-5xl">
             {t.hero}
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#4a4a3e]">{t.lede}</p>
         </div>
+        <figure className="overflow-hidden rounded-2xl border border-black/10 bg-[#ece8de]">
+          <img
+            src="/images/hero.jpg"
+            alt={t.heroAlt}
+            width={1600}
+            height={900}
+            className="aspect-video w-full object-cover"
+          />
+        </figure>
       </section>
 
-      <section className="mx-auto max-w-5xl px-5 pb-16">
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="flex flex-col rounded-2xl border border-black/10 bg-white p-6 sm:p-7">
-            <TagMock />
-            <div className="mt-5 flex items-end justify-between gap-3">
-              <h2 className="text-xl font-semibold">CycleTag</h2>
-              <p className="font-serif text-3xl leading-none tracking-tight">{t.cyclePrice}</p>
-            </div>
-            <p className="mt-1 text-right text-xs text-[#6a6858]">{t.cycleNote}</p>
-            <p className="mt-3 text-sm leading-relaxed text-[#4a4a3e]">{t.cycleBody}</p>
-            <div className="mt-6 flex flex-col gap-2">
-              <a
-                href="https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-800 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-900"
-              >
-                {t.cyclePay} <ArrowRight className="h-4 w-4" />
-              </a>
-              <a
-                href="https://buy.stripe.com/28E4gy65X4sK9yE52R8og0q"
-                className="inline-flex min-h-11 items-center justify-center rounded-md border border-black/15 bg-white px-5 py-2.5 text-sm font-medium text-[#1b1b16] transition hover:border-black/30"
-              >
-                {t.cycleBulk}
-              </a>
-              <a href="https://cycletag.eu/#create" className="inline-flex min-h-11 items-center justify-center gap-1 text-sm text-[#6a6858] hover:text-[#1b1b16]">
-                {t.cycleFree} <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
-            </div>
-          </div>
-
-          <div className="flex flex-col rounded-2xl border border-black/10 bg-white p-6 sm:p-7">
-            <ViesMock />
-            <div className="mt-5 flex items-end justify-between gap-3">
-              <h2 className="text-xl font-semibold">VIESproof</h2>
-              <p className="font-serif text-3xl leading-none tracking-tight">{t.viesPrice}</p>
-            </div>
-            <p className="mt-1 text-right text-xs text-[#6a6858]">{t.viesNote}</p>
-            <p className="mt-3 text-sm leading-relaxed text-[#4a4a3e]">{t.viesBody}</p>
-            <div className="mt-6 flex flex-col gap-2">
-              <a
-                href="https://viesproof.eu/"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-800 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-900"
-              >
-                {t.viesPay} <ArrowRight className="h-4 w-4" />
-              </a>
-              <a href="https://viesproof.eu/" className="inline-flex min-h-11 items-center justify-center gap-1 text-sm text-[#6a6858] hover:text-[#1b1b16]">
-                {t.viesFree} <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
-            </div>
-          </div>
+      <section className="mx-auto max-w-6xl px-5 pb-16">
+        <div className="grid items-stretch gap-6 md:grid-cols-2">
+          <PayCard
+            img="/images/cycletag.jpg"
+            alt={t.cycleAlt}
+            name="CycleTag"
+            price={t.cyclePrice}
+            note={t.cycleNote}
+            body={t.cycleBody}
+            actions={
+              <>
+                <a href="https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r" className={payBtn}>
+                  {t.cyclePay} <ArrowRight className="h-4 w-4" />
+                </a>
+                <a href="https://buy.stripe.com/28E4gy65X4sK9yE52R8og0q" className={ghostBtn}>
+                  {t.cycleBulk}
+                </a>
+                <a href="https://cycletag.eu/#create" className={freeBtn}>
+                  {t.cycleFree} <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </>
+            }
+          />
+          <PayCard
+            img="/images/viesproof.jpg"
+            alt={t.viesAlt}
+            name="VIESproof"
+            price={t.viesPrice}
+            note={t.viesNote}
+            body={t.viesBody}
+            actions={
+              <>
+                <a href="https://viesproof.eu/" className={payBtn}>
+                  {t.viesPay} <ArrowRight className="h-4 w-4" />
+                </a>
+                <span className="hidden min-h-11 md:block" aria-hidden />
+                <a href="https://viesproof.eu/" className={freeBtn}>
+                  {t.viesFree} <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </>
+            }
+          />
         </div>
 
         {otherProducts.length > 0 && (
@@ -197,14 +175,14 @@ export default function HomeView() {
       </section>
 
       <section className="border-y border-black/10 bg-white">
-        <div className="mx-auto flex max-w-5xl flex-col items-start justify-between gap-6 px-5 py-12 md:flex-row md:items-center">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 py-12 md:flex-row md:items-center">
           <div className="max-w-xl">
-            <h2 className="text-2xl font-semibold">{t.partnerTitle}</h2>
+            <h2 className="font-serif text-3xl font-normal tracking-tight">{t.partnerTitle}</h2>
             <p className="mt-3 text-sm leading-relaxed text-[#4a4a3e]">{t.partnerBody}</p>
           </div>
           <Link
             href="/partners"
-            className="inline-flex min-h-11 items-center gap-2 rounded-md bg-[#1b1b16] px-5 py-2.5 text-sm font-medium text-[#f7f5f0] hover:bg-black"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md bg-[#1b1b16] px-5 py-2.5 text-sm font-medium text-[#f7f5f0] hover:bg-black"
           >
             {t.partnerCta} <ArrowRight className="h-4 w-4" />
           </Link>
