@@ -33,12 +33,13 @@ const COPY = {
 
 function LangSwitch({ locale, setLocale }) {
   return (
-    <div className="flex rounded-md border border-black/15 bg-white p-0.5 text-xs font-medium">
+    <div className="flex rounded-md border border-black/15 bg-white p-0.5 text-xs font-medium" role="group" aria-label="Language">
       {['en', 'sv'].map((code) => (
         <button
           key={code}
           type="button"
           onClick={() => setLocale(code)}
+          aria-pressed={locale === code}
           className={`min-h-9 min-w-9 rounded px-2 uppercase ${locale === code ? 'bg-[#1b1b16] text-[#f7f5f0]' : 'text-[#6a6858]'}`}
         >
           {code}
@@ -59,32 +60,31 @@ export default function SiteNav() {
   const showCta = pathname !== '/contact'
   return (
     <header className="sticky top-0 z-40 border-b border-black/10 bg-[#f7f5f0]/95 backdrop-blur" onKeyDown={(event) => { if (event.key === 'Escape' && open) { setOpen(false); toggleRef.current?.focus() } }}>
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-        <Link href="/" className="flex min-h-11 items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#1b1b16] text-emerald-400">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5">
+        <Link href="/" className="flex min-h-11 min-w-0 items-center gap-2">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#1b1b16] text-emerald-400">
             <Radio className="h-4 w-4" />
           </span>
           <span className="text-[15px] font-semibold tracking-[0.14em] text-[#1b1b16]">NYTTO LABS</span>
         </Link>
-        <nav className="hidden items-center gap-6 md:flex" aria-label="Company">
-          {t.links.map((l) => (
-            <Link key={l.href} href={l.href} aria-current={isActive(l.href) ? 'page' : undefined} className={`inline-flex min-h-11 items-center text-sm font-medium transition-colors hover:text-[#1b1b16] ${isActive(l.href) ? 'text-[#1b1b16]' : 'text-[#3a3a30]'}`}>
-              {l.label}
-            </Link>
-          ))}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <nav className="hidden items-center gap-6 md:flex" aria-label="Company">
+            {t.links.map((l) => (
+              <Link key={l.href} href={l.href} aria-current={isActive(l.href) ? 'page' : undefined} className={`inline-flex min-h-11 items-center text-sm font-medium transition-colors hover:text-[#1b1b16] ${isActive(l.href) ? 'text-[#1b1b16]' : 'text-[#3a3a30]'}`}>
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           <LangSwitch locale={locale} setLocale={setLocale} />
           {showCta && (
-            <Link href="/contact" className="rounded-md bg-[#1b1b16] px-4 py-2 text-sm font-medium text-[#f7f5f0] transition hover:bg-black">
+            <Link href="/contact" className="hidden rounded-md bg-[#1b1b16] px-4 py-2 text-sm font-medium text-[#f7f5f0] transition hover:bg-black md:inline-flex">
               {t.cta}
             </Link>
           )}
-        </nav>
-        <div className="flex items-center gap-2 md:hidden">
-          <LangSwitch locale={locale} setLocale={setLocale} />
           <button
             ref={toggleRef}
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md md:hidden"
             onClick={() => setOpen(!open)}
             aria-label={open ? t.close : t.open}
             aria-expanded={open}

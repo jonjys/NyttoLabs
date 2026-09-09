@@ -9,37 +9,41 @@ import { useLocale } from '@/hooks/use-locale'
 
 const COPY = {
   en: {
-    blurb: 'A Swedish software company. Products on this site are proof of what we build — each one keeps its own identity.',
+    blurb: 'A Swedish software company. Two tools take payment today. The rest of the lab is on Products.',
     company: 'Company',
     home: 'Home',
-    products: 'Products',
+    products: 'The lab',
     partners: 'Partners',
     contact: 'Contact',
     privacy: 'Privacy',
     terms: 'Terms',
-    all: 'All products',
+    all: 'For sale',
+    lab: 'The lab →',
     rights: 'All rights reserved.',
   },
   sv: {
-    blurb: 'Ett svenskt mjukvarubolag. Produkterna på den här sajten är bevis på vad vi bygger — var och en behåller sin identitet.',
+    blurb: 'Ett svenskt mjukvarubolag. Två verktyg tar betalt idag. Resten av labbet ligger under Produkter.',
     company: 'Bolag',
     home: 'Hem',
-    products: 'Produkter',
+    products: 'Labbet',
     partners: 'Partners',
     contact: 'Kontakt',
     privacy: 'Integritet',
     terms: 'Villkor',
-    all: 'Alla produkter',
+    all: 'Till salu',
+    lab: 'Labbet →',
     rights: 'Alla rättigheter förbehållna.',
   },
 }
+
+const LIVE_SLUGS = new Set(['cycletag', 'viesproof'])
 
 export default function SiteFooter() {
   const [locale] = useLocale()
   const t = COPY[locale]
   const s = usePublicSettings()
   const helloEmail = s.helloEmail || PUBLIC_HELLO_EMAIL
-  const products = PORTAL_PRODUCTS
+  const live = PORTAL_PRODUCTS.filter((p) => LIVE_SLUGS.has(p.slug))
   return (
     <footer className="border-t border-black/10 bg-[#1b1b16] text-[#d6d4c8]">
       <div className="mx-auto max-w-6xl px-5 py-12">
@@ -65,11 +69,14 @@ export default function SiteFooter() {
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-[#aaa89b]">{t.all}</div>
             <ul className="mt-3 space-y-2 text-sm">
-              {products.map((p) => (
+              {live.map((p) => (
                 <li key={p.slug}>
                   <a href={p.url} className="inline-flex min-h-8 items-center hover:text-white">{p.name}</a>
                 </li>
               ))}
+              <li>
+                <Link href="/products" className="inline-flex min-h-8 items-center hover:text-white">{t.lab}</Link>
+              </li>
             </ul>
           </div>
         </div>
