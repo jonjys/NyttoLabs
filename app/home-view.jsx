@@ -14,14 +14,14 @@ const COPY = {
     hero: 'Two things you can pay for today.',
     lede: 'Nytto Labs builds small tools for reordering and VAT evidence. CycleTag and VIESproof take payment. The rest of the lab is on Products.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace. Print, stick, scan. No app.',
-    cyclePrice: '49 SEK',
-    cycleNote: 'starter sheet · one-time',
+    cyclePrice: '$5',
+    cycleNote: '49 SEK at checkout · starter sheet',
     cyclePay: 'Buy a sheet',
-    cycleBulk: 'Bulk 299 SEK',
+    cycleBulk: 'Bulk $31',
     cycleFree: 'Free — make one tag',
     viesBody: 'EU VAT checks against VIES, with a sealed PDF + CSV for the books.',
-    viesPrice: '€4.90',
-    viesNote: 'minimum per batch · one-time',
+    viesPrice: '$6',
+    viesNote: '€4.90 at checkout · minimum per batch',
     viesPay: 'Pay and verify',
     viesFree: 'Free — a single check',
     more: 'Seven more tools live in the lab. They are not for sale yet.',
@@ -147,18 +147,18 @@ export default function HomeView() {
             <p className="mt-3 text-sm leading-relaxed text-[#4a4a3e]">{t.cycleBody}</p>
             <div className="mt-6 flex flex-col gap-2">
               <a
-                href="https://cycletag.eu/"
+                href="https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r"
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-800 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-900"
               >
                 {t.cyclePay} <ArrowRight className="h-4 w-4" />
               </a>
               <a
-                href="https://cycletag.eu/"
+                href="https://buy.stripe.com/28E4gy65X4sK9yE52R8og0q"
                 className="inline-flex min-h-11 items-center justify-center rounded-md border border-black/15 bg-white px-5 py-2.5 text-sm font-medium text-[#1b1b16] transition hover:border-black/30"
               >
                 {t.cycleBulk}
               </a>
-              <a href="https://cycletag.eu/" className="inline-flex min-h-11 items-center justify-center gap-1 text-sm text-[#6a6858] hover:text-[#1b1b16]">
+              <a href="https://cycletag.eu/#create" className="inline-flex min-h-11 items-center justify-center gap-1 text-sm text-[#6a6858] hover:text-[#1b1b16]">
                 {t.cycleFree} <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
             </div>
