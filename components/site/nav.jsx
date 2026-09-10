@@ -6,10 +6,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Menu, X, Radio } from 'lucide-react'
 
 const links = [
-  { href: '/', label: 'Hem' },
-  { href: '/products', label: 'Produkter' },
+  { href: '/', label: 'Home' },
+  { href: '/products', label: 'Products' },
   { href: '/partners', label: 'Partners' },
-  { href: '/contact', label: 'Kontakt' },
+  { href: '/contact', label: 'Contact' },
 ]
 
 export default function SiteNav() {
@@ -36,7 +36,7 @@ export default function SiteNav() {
           ))}
           {showCta && (
             <Link href="/contact" className="rounded-md bg-[#1b1b16] px-4 py-2 text-sm font-medium text-[#f7f5f0] transition hover:bg-black">
-              Kontakta oss
+              Get in touch
             </Link>
           )}
         </nav>
@@ -45,7 +45,7 @@ export default function SiteNav() {
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-md md:hidden"
           onClick={() => setOpen(!open)}
-          aria-label={open ? 'Stäng meny' : 'Öppna meny'}
+          aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
           aria-controls="mobile-nav"
         >
@@ -61,7 +61,7 @@ export default function SiteNav() {
           ))}
           {showCta && (
             <Link href="/contact" onClick={() => setOpen(false)} className="mt-2 block rounded-md bg-[#1b1b16] px-4 py-3 text-center text-sm font-medium text-[#f7f5f0]">
-              Kontakta oss
+              Get in touch
             </Link>
           )}
         </div>
