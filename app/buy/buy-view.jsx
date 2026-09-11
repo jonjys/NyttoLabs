@@ -16,14 +16,16 @@ const CYCLE_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
 const CYCLE_BULK = 'https://buy.stripe.com/28E4gy65X4sK9yE52R8og0q'
 const CYCLE_FREE = 'https://cycletag.eu/#create'
 const VIES_PAY = 'https://viesproof.eu/'
+const CURL_PAY = 'https://pay.nyttolabs.com/'
 
 const COPY = {
   en: {
     eyebrow: 'Buy · Swedish software · F-tax',
-    hero: 'Two things you can pay for today.',
-    lede: 'CycleTag and VIESproof take payment right here. The rest of the lab lives on Products.',
+    hero: 'Three things you can pay for today.',
+    lede: 'CycleTag, VIESproof and Curl-to-Buy take payment right here. The rest of the lab lives on Products.',
     cycleAlt: 'Printed CycleTag labels on filters and toner.',
     viesAlt: 'A VAT evidence sheet stamped valid.',
+    curlAlt: 'A paid file receipt beside a USB stick.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace. Print, stick, scan. No app.',
     cyclePrice: '$5',
     cycleNote: '49 SEK at checkout · starter sheet',
@@ -35,6 +37,10 @@ const COPY = {
     viesNote: '€4.90 at checkout · minimum per batch',
     viesPay: 'Pay and verify',
     viesFree: 'Free — a single check',
+    curlBody: 'Sell a digital file with no account on either side. Upload, set a price, share the link.',
+    curlPrice: '5%',
+    curlNote: 'fee · you keep 95%',
+    curlPay: 'Post a file',
     more: 'More tools live in the lab. They are not for sale yet.',
     all: 'See the lab →',
     partnerTitle: 'Work with Nytto Labs',
@@ -43,10 +49,11 @@ const COPY = {
   },
   sv: {
     eyebrow: 'Köp · Svensk mjukvara · F-skatt',
-    hero: 'Två saker du kan betala för idag.',
-    lede: 'CycleTag och VIESproof tar betalt direkt här. Resten av labbet ligger under Produkter.',
+    hero: 'Tre saker du kan betala för idag.',
+    lede: 'CycleTag, VIESproof och Curl-to-Buy tar betalt direkt här. Resten av labbet ligger under Produkter.',
     cycleAlt: 'Utskrivna CycleTag-etiketter på filter och toner.',
     viesAlt: 'Ett momsbevis stämplat giltigt.',
+    curlAlt: 'Ett betalt filkvitto bredvid ett USB-minne.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter. Skriv ut, klistra, skanna. Ingen app.',
     cyclePrice: '49 kr',
     cycleNote: 'startark · engångsköp',
@@ -58,6 +65,10 @@ const COPY = {
     viesNote: 'minimum per batch · engångsköp',
     viesPay: 'Betala och verifiera',
     viesFree: 'Gratis — enstaka kontroll',
+    curlBody: 'Sälj en digital fil utan konto på någon sida. Ladda upp, sätt ett pris, dela länken.',
+    curlPrice: '5%',
+    curlNote: 'avgift · du behåller 95%',
+    curlPay: 'Lägg upp en fil',
     more: 'Fler verktyg ligger i labbet. De är inte till salu än.',
     all: 'Se labbet →',
     partnerTitle: 'Samarbeta med Nytto Labs',
@@ -96,7 +107,7 @@ export default function BuyView() {
   const products = usePublicProducts()
   const otherProducts = groupPublicProductsByStatus(products)
     .flatMap((group) => group.list)
-    .filter((p) => p.slug !== 'cycletag' && p.slug !== 'viesproof')
+    .filter((p) => p.slug !== 'cycletag' && p.slug !== 'viesproof' && p.slug !== 'curl-to-buy')
 
   const payBtn =
     'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-bold transition-transform hover:scale-[1.02]'
@@ -130,7 +141,7 @@ export default function BuyView() {
           </div>
         </div>
 
-        <div className="grid items-stretch gap-6 md:grid-cols-2">
+        <div className="grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
           <PayCard
             img="/images/cycletag.jpg"
             alt={t.cycleAlt}
@@ -169,6 +180,19 @@ export default function BuyView() {
                   {t.viesFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
+            }
+          />
+          <PayCard
+            img="/images/curl-to-buy.jpg"
+            alt={t.curlAlt}
+            name="Curl-to-Buy"
+            price={t.curlPrice}
+            note={t.curlNote}
+            body={t.curlBody}
+            actions={
+              <a href={CURL_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                {t.curlPay} <ArrowRight className="h-4 w-4" />
+              </a>
             }
           />
         </div>
