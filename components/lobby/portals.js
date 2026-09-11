@@ -21,10 +21,10 @@ export const PORTALS = [
     x: 0,
     color: '#00ff9d',
     label: 'PRODUCTS',
-    href: '/products',
+    href: '/buy',
     heading: 'The Product Showcase',
-    blurb: 'Every tool we ship lives under its own name and its own domain. Focused, self-contained, done when the problem is solved.',
-    cta: 'Open Products',
+    blurb: 'Two things you can pay for today — CycleTag and VIESproof. The rest of the lab is one click further in.',
+    cta: 'What you can buy',
   },
   {
     id: 'contact',
