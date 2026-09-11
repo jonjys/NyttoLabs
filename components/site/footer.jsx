@@ -4,88 +4,76 @@ import Link from 'next/link'
 import { usePublicSettings } from '@/hooks/use-public-catalog'
 import { FOOTER_IDENTITY_LINE } from '@/lib/site'
 import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
-import { PORTAL_PRODUCTS } from '@/lib/portal/catalog'
-import { useLocale } from '@/hooks/use-locale'
 
-const COPY = {
-  en: {
-    blurb: 'A Swedish software company. Two tools take payment today. The rest of the lab is on Products.',
-    company: 'Company',
-    home: 'Home',
-    products: 'The lab',
-    partners: 'Partners',
-    contact: 'Contact',
-    privacy: 'Privacy',
-    terms: 'Terms',
-    all: 'For sale',
-    lab: 'The lab →',
-    rights: 'All rights reserved.',
-  },
-  sv: {
-    blurb: 'Ett svenskt mjukvarubolag. Två verktyg tar betalt idag. Resten av labbet ligger under Produkter.',
-    company: 'Bolag',
-    home: 'Hem',
-    products: 'Labbet',
-    partners: 'Partners',
-    contact: 'Kontakt',
-    privacy: 'Integritet',
-    terms: 'Villkor',
-    all: 'Till salu',
-    lab: 'Labbet →',
-    rights: 'Alla rättigheter förbehållna.',
-  },
-}
-
-const LIVE_SLUGS = new Set(['cycletag', 'viesproof'])
-
-export default function SiteFooter() {
-  const [locale] = useLocale()
-  const t = COPY[locale]
+export default function SiteFooter({ accent = '#00f5ff' }) {
   const s = usePublicSettings()
   const helloEmail = s.helloEmail || PUBLIC_HELLO_EMAIL
-  const live = PORTAL_PRODUCTS.filter((p) => LIVE_SLUGS.has(p.slug))
+
+  const linkCls = 'inline-flex min-h-8 items-center transition-colors duration-200 hover:text-white'
+  const muted = { color: 'rgba(255,255,255,0.4)' }
+
   return (
-    <footer className="border-t border-black/10 bg-[#1b1b16] text-[#d6d4c8]">
-      <div className="mx-auto max-w-6xl px-5 py-12">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    <footer
+      className="relative mt-24"
+      style={{ borderTop: '1px solid rgba(255,255,255,0.07)', background: 'rgba(0,0,0,0.35)' }}
+    >
+      <div className="mx-auto max-w-6xl px-5 py-14">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="sm:col-span-2">
-            <div className="text-sm font-semibold tracking-[0.14em] text-white">NYTTO LABS</div>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#9c9a8c]">{t.blurb}</p>
-            <p className="mt-4 text-xs leading-relaxed text-[#aaa89b]">
+            <div className="flex items-center gap-2.5">
+              <span
+                className="flex h-6 w-6 items-center justify-center rounded"
+                style={{ background: accent, boxShadow: `0 0 14px ${accent}99` }}
+              >
+                <span className="block h-2 w-2 rounded-full" style={{ background: '#03030c' }} />
+              </span>
+              <span className="font-mono text-xs tracking-[0.3em] text-white">NYTTO LABS</span>
+            </div>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed" style={muted}>
+              Swedish software company. Each product lives under its own name and its own site.
+            </p>
+            <p className="mt-4 max-w-sm text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.26)' }}>
               {s.affiliateDisclosure}
             </p>
           </div>
+
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-[#aaa89b]">{t.company}</div>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/" className="hover:text-white">{t.home}</Link></li>
-              <li><Link href="/products" className="hover:text-white">{t.products}</Link></li>
-              <li><Link href="/partners" className="hover:text-white">{t.partners}</Link></li>
-              <li><Link href="/contact" className="hover:text-white">{t.contact}</Link></li>
-              <li><Link href="/privacy" className="hover:text-white">{t.privacy}</Link></li>
-              <li><Link href="/terms" className="hover:text-white">{t.terms}</Link></li>
+            <div className="font-mono text-[9px] uppercase tracking-[0.26em]" style={{ color: accent }}>
+              Company
+            </div>
+            <ul className="mt-4 space-y-1.5 text-sm" style={muted}>
+              <li><Link href="/" className={linkCls}>Home</Link></li>
+              <li><Link href="/products" className={linkCls}>Products</Link></li>
+              <li><Link href="/partners" className={linkCls}>Partners</Link></li>
+              <li><Link href="/contact" className={linkCls}>Contact</Link></li>
+              <li><Link href="/privacy" className={linkCls}>Privacy policy</Link></li>
+              <li><Link href="/terms" className={linkCls}>Terms</Link></li>
             </ul>
           </div>
+
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-[#aaa89b]">{t.all}</div>
-            <ul className="mt-3 space-y-2 text-sm">
-              {live.map((p) => (
-                <li key={p.slug}>
-                  <a href={p.url} className="inline-flex min-h-8 items-center hover:text-white">{p.name}</a>
-                </li>
-              ))}
-              <li>
-                <Link href="/products" className="inline-flex min-h-8 items-center hover:text-white">{t.lab}</Link>
-              </li>
+            <div className="font-mono text-[9px] uppercase tracking-[0.26em]" style={{ color: accent }}>
+              Products
+            </div>
+            <ul className="mt-4 space-y-1.5 text-sm" style={muted}>
+              <li><a href="https://cycletag.eu/" className={linkCls}>CycleTag</a></li>
+              <li><a href="https://viesproof.eu/" className={linkCls}>VIESproof</a></li>
+              <li><Link href="/products" className={linkCls}>All products →</Link></li>
             </ul>
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-[#aaa89b] md:flex-row md:items-center md:justify-between">
-          <span>© {new Date().getFullYear()} Nytto Labs. {t.rights}</span>
+
+        <div
+          className="mt-12 flex flex-col gap-2 pt-6 text-xs md:flex-row md:items-center md:justify-between"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.28)' }}
+        >
+          <span>© {new Date().getFullYear()} Nytto Labs. All rights reserved.</span>
           <span>
             {FOOTER_IDENTITY_LINE}
             {' · '}
-            <a href={`mailto:${helloEmail}`} className="hover:text-white">{helloEmail}</a>
+            <a href={`mailto:${helloEmail}`} className="transition-colors duration-200 hover:text-white">
+              {helloEmail}
+            </a>
           </span>
         </div>
       </div>

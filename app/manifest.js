@@ -7,8 +7,8 @@ export default function manifest() {
     start_url: '/products',
     scope: '/',
     display: 'standalone',
-    background_color: '#f7f5f0',
-    theme_color: '#1c3329',
+    background_color: '#03030c',
+    theme_color: '#03030c',
     lang: 'en',
     icons: [
       { src: '/portal-icon/192', sizes: '192x192', type: 'image/png', purpose: 'any' },

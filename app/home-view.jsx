@@ -1,195 +1,359 @@
 'use client'
 
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
-import SiteNav from '@/components/site/nav'
-import SiteFooter from '@/components/site/footer'
-import { usePublicProducts } from '@/hooks/use-public-catalog'
-import { groupPublicProductsByStatus } from '@/lib/relay/catalog'
-import { useLocale } from '@/hooks/use-locale'
+import dynamic from 'next/dynamic'
+import { motion, AnimatePresence } from 'framer-motion'
+import { PORTALS } from '@/components/lobby/portals'
 
-const COPY = {
-  en: {
-    kicker: 'Swedish software · F-tax',
-    hero: 'Two things you can pay for today.',
-    lede: 'Nytto Labs builds small tools for reordering and VAT evidence. CycleTag and VIESproof take payment. The rest of the lab is on Products.',
-    heroAlt: 'A QR reorder label stuck to a water filter.',
-    cycleAlt: 'Printed CycleTag labels on filters and toner.',
-    viesAlt: 'A VAT evidence sheet stamped valid.',
-    cycleBody: 'QR reorder labels for filters, toner and the things you replace. Print, stick, scan. No app.',
-    cyclePrice: '$5',
-    cycleNote: '49 SEK at checkout · starter sheet',
-    cyclePay: 'Buy a sheet',
-    cycleBulk: 'Bulk $31',
-    cycleFree: 'Free — make one tag',
-    viesBody: 'EU VAT checks against VIES, with a sealed PDF + CSV for the books.',
-    viesPrice: '$6',
-    viesNote: '€4.90 at checkout · minimum per batch',
-    viesPay: 'Pay and verify',
-    viesFree: 'Free — a single check',
-    more: 'Seven more tools live in the lab. They are not for sale yet.',
-    all: 'See the lab →',
-    partnerTitle: 'Work with Nytto Labs',
-    partnerBody:
-      'Partnerships and general questions go to the same inbox. You keep checkout, payment and fulfilment.',
-    partnerCta: 'Become a partner',
-  },
-  sv: {
-    kicker: 'Svensk mjukvara · F-skatt',
-    hero: 'Två saker du kan betala för idag.',
-    lede: 'Nytto Labs bygger små verktyg för återbeställning och momsbevis. CycleTag och VIESproof tar betalt. Resten av labbet ligger under Produkter.',
-    heroAlt: 'En QR-återbeställningsetikett på ett vattenfilter.',
-    cycleAlt: 'Utskrivna CycleTag-etiketter på filter och toner.',
-    viesAlt: 'Ett momsbevis stämplat giltigt.',
-    cycleBody: 'QR-etiketter för filter, toner och det du byter. Skriv ut, klistra, skanna. Ingen app.',
-    cyclePrice: '49 kr',
-    cycleNote: 'startark · engångsköp',
-    cyclePay: 'Köp ett ark',
-    cycleBulk: 'Bulk 299 kr',
-    cycleFree: 'Gratis — gör en tagg',
-    viesBody: 'EU-momskontroll mot VIES, med förseglad PDF + CSV till bokföringen.',
-    viesPrice: '4,90 €',
-    viesNote: 'minimum per batch · engångsköp',
-    viesPay: 'Betala och verifiera',
-    viesFree: 'Gratis — enstaka kontroll',
-    more: 'Sju verktyg till ligger i labbet. De är inte till salu än.',
-    all: 'Se labbet →',
-    partnerTitle: 'Samarbeta med Nytto Labs',
-    partnerBody:
-      'Partnerskap och allmänna frågor går till samma inkorg. Ni behåller kassa, betalning och leverans.',
-    partnerCta: 'Bli partner',
-  },
-}
+const PortalScene = dynamic(() => import('@/components/lobby/portal-scene'), {
+  ssr: false,
+  loading: () => null,
+})
 
-function PayCard({ img, alt, name, price, note, body, actions }) {
+// ── Reticle cursor ───────────────────────────────────────────────────────────
+
+function Reticle() {
+  const dot = useRef(null)
+  const ring = useRef(null)
+  const pos = useRef({ x: -200, y: -200 })
+  const rpos = useRef({ x: -200, y: -200 })
+
+  useEffect(() => {
+    const onMove = (e) => {
+      pos.current = { x: e.clientX, y: e.clientY }
+      if (dot.current) dot.current.style.transform = `translate(${e.clientX - 2}px, ${e.clientY - 2}px)`
+    }
+    window.addEventListener('mousemove', onMove)
+
+    let raf
+    const tick = () => {
+      rpos.current.x += (pos.current.x - rpos.current.x) * 0.16
+      rpos.current.y += (pos.current.y - rpos.current.y) * 0.16
+      if (ring.current) {
+        ring.current.style.transform = `translate(${rpos.current.x - 16}px, ${rpos.current.y - 16}px)`
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white">
-      <div className="aspect-[16/10] overflow-hidden bg-[#ece8de]">
-        <img src={img} alt={alt} width={1200} height={750} className="h-full w-full object-cover" />
-      </div>
-      <div className="flex flex-1 flex-col p-6">
-        <div className="flex items-end justify-between gap-3">
-          <h2 className="text-xl font-semibold tracking-tight">{name}</h2>
-          <p className="font-serif text-3xl leading-none tracking-tight">{price}</p>
-        </div>
-        <p className="mt-1 text-right text-xs text-[#6a6858]">{note}</p>
-        <p className="mt-4 flex-1 text-sm leading-relaxed text-[#4a4a3e]">{body}</p>
-        <div className="mt-6 flex flex-col gap-2">{actions}</div>
-      </div>
-    </article>
+    <>
+      <div
+        ref={dot}
+        className="pointer-events-none fixed left-0 top-0 mix-blend-screen"
+        style={{ zIndex: 9999, width: 4, height: 4, borderRadius: '50%', background: '#00f5ff' }}
+      />
+      <div
+        ref={ring}
+        className="pointer-events-none fixed left-0 top-0 mix-blend-screen"
+        style={{
+          zIndex: 9998,
+          width: 32,
+          height: 32,
+          borderRadius: '50%',
+          border: '1px solid rgba(0,245,255,0.45)',
+        }}
+      />
+    </>
   )
 }
 
-const payBtn =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-800 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-900'
-const ghostBtn =
-  'inline-flex min-h-11 items-center justify-center rounded-md border border-black/15 bg-white px-5 py-2.5 text-sm font-medium text-[#1b1b16] transition hover:border-black/30'
-const freeBtn =
-  'inline-flex min-h-11 items-center justify-center gap-1 text-sm text-[#6a6858] hover:text-[#1b1b16]'
+// ── Main ─────────────────────────────────────────────────────────────────────
 
 export default function HomeView() {
-  const [locale] = useLocale()
-  const t = COPY[locale]
-  const products = usePublicProducts()
-  const otherProducts = groupPublicProductsByStatus(products)
-    .flatMap((group) => group.list)
-    .filter((p) => p.slug !== 'cycletag' && p.slug !== 'viesproof')
+  const [target, setTarget] = useState(null)
+  const [transitioning, setTransitioning] = useState(false)
+  const [flash, setFlash] = useState(null)
+
+  const select = useCallback(
+    (i) => {
+      setTarget((cur) => {
+        if (cur !== null) return cur
+        setTransitioning(true)
+        setFlash(PORTALS[i].color)
+        return i
+      })
+    },
+    [],
+  )
+
+  const back = useCallback(() => {
+    setTransitioning(true)
+    setFlash('#00f5ff')
+    setTarget(null)
+  }, [])
+
+  const onArrive = useCallback(() => {
+    setTransitioning(false)
+    setFlash(null)
+  }, [])
+
+  // Esc returns to the lobby
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape' && target !== null && !transitioning) back()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [target, transitioning, back])
+
+  // Touch devices have no cursor to replace and no hover to hint at.
+  const [finePointer, setFinePointer] = useState(false)
+  useEffect(() => {
+    const fine = window.matchMedia?.('(pointer: fine)')?.matches ?? true
+    setFinePointer(fine)
+    if (!fine) return undefined
+    document.body.style.cursor = 'none'
+    return () => {
+      document.body.style.cursor = ''
+    }
+  }, [])
+
+  const room = target === null ? null : PORTALS[target]
+  const inLobby = target === null && !transitioning
+  const inRoom = target !== null && !transitioning
 
   return (
-    <div className="min-h-screen bg-[#f7f5f0] text-[#1b1b16]">
-      <SiteNav />
+    <div className="relative h-screen w-screen overflow-hidden" style={{ background: '#03030c' }}>
+      {/* 3D world */}
+      <div className="absolute inset-0">
+        <PortalScene
+          target={target}
+          transitioning={transitioning}
+          onSelect={select}
+          onArrive={onArrive}
+        />
+      </div>
 
-      <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-12 pt-10 sm:pt-14 lg:grid-cols-2">
-        <div>
-          <span className="inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-[#6a6858]">
-            {t.kicker}
-          </span>
-          <h1 className="mt-5 font-serif text-4xl font-normal leading-[1.08] tracking-tight sm:text-5xl">
-            {t.hero}
-          </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#4a4a3e]">{t.lede}</p>
-        </div>
-        <figure className="overflow-hidden rounded-2xl border border-black/10 bg-[#ece8de]">
-          <img
-            src="/images/hero.jpg"
-            alt={t.heroAlt}
-            width={1600}
-            height={900}
-            className="aspect-video w-full object-cover"
-          />
-        </figure>
-      </section>
+      {finePointer && <Reticle />}
 
-      <section className="mx-auto max-w-6xl px-5 pb-16">
-        <div className="grid items-stretch gap-6 md:grid-cols-2">
-          <PayCard
-            img="/images/cycletag.jpg"
-            alt={t.cycleAlt}
-            name="CycleTag"
-            price={t.cyclePrice}
-            note={t.cycleNote}
-            body={t.cycleBody}
-            actions={
-              <>
-                <a href="https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r" className={payBtn}>
-                  {t.cyclePay} <ArrowRight className="h-4 w-4" />
-                </a>
-                <a href="https://buy.stripe.com/28E4gy65X4sK9yE52R8og0q" className={ghostBtn}>
-                  {t.cycleBulk}
-                </a>
-                <a href="https://cycletag.eu/#create" className={freeBtn}>
-                  {t.cycleFree} <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              </>
-            }
-          />
-          <PayCard
-            img="/images/viesproof.jpg"
-            alt={t.viesAlt}
-            name="VIESproof"
-            price={t.viesPrice}
-            note={t.viesNote}
-            body={t.viesBody}
-            actions={
-              <>
-                <a href="https://viesproof.eu/" className={payBtn}>
-                  {t.viesPay} <ArrowRight className="h-4 w-4" />
-                </a>
-                <span className="hidden min-h-11 md:block" aria-hidden />
-                <a href="https://viesproof.eu/" className={freeBtn}>
-                  {t.viesFree} <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              </>
-            }
-          />
-        </div>
-
-        {otherProducts.length > 0 && (
-          <p className="mt-8 text-sm text-[#6a6858]">
-            {t.more}{' '}
-            <Link href="/products" className="font-medium text-emerald-800 hover:text-emerald-900">
-              {t.all}
-            </Link>
-          </p>
-        )}
-      </section>
-
-      <section className="border-y border-black/10 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 py-12 md:flex-row md:items-center">
-          <div className="max-w-xl">
-            <h2 className="font-serif text-3xl font-normal tracking-tight">{t.partnerTitle}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-[#4a4a3e]">{t.partnerBody}</p>
-          </div>
-          <Link
-            href="/partners"
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md bg-[#1b1b16] px-5 py-2.5 text-sm font-medium text-[#f7f5f0] hover:bg-black"
+      {/* Portal-transit flash */}
+      <AnimatePresence>
+        {flash && (
+          <motion.div
+            className="pointer-events-none absolute inset-0"
+            style={{ zIndex: 50 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.55, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2.3, times: [0, 0.5, 1], ease: 'easeInOut' }}
           >
-            {t.partnerCta} <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
+            <div
+              className="h-full w-full"
+              style={{ background: `radial-gradient(circle at 50% 42%, ${flash} 0%, transparent 70%)` }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <SiteFooter />
+      {/* Scanline / vignette grade */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          zIndex: 30,
+          background:
+            'radial-gradient(circle at 50% 50%, transparent 45%, rgba(0,0,0,0.55) 100%)',
+        }}
+      />
+
+      {/* Top bar */}
+      <header className="pointer-events-none absolute inset-x-0 top-0" style={{ zIndex: 40 }}>
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Link
+            href="/"
+            className="pointer-events-auto flex items-center gap-2.5"
+            onClick={(e) => {
+              if (target !== null) {
+                e.preventDefault()
+                back()
+              }
+            }}
+          >
+            <span
+              className="flex h-6 w-6 items-center justify-center rounded"
+              style={{ background: '#00f5ff', boxShadow: '0 0 14px rgba(0,245,255,0.6)' }}
+            >
+              <span className="block h-2 w-2 rounded-full" style={{ background: '#03030c' }} />
+            </span>
+            <span className="font-mono text-xs tracking-[0.3em] text-white">NYTTO LABS</span>
+          </Link>
+          <span
+            className="font-mono text-[9px] tracking-[0.28em]"
+            style={{ color: 'rgba(255,255,255,0.28)' }}
+          >
+            STOCKHOLM · EST. 2024
+          </span>
+        </div>
+      </header>
+
+      {/* Lobby HUD */}
+      <AnimatePresence>
+        {inLobby && (
+          <motion.div
+            key="lobby"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end px-5 pb-8 sm:pb-14"
+            style={{ zIndex: 40 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <motion.h1
+              className="mb-3 text-center font-black tracking-tighter text-white"
+              style={{ fontSize: 'clamp(1.9rem, 9vw, 4.4rem)', lineHeight: 0.92 }}
+              initial={{ y: 26, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {'NYTTO LABS'.split('').map((c, i) => (
+                <motion.span
+                  key={i}
+                  className="inline-block"
+                  initial={{ y: '110%', opacity: 0 }}
+                  animate={{ y: '0%', opacity: 1 }}
+                  transition={{ delay: 0.2 + i * 0.04, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {c === ' ' ? ' ' : c}
+                </motion.span>
+              ))}
+            </motion.h1>
+
+            <motion.p
+              className="mb-6 max-w-md text-center text-[13px] font-light leading-relaxed sm:text-sm"
+              style={{ color: 'rgba(255,255,255,0.42)' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9, duration: 0.8 }}
+            >
+              A Swedish software company. Three doors, three rooms — pick one and walk through.
+            </motion.p>
+
+            <motion.div
+              className="flex max-w-full items-center gap-2.5 rounded-full px-4 py-2 backdrop-blur-sm sm:gap-3 sm:px-5"
+              style={{
+                border: '1px solid rgba(0,245,255,0.2)',
+                background: 'rgba(0,245,255,0.05)',
+              }}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.7 }}
+            >
+              <motion.span
+                className="block h-1.5 w-1.5 rounded-full"
+                style={{ background: '#00f5ff' }}
+                animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.5, 1] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <span
+                className="font-mono text-[8px] tracking-[0.16em] sm:text-[9px] sm:tracking-[0.26em]"
+                style={{ color: 'rgba(255,255,255,0.55)' }}
+              >
+                {finePointer
+                  ? 'MOVE MOUSE TO LOOK · CLICK A PORTAL TO ENTER'
+                  : 'DRAG TO LOOK · TAP A PORTAL TO ENTER'}
+              </span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Room HUD */}
+      <AnimatePresence>
+        {inRoom && room && (
+          <motion.div
+            key={room.id}
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end px-4 pb-8 sm:pb-16"
+            style={{ zIndex: 40 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div
+              className="pointer-events-auto w-full max-w-lg rounded-2xl p-6 text-center backdrop-blur-md sm:p-8"
+              style={{
+                border: `1px solid ${room.color}38`,
+                background: 'rgba(3,3,12,0.62)',
+                boxShadow: `0 0 60px ${room.color}1f`,
+              }}
+            >
+              <p
+                className="mb-3 font-mono text-[9px] tracking-[0.34em]"
+                style={{ color: room.color }}
+              >
+                {room.label} ROOM
+              </p>
+              <h2 className="mb-3 text-2xl font-bold leading-tight text-white sm:mb-4 sm:text-3xl">
+                {room.heading}
+              </h2>
+              <p
+                className="mb-6 text-[13px] leading-relaxed sm:mb-8 sm:text-sm"
+                style={{ color: 'rgba(255,255,255,0.46)' }}
+              >
+                {room.blurb}
+              </p>
+
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link
+                  href={room.href}
+                  className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg px-6 py-3 text-sm font-bold transition-transform hover:scale-105 sm:flex-none"
+                  style={{ background: room.color, color: '#03030c' }}
+                >
+                  {room.cta} →
+                </Link>
+                <button
+                  type="button"
+                  onClick={back}
+                  className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg px-6 py-3 text-sm font-medium transition-colors hover:text-white sm:flex-none"
+                  style={{
+                    border: '1px solid rgba(255,255,255,0.16)',
+                    color: 'rgba(255,255,255,0.6)',
+                  }}
+                >
+                  ← Back to lobby
+                </button>
+              </div>
+
+              {finePointer && (
+                <p
+                  className="mt-5 font-mono text-[8px] tracking-[0.24em]"
+                  style={{ color: 'rgba(255,255,255,0.2)' }}
+                >
+                  PRESS ESC TO RETURN
+                </p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* In-transit caption */}
+      <AnimatePresence>
+        {transitioning && (
+          <motion.div
+            className="pointer-events-none absolute inset-x-0 bottom-16 text-center"
+            style={{ zIndex: 45 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <span
+              className="font-mono text-[10px] tracking-[0.4em]"
+              style={{ color: 'rgba(255,255,255,0.45)' }}
+            >
+              {target === null ? 'RETURNING TO LOBBY' : `ENTERING ${PORTALS[target].label}`}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

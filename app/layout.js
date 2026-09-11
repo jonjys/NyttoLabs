@@ -22,17 +22,17 @@ export const metadata = {
   manifest: '/manifest.webmanifest',
   appleWebApp: { capable: true, title: 'Nytto Labs', statusBarStyle: 'default' },
   twitter: { card: 'summary_large_image', images: [`${SITE_ORIGIN}/opengraph-image`] },
-  title: 'Nytto Labs — CycleTag and VIESproof',
-  description: 'Buy CycleTag reorder labels or pay for a VIESproof VAT check. Swedish software, F-tax. Other tools live under Products.',
+  title: 'Nytto Labs — Focused software. Invisible infrastructure.',
+  description: 'Nytto Labs builds focused digital products and quietly connects people to the right next product, service, or action.',
   openGraph: {
-    title: 'Nytto Labs — CycleTag and VIESproof',
-    description: 'Two tools you can pay for today. CycleTag and VIESproof. The rest of the lab is on Products.',
+    title: 'Nytto Labs',
+    description: 'Focused software. Invisible infrastructure. Practical outcomes.',
     siteName: 'Nytto Labs',
     type: 'website',
   },
 }
 
-export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#1c3329' }
+export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#03030c' }
 
 export default function RootLayout({ children }) {
   return (
