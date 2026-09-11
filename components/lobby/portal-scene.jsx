@@ -7,7 +7,6 @@ import { PORTALS, PORTAL_Z, ROOM_Z, ROOM_SPREAD } from './portals'
 const LOBBY_CAM = new THREE.Vector3(0, 1.75, 10)
 const LOBBY_LOOK = new THREE.Vector3(0, 1.75, PORTAL_Z)
 const FLIGHT_S = 2.3
-const LABEL_Y = -0.65
 
 const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 
@@ -86,8 +85,13 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
   const labelRefs = useRef([])
   const propsRef = useRef({ target, transitioning, onSelect, onArrive })
   const [failed, setFailed] = useState(false)
+  const [finePointer, setFinePointer] = useState(true)
 
   propsRef.current = { target, transitioning, onSelect, onArrive }
+
+  useEffect(() => {
+    setFinePointer(window.matchMedia?.('(pointer: fine)')?.matches ?? true)
+  }, [])
 
   useEffect(() => {
     const mount = mountRef.current
@@ -119,6 +123,18 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
 
     const camera = new THREE.PerspectiveCamera(62, w / h, 0.1, 220)
     camera.position.copy(LOBBY_CAM)
+
+    // Three.js fov is vertical, so a portrait viewport sees a far narrower
+    // slice of the world. At 390px the outer portals sit entirely off screen,
+    // so narrow viewports get a wider lens and a tighter, smaller portal rig.
+    const computeLayout = () => {
+      const aspect = w / h
+      return {
+        scale: THREE.MathUtils.clamp(aspect / 1.1, 0.5, 1),
+        fov: aspect < 1 ? 78 : 62,
+      }
+    }
+    let layout = computeLayout()
 
     const disposables = []
     const track = (o) => {
@@ -250,6 +266,16 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
       pool.rotation.x = -Math.PI / 2
       group.add(pool)
 
+      // Invisible, generous hit disc — the visible portal is a small tap
+      // target once the rig scales down on a phone.
+      const hit = new THREE.Mesh(
+        track(new THREE.CircleGeometry(3.2, 24)),
+        track(new THREE.MeshBasicMaterial({ visible: false })),
+      )
+      hit.userData.portalIndex = i
+      group.add(hit)
+      portalMeshes.push(hit)
+
       scene.add(group)
       return { data, group, uniforms, ring, ring2, glowPlane, ringMat, ring2Mat, glowMat, poolMat }
     })
@@ -331,10 +357,14 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
       group.add(pool)
 
       scene.add(group)
-      return { shape, arch, shapeMat, archMat, tunnelMat, poolMat }
+      return { group, shape, arch, shapeMat, archMat, tunnelMat, poolMat }
     })
 
     // ── Interaction ────────────────────────────────────────────────────────
+    // Only a real cursor gets hidden in favour of the custom reticle.
+    const finePointer = window.matchMedia?.('(pointer: fine)')?.matches ?? true
+    const restCursor = finePointer ? 'none' : ''
+
     const pointer = new THREE.Vector2(0, 0) // normalised -1..1 for head-bob
     const ndc = new THREE.Vector2(-2, -2)
     const raycaster = new THREE.Raycaster()
@@ -347,19 +377,50 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
       pointer.set(nx, ny)
       ndc.set(nx, ny)
     }
-    const onClick = () => {
-      const p = propsRef.current
-      if (hovered >= 0 && p.target === null && !p.transitioning && p.onSelect) p.onSelect(hovered)
+    // Touch never produces a hover pass, so the tap raycasts for itself rather
+    // than trusting `hovered`. Movement is tracked so a look-around drag does
+    // not release into a portal.
+    const pick = (clientX, clientY) => {
+      const r = renderer.domElement.getBoundingClientRect()
+      ndc.set(
+        ((clientX - r.left) / r.width) * 2 - 1,
+        -(((clientY - r.top) / r.height) * 2 - 1),
+      )
+      raycaster.setFromCamera(ndc, camera)
+      const hits = raycaster.intersectObjects(portalMeshes, false)
+      return hits.length ? hits[0].object.userData.portalIndex : -1
     }
+
+    let downAt = null
+    const onPointerDown = (e) => {
+      downAt = { x: e.clientX, y: e.clientY }
+      pointer.set(
+        (e.clientX / window.innerWidth) * 2 - 1,
+        -((e.clientY / window.innerHeight) * 2 - 1),
+      )
+    }
+    const onPointerUp = (e) => {
+      const start = downAt
+      downAt = null
+      if (!start) return
+      if (Math.hypot(e.clientX - start.x, e.clientY - start.y) > 12) return
+      const p = propsRef.current
+      if (p.target !== null || p.transitioning) return
+      const idx = pick(e.clientX, e.clientY)
+      if (idx >= 0 && p.onSelect) p.onSelect(idx)
+    }
+
     window.addEventListener('pointermove', onPointerMove)
-    renderer.domElement.addEventListener('click', onClick)
+    renderer.domElement.addEventListener('pointerdown', onPointerDown)
+    renderer.domElement.addEventListener('pointerup', onPointerUp)
 
     const onResize = () => {
       w = mount.clientWidth || window.innerWidth
       h = mount.clientHeight || window.innerHeight
       camera.aspect = w / h
-      camera.updateProjectionMatrix()
       renderer.setSize(w, h)
+      layout = computeLayout()
+      applyLayout()
     }
     window.addEventListener('resize', onResize)
 
@@ -371,6 +432,28 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
         look: new THREE.Vector3(p.x * ROOM_SPREAD, 1.75, ROOM_Z),
       })),
     ]
+
+    // Keeps the portal rig, the rooms and every camera destination in step
+    // with the current viewport shape.
+    function applyLayout() {
+      const s = layout.scale
+      camera.fov = layout.fov
+      camera.updateProjectionMatrix()
+
+      portals.forEach((p, i) => {
+        p.group.position.x = PORTALS[i].x * s
+        p.group.scale.setScalar(s)
+      })
+      rooms.forEach((r, i) => {
+        r.group.position.x = PORTALS[i].x * ROOM_SPREAD * s
+      })
+      PORTALS.forEach((p, i) => {
+        dests[i + 1].cam.x = p.x * ROOM_SPREAD * s
+        dests[i + 1].look.x = p.x * ROOM_SPREAD * s
+      })
+    }
+
+    applyLayout()
 
     const pos = LOBBY_CAM.clone()
     const look = LOBBY_LOOK.clone()
@@ -432,11 +515,11 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
         const next = hits.length ? hits[0].object.userData.portalIndex : -1
         if (next !== hovered) {
           hovered = next
-          document.body.style.cursor = hovered >= 0 ? 'pointer' : 'none'
+          document.body.style.cursor = hovered >= 0 ? 'pointer' : restCursor
         }
       } else if (hovered !== -1) {
         hovered = -1
-        document.body.style.cursor = 'none'
+        document.body.style.cursor = restCursor
       }
 
       // Portal animation
@@ -497,7 +580,7 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
         const prog = Math.min(1, (t - flightStart) / FLIGHT_S)
         const e = easeInOutCubic(prog)
         // Control point in the portal mouth, so the camera flies *through* the ring.
-        ctrl.set(lastPortalX, 1.75, PORTAL_Z)
+        ctrl.set(lastPortalX * layout.scale, 1.75, PORTAL_Z)
         bezier(tmp, from, ctrl, dest.cam, e)
         pos.copy(tmp)
         look.lerpVectors(fromLook, dest.look, e)
@@ -520,13 +603,16 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
       for (let i = 0; i < portals.length; i++) {
         const el = labelRefs.current[i]
         if (!el) continue
-        proj.set(PORTALS[i].x, 2.3 + LABEL_Y - 2.3, PORTAL_Z)
+        // Sit just under the ring, which shrinks with the rig on narrow screens.
+        proj.set(PORTALS[i].x * layout.scale, 2.3 - 2.3 * layout.scale - 0.5, PORTAL_Z)
         const dist = camera.position.distanceTo(proj)
         proj.project(camera)
         const behind = proj.z > 1
         const sx = (proj.x * 0.5 + 0.5) * w
         const sy = (-proj.y * 0.5 + 0.5) * h
-        const scale = THREE.MathUtils.clamp(16 / dist, 0.45, 1.5)
+        // Shrink with the rig too, or the labels collide once the portals
+        // pull together on a narrow screen.
+        const scale = THREE.MathUtils.clamp(16 / dist, 0.45, 1.5) * layout.scale
         el.style.transform = `translate(-50%, -50%) translate(${sx}px, ${sy}px) scale(${scale})`
         el.style.opacity = behind || !inLobby ? '0' : '1'
         el.dataset.hovered = hovered === i ? '1' : '0'
@@ -541,8 +627,9 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
       cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('resize', onResize)
-      renderer.domElement.removeEventListener('click', onClick)
-      document.body.style.cursor = 'none'
+      renderer.domElement.removeEventListener('pointerdown', onPointerDown)
+      renderer.domElement.removeEventListener('pointerup', onPointerUp)
+      document.body.style.cursor = ''
       for (const d of disposables) d.dispose?.()
       renderer.dispose()
       if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement)
@@ -595,7 +682,7 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
               color: 'rgba(255,255,255,0.4)',
             }}
           >
-            CLICK TO ENTER
+            {finePointer ? 'CLICK TO ENTER' : 'TAP TO ENTER'}
           </div>
         </div>
       ))}

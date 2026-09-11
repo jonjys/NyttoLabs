@@ -126,7 +126,7 @@ export default function ProductCard({ product }) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="relative mt-6 inline-flex items-center gap-1.5 text-sm font-semibold transition-opacity duration-200 hover:opacity-80"
+          className="relative mt-5 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold transition-opacity duration-200 hover:opacity-80"
           style={{ color: st.color }}
         >
           Visit {product.name}

@@ -104,7 +104,12 @@ export default function HomeView() {
     return () => window.removeEventListener('keydown', onKey)
   }, [target, transitioning, back])
 
+  // Touch devices have no cursor to replace and no hover to hint at.
+  const [finePointer, setFinePointer] = useState(false)
   useEffect(() => {
+    const fine = window.matchMedia?.('(pointer: fine)')?.matches ?? true
+    setFinePointer(fine)
+    if (!fine) return undefined
     document.body.style.cursor = 'none'
     return () => {
       document.body.style.cursor = ''
@@ -127,7 +132,7 @@ export default function HomeView() {
         />
       </div>
 
-      <Reticle />
+      {finePointer && <Reticle />}
 
       {/* Portal-transit flash */}
       <AnimatePresence>
@@ -193,7 +198,7 @@ export default function HomeView() {
         {inLobby && (
           <motion.div
             key="lobby"
-            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end pb-14"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end px-5 pb-8 sm:pb-14"
             style={{ zIndex: 40 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -202,7 +207,7 @@ export default function HomeView() {
           >
             <motion.h1
               className="mb-3 text-center font-black tracking-tighter text-white"
-              style={{ fontSize: 'clamp(2.1rem, 6vw, 4.4rem)', lineHeight: 0.92 }}
+              style={{ fontSize: 'clamp(1.9rem, 9vw, 4.4rem)', lineHeight: 0.92 }}
               initial={{ y: 26, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
@@ -221,7 +226,7 @@ export default function HomeView() {
             </motion.h1>
 
             <motion.p
-              className="mb-7 max-w-md text-center text-sm font-light"
+              className="mb-6 max-w-md text-center text-[13px] font-light leading-relaxed sm:text-sm"
               style={{ color: 'rgba(255,255,255,0.42)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -231,7 +236,7 @@ export default function HomeView() {
             </motion.p>
 
             <motion.div
-              className="flex items-center gap-3 rounded-full px-5 py-2 backdrop-blur-sm"
+              className="flex max-w-full items-center gap-2.5 rounded-full px-4 py-2 backdrop-blur-sm sm:gap-3 sm:px-5"
               style={{
                 border: '1px solid rgba(0,245,255,0.2)',
                 background: 'rgba(0,245,255,0.05)',
@@ -247,10 +252,12 @@ export default function HomeView() {
                 transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
               />
               <span
-                className="font-mono text-[9px] tracking-[0.26em]"
+                className="font-mono text-[8px] tracking-[0.16em] sm:text-[9px] sm:tracking-[0.26em]"
                 style={{ color: 'rgba(255,255,255,0.55)' }}
               >
-                MOVE MOUSE TO LOOK · CLICK A PORTAL TO ENTER
+                {finePointer
+                  ? 'MOVE MOUSE TO LOOK · CLICK A PORTAL TO ENTER'
+                  : 'DRAG TO LOOK · TAP A PORTAL TO ENTER'}
               </span>
             </motion.div>
           </motion.div>
@@ -262,7 +269,7 @@ export default function HomeView() {
         {inRoom && room && (
           <motion.div
             key={room.id}
-            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end pb-16"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end px-4 pb-8 sm:pb-16"
             style={{ zIndex: 40 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -270,7 +277,7 @@ export default function HomeView() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <div
-              className="pointer-events-auto mx-6 max-w-lg rounded-2xl p-8 text-center backdrop-blur-md"
+              className="pointer-events-auto w-full max-w-lg rounded-2xl p-6 text-center backdrop-blur-md sm:p-8"
               style={{
                 border: `1px solid ${room.color}38`,
                 background: 'rgba(3,3,12,0.62)',
@@ -283,9 +290,11 @@ export default function HomeView() {
               >
                 {room.label} ROOM
               </p>
-              <h2 className="mb-4 text-3xl font-bold leading-tight text-white">{room.heading}</h2>
+              <h2 className="mb-3 text-2xl font-bold leading-tight text-white sm:mb-4 sm:text-3xl">
+                {room.heading}
+              </h2>
               <p
-                className="mb-8 text-sm leading-relaxed"
+                className="mb-6 text-[13px] leading-relaxed sm:mb-8 sm:text-sm"
                 style={{ color: 'rgba(255,255,255,0.46)' }}
               >
                 {room.blurb}
@@ -294,7 +303,7 @@ export default function HomeView() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
                   href={room.href}
-                  className="rounded-lg px-6 py-3 text-sm font-bold transition-transform hover:scale-105"
+                  className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg px-6 py-3 text-sm font-bold transition-transform hover:scale-105 sm:flex-none"
                   style={{ background: room.color, color: '#03030c' }}
                 >
                   {room.cta} →
@@ -302,7 +311,7 @@ export default function HomeView() {
                 <button
                   type="button"
                   onClick={back}
-                  className="rounded-lg px-6 py-3 text-sm font-medium transition-colors hover:text-white"
+                  className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg px-6 py-3 text-sm font-medium transition-colors hover:text-white sm:flex-none"
                   style={{
                     border: '1px solid rgba(255,255,255,0.16)',
                     color: 'rgba(255,255,255,0.6)',
@@ -312,12 +321,14 @@ export default function HomeView() {
                 </button>
               </div>
 
-              <p
-                className="mt-5 font-mono text-[8px] tracking-[0.24em]"
-                style={{ color: 'rgba(255,255,255,0.2)' }}
-              >
-                PRESS ESC TO RETURN
-              </p>
+              {finePointer && (
+                <p
+                  className="mt-5 font-mono text-[8px] tracking-[0.24em]"
+                  style={{ color: 'rgba(255,255,255,0.2)' }}
+                >
+                  PRESS ESC TO RETURN
+                </p>
+              )}
             </div>
           </motion.div>
         )}

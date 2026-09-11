@@ -182,7 +182,7 @@ export default function PartnersView() {
                 type="checkbox"
                 checked={form.consent}
                 onChange={(e) => setForm({ ...form, consent: e.target.checked })}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-white"
+                className="mt-0.5 h-5 w-5 shrink-0"
                 style={{ accentColor: accent }}
               />
               <span>I consent to Nytto Labs storing this inquiry to evaluate a potential partnership.</span>

@@ -74,17 +74,17 @@ export default function ContactView() {
                 {item.body}
               </p>
               <a
-                className="mt-3 inline-block break-all text-sm font-medium transition-opacity duration-200 hover:opacity-80"
+                className="mt-2 inline-flex min-h-11 items-center break-all text-sm font-medium transition-opacity duration-200 hover:opacity-80"
                 style={{ color: accent }}
                 href={`mailto:${item.email}`}
               >
                 {item.email}
               </a>
               {item.email === PUBLIC_HELLO_EMAIL && (
-                <p className="mt-3">
+                <p>
                   <Link
                     href="/partners"
-                    className="text-sm font-medium text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
+                    className="inline-flex min-h-11 items-center text-sm font-medium text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
                   >
                     Open the partner inquiry form
                   </Link>
