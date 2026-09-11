@@ -32,11 +32,11 @@ export const metadata = {
   },
 }
 
-export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#1c3329' }
+export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#03030c' }
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="sv" className={`${sans.variable} ${serif.variable}`}>
+    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{__html:'window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);'}} />
       </head>

@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { Mail, LifeBuoy, Shield, Receipt } from 'lucide-react'
-import SiteNav from '@/components/site/nav'
-import SiteFooter from '@/components/site/footer'
+import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { FTAX_LINE, OPERATOR_LINE } from '@/lib/site'
 import {
   PUBLIC_HELLO_EMAIL,
@@ -39,30 +38,62 @@ const inboxes = [
   },
 ]
 
+const accent = ACCENT.contact
+
 export default function ContactView() {
   return (
-    <div className="min-h-screen bg-[#f7f5f0] text-[#1b1b16]">
-      <SiteNav />
-      <section className="mx-auto max-w-3xl px-5 py-16">
-        <h1 className="font-serif text-3xl font-normal tracking-tight">Contact</h1>
-        <p className="mt-4 text-[#4a4a3e]">Reach the right inbox directly. {OPERATOR_LINE} {FTAX_LINE}</p>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2">
+    <PageShell
+      accent={accent}
+      eyebrow="Contact"
+      title="A real inbox, not a ticket queue."
+      lead={`Reach the right inbox directly. ${OPERATOR_LINE} ${FTAX_LINE}`}
+    >
+      <section className="mx-auto max-w-3xl px-5 py-8">
+        <div className="grid gap-5 sm:grid-cols-2">
           {inboxes.map((item) => (
-            <div key={item.email} className="rounded-xl border border-black/10 bg-white p-6">
-              <item.icon className="h-5 w-5 text-emerald-800" />
-              <h2 className="mt-4 font-semibold">{item.title}</h2>
-              <p className="mt-1 text-sm text-[#4a4a3e]">{item.body}</p>
-              <a className="mt-3 inline-block break-all text-sm text-emerald-800 underline" href={`mailto:${item.email}`}>{item.email}</a>
+            <div
+              key={item.email}
+              className="rounded-2xl p-6 backdrop-blur-sm transition-colors duration-300"
+              style={{
+                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(255,255,255,0.025)',
+              }}
+            >
+              <span
+                className="flex h-10 w-10 items-center justify-center rounded-lg"
+                style={{
+                  border: `1px solid ${accent}3d`,
+                  background: `${accent}14`,
+                  color: accent,
+                }}
+              >
+                <item.icon className="h-5 w-5" />
+              </span>
+              <h2 className="mt-4 font-bold text-white">{item.title}</h2>
+              <p className="mt-1.5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>
+                {item.body}
+              </p>
+              <a
+                className="mt-3 inline-block break-all text-sm font-medium transition-opacity duration-200 hover:opacity-80"
+                style={{ color: accent }}
+                href={`mailto:${item.email}`}
+              >
+                {item.email}
+              </a>
               {item.email === PUBLIC_HELLO_EMAIL && (
                 <p className="mt-3">
-                  <Link href="/partners" className="text-sm font-medium text-[#1b1b16] underline">Open the partner inquiry form</Link>
+                  <Link
+                    href="/partners"
+                    className="text-sm font-medium text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
+                  >
+                    Open the partner inquiry form
+                  </Link>
                 </p>
               )}
             </div>
           ))}
         </div>
       </section>
-      <SiteFooter />
-    </div>
+    </PageShell>
   )
 }
