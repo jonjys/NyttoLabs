@@ -184,12 +184,20 @@ export default function HomeView() {
             </span>
             <span className="font-mono text-xs tracking-[0.3em] text-white">NYTTO LABS</span>
           </Link>
-          <span
-            className="font-mono text-[9px] tracking-[0.28em]"
-            style={{ color: 'rgba(255,255,255,0.28)' }}
-          >
-            STOCKHOLM · EST. 2024
-          </span>
+          {/* Always-visible HTML navigation. The 3D portals are an enhancement
+              on top of this — with WebGL unavailable or via keyboard, these
+              links keep Products, Partners and Contact reachable. */}
+          <nav className="pointer-events-auto flex items-center gap-3.5 sm:gap-6">
+            {PORTALS.map((p) => (
+              <Link
+                key={p.id}
+                href={p.href}
+                className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/55 transition-colors hover:text-white sm:text-[10px] sm:tracking-[0.24em]"
+              >
+                {p.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </header>
 

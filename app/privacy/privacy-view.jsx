@@ -24,8 +24,15 @@ export default function PrivacyView() {
             operate on the minimum anonymous commercial context required to route a request —
             nothing more.
           </p>
+          <p>
+            This policy covers the nyttolabs.com website, its routing infrastructure, and partner
+            inquiries. Each product handles its own data under its own privacy policy — for example
+            VIESProof processes the VAT numbers you submit, GateZero stores encrypted keys, and
+            Curl-to-Buy handles uploaded files and payments. See the individual product for the
+            details that apply when you use it.
+          </p>
 
-          <h2 className={h2}>What we do not store</h2>
+          <h2 className={h2}>What the routing layer does not store</h2>
           <ul className="list-disc space-y-1.5 pl-5">
             <li>Names or email addresses of anonymous product users</li>
             <li>Full IP addresses or full user-agent strings</li>
@@ -39,6 +46,15 @@ export default function PrivacyView() {
             Only anonymous commercial event data needed for routing and attribution: the
             application slug, an action, a product category / brand / search phrase, a market, an
             opaque click identifier, and which partner (if any) was selected.
+          </p>
+
+          <h2 className={h2}>Partner inquiries</h2>
+          <p>
+            When you submit the Partners form, we store the details you enter — company, contact
+            name, work email, and the partnership information you provide — solely to evaluate and
+            respond to your inquiry. We keep it only as long as needed for that conversation and any
+            resulting partnership, and you can ask us to delete it at any time by emailing{' '}
+            {PUBLIC_PRIVACY_EMAIL}.
           </p>
 
           <h2 className={h2}>Affiliate disclosure</h2>
