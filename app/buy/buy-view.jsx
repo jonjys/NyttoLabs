@@ -15,14 +15,14 @@ const accent = ACCENT.products
 const CYCLE_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
 const CYCLE_BULK = 'https://buy.stripe.com/28E4gy65X4sK9yE52R8og0q'
 const CYCLE_FREE = 'https://cycletag.eu/#create'
-const VIES_PAY = 'https://viesproof.eu/'
+const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
 
 const COPY = {
   en: {
     eyebrow: 'Buy · Swedish software · F-tax',
     hero: 'Three things you can pay for today.',
-    lede: 'CycleTag, VIESproof and Curl-to-Buy take payment right here. The rest of the lab lives on Products.',
+    lede: 'CycleTag, Vatidence and Curl-to-Buy take payment right here. The rest of the lab lives on Products.',
     cycleAlt: 'Printed CycleTag labels on filters and toner.',
     viesAlt: 'A VAT evidence sheet stamped valid.',
     curlAlt: 'A paid file receipt beside a USB stick.',
@@ -50,7 +50,7 @@ const COPY = {
   sv: {
     eyebrow: 'Köp · Svensk mjukvara · F-skatt',
     hero: 'Tre saker du kan betala för idag.',
-    lede: 'CycleTag, VIESproof och Curl-to-Buy tar betalt direkt här. Resten av labbet ligger under Produkter.',
+    lede: 'CycleTag, Vatidence och Curl-to-Buy tar betalt direkt här. Resten av labbet ligger under Produkter.',
     cycleAlt: 'Utskrivna CycleTag-etiketter på filter och toner.',
     viesAlt: 'Ett momsbevis stämplat giltigt.',
     curlAlt: 'Ett betalt filkvitto bredvid ett USB-minne.',
@@ -164,19 +164,19 @@ export default function BuyView() {
             }
           />
           <PayCard
-            img="/images/viesproof.jpg"
+            img="/images/vatidence.jpg"
             alt={t.viesAlt}
-            name="VIESproof"
+            name="Vatidence"
             price={t.viesPrice}
             note={t.viesNote}
             body={t.viesBody}
             actions={
               <>
-                <a href={VIES_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                <a href={VATIDENCE_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>
                   {t.viesPay} <ArrowRight className="h-4 w-4" />
                 </a>
                 <span className="hidden min-h-11 md:block" aria-hidden />
-                <a href={VIES_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={VATIDENCE_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
                   {t.viesFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>

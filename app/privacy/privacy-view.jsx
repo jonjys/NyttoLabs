@@ -27,7 +27,7 @@ export default function PrivacyView() {
           <p>
             This policy covers the nyttolabs.com website, its routing infrastructure, and partner
             inquiries. Each product handles its own data under its own privacy policy — for example
-            VIESProof processes the VAT numbers you submit, GateZero stores encrypted keys, and
+            Vatidence processes the VAT numbers you submit, GateZero stores encrypted keys, and
             Curl-to-Buy handles uploaded files and payments. See the individual product for the
             details that apply when you use it.
           </p>

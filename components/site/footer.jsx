@@ -57,7 +57,7 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
             </div>
             <ul className="mt-4 space-y-1.5 text-sm" style={muted}>
               <li><a href="https://cycletag.eu/" className={linkCls}>CycleTag</a></li>
-              <li><a href="https://viesproof.eu/" className={linkCls}>VIESproof</a></li>
+              <li><a href="https://vatidence.nyttolabs.com/" className={linkCls}>Vatidence</a></li>
               <li><Link href="/products" className={linkCls}>All products →</Link></li>
             </ul>
           </div>
