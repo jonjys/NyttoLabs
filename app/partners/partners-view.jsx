@@ -90,7 +90,13 @@ export default function PartnersView() {
       <section className="mx-auto max-w-6xl px-5 py-8 2xl:max-w-[1560px]">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {points.map((p) => (
-            <div key={p.title} className="rounded-2xl p-6 backdrop-blur-sm" style={cardStyle}>
+            <div
+              key={p.title}
+              className="rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_var(--card-accent)]"
+              style={{ ...cardStyle, '--card-accent': `${accent}55`, borderColor: 'var(--card-border, rgba(255,255,255,0.08))' }}
+              onMouseEnter={(e) => e.currentTarget.style.setProperty('--card-border', `${accent}4d`)}
+              onMouseLeave={(e) => e.currentTarget.style.setProperty('--card-border', 'rgba(255,255,255,0.08)')}
+            >
               <span
                 className="flex h-10 w-10 items-center justify-center rounded-lg"
                 style={{ border: `1px solid ${accent}3d`, background: `${accent}14`, color: accent }}

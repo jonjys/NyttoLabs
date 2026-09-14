@@ -80,7 +80,12 @@ const cardStyle = {
 
 function PayCard({ name, price, note, body, features, actions }) {
   return (
-    <article className="flex h-full flex-col rounded-2xl p-6 backdrop-blur-sm" style={cardStyle}>
+    <article
+      className="flex h-full flex-col rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_var(--card-accent)]"
+      style={{ ...cardStyle, '--card-accent': `${accent}55`, borderColor: 'var(--card-border, rgba(255,255,255,0.08))' }}
+      onMouseEnter={(e) => e.currentTarget.style.setProperty('--card-border', `${accent}4d`)}
+      onMouseLeave={(e) => e.currentTarget.style.setProperty('--card-border', 'rgba(255,255,255,0.08)')}
+    >
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-lg font-bold tracking-tight text-white">{name}</h2>
         <p className="text-2xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>
