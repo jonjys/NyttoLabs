@@ -87,8 +87,8 @@ export default function PartnersView() {
       title="Partner with the company behind the products."
       lead="Nytto Labs builds focused products. When a real commercial intent appears in one of them, we can connect that user to a relevant destination — yours. You keep checkout, payment, and fulfilment."
     >
-      <section className="mx-auto max-w-6xl px-5 py-8">
-        <div className="grid gap-5 sm:grid-cols-2">
+      <section className="mx-auto max-w-6xl px-5 py-8 2xl:max-w-[1560px]">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {points.map((p) => (
             <div key={p.title} className="rounded-2xl p-6 backdrop-blur-sm" style={cardStyle}>
               <span
@@ -106,7 +106,7 @@ export default function PartnersView() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-10">
+      <section className="mx-auto max-w-6xl px-5 py-10 2xl:max-w-[1560px]">
         <div className="grid gap-10 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Eyebrow accent={accent}>Partner inquiry</Eyebrow>
