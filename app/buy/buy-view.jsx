@@ -13,7 +13,7 @@ const accent = ACCENT.products
 // not edit these hrefs without checking the live links in the Nytto Labs
 // Stripe account first.
 const CYCLE_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
-const CYCLE_BULK = 'https://buy.stripe.com/28E4gy65X4sK9yE52R8og0q'
+const CYCLE_BULK = 'https://cycletag.eu/bulk'
 const CYCLE_FREE = 'https://cycletag.eu/#create'
 const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
@@ -41,6 +41,7 @@ const COPY = {
     curlPrice: '5%',
     curlNote: 'fee · you keep 95%',
     curlPay: 'Post a file',
+    curlFree: 'Free to try — no account',
     more: 'More tools live in the lab. They are not for sale yet.',
     all: 'See the lab →',
     partnerTitle: 'Work with Nytto Labs',
@@ -69,6 +70,7 @@ const COPY = {
     curlPrice: '5%',
     curlNote: 'avgift · du behåller 95%',
     curlPay: 'Lägg upp en fil',
+    curlFree: 'Gratis att testa — inget konto',
     more: 'Fler verktyg ligger i labbet. De är inte till salu än.',
     all: 'Se labbet →',
     partnerTitle: 'Samarbeta med Nytto Labs',
@@ -190,9 +192,15 @@ export default function BuyView() {
             note={t.curlNote}
             body={t.curlBody}
             actions={
-              <a href={CURL_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>
-                {t.curlPay} <ArrowRight className="h-4 w-4" />
-              </a>
+              <>
+                <a href={CURL_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                  {t.curlPay} <ArrowRight className="h-4 w-4" />
+                </a>
+                <span className="hidden min-h-11 md:block" aria-hidden />
+                <a href={CURL_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  {t.curlFree} <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </>
             }
           />
         </div>

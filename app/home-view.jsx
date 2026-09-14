@@ -165,7 +165,7 @@ export default function HomeView() {
 
       {/* Top bar */}
       <header className="pointer-events-none absolute inset-x-0 top-0" style={{ zIndex: 40 }}>
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 2xl:max-w-[1560px]">
           <Link
             href="/"
             className="pointer-events-auto flex items-center gap-2.5"
@@ -197,6 +197,13 @@ export default function HomeView() {
                 {p.label}
               </Link>
             ))}
+            <Link
+              href="/contact"
+              className="rounded-md px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em] transition-colors sm:text-[10px] sm:tracking-[0.24em]"
+              style={{ border: '1px solid rgba(0,245,255,0.35)', color: '#00f5ff' }}
+            >
+              Get in touch
+            </Link>
           </nav>
         </div>
       </header>
