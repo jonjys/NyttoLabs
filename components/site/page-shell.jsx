@@ -71,7 +71,7 @@ export default function PageShell({
 
         <main className="flex-1">
           {(eyebrow || title) && (
-            <header className={`mx-auto ${wide ? 'max-w-6xl' : 'max-w-3xl'} px-5 pb-4 pt-16`}>
+            <header className={`mx-auto ${wide ? 'max-w-6xl 2xl:max-w-[1560px]' : 'max-w-3xl'} px-5 pb-4 pt-16`}>
               <Link
                 href="/"
                 className="mb-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.26em] transition-colors duration-200 hover:text-white"

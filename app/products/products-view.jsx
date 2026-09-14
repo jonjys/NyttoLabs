@@ -29,7 +29,7 @@ export default function ProductsView() {
         if (g.list.length === 0) return null
         const label = STATUS_LABELS[g.key] || { title: g.title, desc: g.desc }
         return (
-          <section key={g.key} className="mx-auto max-w-6xl px-5 py-8">
+          <section key={g.key} className="mx-auto max-w-6xl px-5 py-8 2xl:max-w-[1560px]">
             <div className="mb-6">
               <Eyebrow accent={ACCENT.products}>{label.title}</Eyebrow>
               <p className="mt-2 text-sm" style={{ color: 'rgba(255,255,255,0.34)' }}>
@@ -46,7 +46,7 @@ export default function ProductsView() {
       })}
 
       {!hasAny && (
-        <section className="mx-auto max-w-6xl px-5 py-8">
+        <section className="mx-auto max-w-6xl px-5 py-8 2xl:max-w-[1560px]">
           <div
             className="rounded-2xl px-6 py-14 text-center text-sm backdrop-blur-sm"
             style={{

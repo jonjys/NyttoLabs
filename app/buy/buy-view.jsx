@@ -117,7 +117,7 @@ export default function BuyView() {
 
   return (
     <PageShell accent={accent} wide eyebrow={t.eyebrow} title={t.hero} lead={t.lede}>
-      <section className="mx-auto max-w-6xl px-5 pb-4">
+      <section className="mx-auto max-w-6xl px-5 pb-4 2xl:max-w-[1560px]">
         <div className="mb-6 flex justify-end">
           <div
             className="inline-flex overflow-hidden rounded-full text-xs font-medium"
@@ -207,7 +207,7 @@ export default function BuyView() {
         )}
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-12">
+      <section className="mx-auto max-w-6xl px-5 py-12 2xl:max-w-[1560px]">
         <div
           className="flex flex-col items-start justify-between gap-6 rounded-2xl p-8 backdrop-blur-sm md:flex-row md:items-center"
           style={cardStyle}
