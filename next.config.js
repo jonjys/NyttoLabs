@@ -23,6 +23,11 @@ const nextConfig = {
     maxInactiveAge: 10000,
     pagesBufferLength: 2,
   },
+  async redirects() {
+    return [
+      { source: '/buy', destination: '/products', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

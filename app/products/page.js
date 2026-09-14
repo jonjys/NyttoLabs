@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/site'
 
 export const metadata = pageMetadata({
   title: 'Products — Nytto Labs',
-  description: 'Every Nytto Labs product: CycleTag, Vatidence, Curl-to-Buy, GateZero and Failclosed — what the company builds.',
+  description: 'Buy CycleTag reorder labels, pay for a Vatidence VAT check, or sell a file with Curl-to-Buy. Swedish software, F-tax.',
   path: '/products',
 })
 

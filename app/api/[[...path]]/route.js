@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import { NextResponse } from 'next/server'
 import { getDb, COLLECTIONS, clean, isDemoMode, getDemoMode, audit, isMongoConfigured, MongoConfigError } from '@/lib/relay/db'
-import { resolveInputSchema, conversionSchema, partnerInquirySchema, ACTION_TYPES } from '@/lib/relay/schema'
+import { resolveInputSchema, conversionSchema, partnerInquirySchema, contactInquirySchema, ACTION_TYPES } from '@/lib/relay/schema'
 import { sanitizeResolveInput } from '@/lib/relay/sanitize'
 import { buildDestination, buildFallback } from '@/lib/relay/urltemplate'
 import { selectOffer } from '@/lib/relay/scoring'
@@ -283,6 +283,20 @@ async function handleRoute(request, context) {
       return json({ ok: true, id: doc.id, stored: true, emailed: false })
     }
 
+    if (route === '/contact-inquiries' && method === 'POST') {
+      if (!rateLimit('contact', 20)) return json({ error: 'rate_limited' }, 429)
+      const body = await request.json()
+      const parsed = contactInquirySchema.safeParse(body)
+      if (!parsed.success) return json({ error: 'validation', details: parsed.error.flatten() }, 400)
+      const doc = {
+        id: crypto.randomUUID(), ...parsed.data,
+        consent_timestamp: new Date(), status: 'new', created_at: new Date(),
+      }
+      await db.collection(COLLECTIONS.contactInquiries).insertOne(doc)
+      // Email delivery is not configured — we store safely and surface in the dashboard.
+      return json({ ok: true, id: doc.id, stored: true, emailed: false })
+    }
+
     // ---- resolve (the engine) ----
     if (route === '/resolve' && method === 'POST') {
       if (!rateLimit('resolve', 120)) return json({ error: 'rate_limited' }, 429)
@@ -502,6 +516,10 @@ async function handleRoute(request, context) {
       // ---- inquiries ----
       if (route === '/admin/inquiries' && method === 'GET') {
         const items = await db.collection(COLLECTIONS.partnerInquiries).find({}).sort({ created_at: -1 }).toArray()
+        return json({ items: clean(items) })
+      }
+      if (route === '/admin/contact-inquiries' && method === 'GET') {
+        const items = await db.collection(COLLECTIONS.contactInquiries).find({}).sort({ created_at: -1 }).toArray()
         return json({ items: clean(items) })
       }
 

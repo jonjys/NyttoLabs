@@ -21,7 +21,7 @@ export const PORTALS = [
     x: 0,
     color: '#00ff9d',
     label: 'PRODUCTS',
-    href: '/buy',
+    href: '/products',
     heading: 'The Product Showcase',
     blurb: 'Three things you can pay for today — CycleTag, Vatidence and Curl-to-Buy. The rest of the lab is one click further in.',
     cta: 'What you can buy',

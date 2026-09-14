@@ -28,6 +28,7 @@ const NAV = [
   { key: 'revenue', label: 'Revenue', icon: BadgeDollarSign },
   { key: 'experiments', label: 'Experiments', icon: FlaskConical },
   { key: 'inquiries', label: 'Partner inquiries', icon: Inbox },
+  { key: 'contact', label: 'Contact messages', icon: Inbox },
   { key: 'simulator', label: 'Simulator', icon: Beaker },
   { key: 'settings', label: 'Settings', icon: SettingsIcon },
   { key: 'docs', label: 'Integration docs', icon: BookOpen },
@@ -120,6 +121,7 @@ export default function ControlPage() {
           {tab === 'revenue' && <Revenue />}
           {tab === 'experiments' && <Experiments />}
           {tab === 'inquiries' && <Inquiries />}
+          {tab === 'contact' && <ContactMessages />}
           {tab === 'simulator' && <Simulator />}
           {tab === 'settings' && <SettingsTab />}
           {tab === 'docs' && <Docs />}
@@ -517,6 +519,28 @@ function Inquiries() {
           { k: 'markets', label: 'Markets' },
           { k: 'categories', label: 'Categories' },
           { k: 'proposedPartnership', label: 'Proposal' },
+        ]}
+      />
+    </div>
+  )
+}
+
+// ---------- Contact messages ----------
+function ContactMessages() {
+  const [items, setItems] = useState([])
+  useEffect(() => { api.get('/admin/contact-inquiries').then((d) => setItems(d.items || [])) }, [])
+  return (
+    <div>
+      <Head title="Contact messages" desc="Stored safely in the database. Email delivery is not configured — nothing is falsely marked as sent." />
+      <Table
+        empty="No messages yet."
+        rows={items}
+        cols={[
+          { k: 'created_at', label: 'When', render: (r) => new Date(r.created_at).toLocaleString() },
+          { k: 'name', label: 'Name' },
+          { k: 'email', label: 'Email' },
+          { k: 'reason', label: 'Reason' },
+          { k: 'message', label: 'Message' },
         ]}
       />
     </div>
