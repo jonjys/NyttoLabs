@@ -268,17 +268,6 @@ export default function HomeView() {
                   : 'DRAG TO LOOK · TAP A PORTAL TO ENTER'}
               </span>
             </motion.div>
-
-            <motion.a
-              href="https://pay.nyttolabs.com/"
-              className="pointer-events-auto mt-4 inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.22em] transition-opacity hover:opacity-100 sm:text-[9px]"
-              style={{ color: 'rgba(0,255,157,0.7)' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.85 }}
-              transition={{ delay: 1.5, duration: 0.7 }}
-            >
-              Sell a file → pay.nyttolabs.com
-            </motion.a>
           </motion.div>
         )}
       </AnimatePresence>
