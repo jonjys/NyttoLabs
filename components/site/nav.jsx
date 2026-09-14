@@ -31,13 +31,11 @@ export default function SiteNav({ accent = '#00f5ff' }) {
   const showCta = pathname !== '/contact'
 
   return (
+    // A floating glass capsule, inset from the top edge, so the chrome reads
+    // the same way on every page — including the 3D lobby's own header —
+    // rather than a full-width bar that only appears once you scroll.
     <header
-      className="sticky top-0 z-40 transition-all duration-500"
-      style={{
-        background: scrolled || open ? 'rgba(3,3,12,0.82)' : 'transparent',
-        backdropFilter: scrolled || open ? 'blur(20px)' : 'none',
-        borderBottom: `1px solid ${scrolled || open ? 'rgba(255,255,255,0.07)' : 'transparent'}`,
-      }}
+      className="sticky top-4 z-40 px-4 sm:top-6"
       onKeyDown={(event) => {
         if (event.key === 'Escape' && open) {
           setOpen(false)
@@ -45,7 +43,14 @@ export default function SiteNav({ accent = '#00f5ff' }) {
         }
       }}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+      <div
+        className="mx-auto flex h-14 max-w-4xl items-center justify-between rounded-full px-5 backdrop-blur-xl transition-shadow duration-300 sm:px-6 2xl:max-w-[1100px]"
+        style={{
+          border: '1px solid rgba(255,255,255,0.09)',
+          background: 'rgba(3,3,12,0.6)',
+          boxShadow: scrolled || open ? '0 12px 40px rgba(0,0,0,0.4)' : '0 6px 24px rgba(0,0,0,0.25)',
+        }}
+      >
         <Link href="/" className="flex min-h-11 items-center gap-2.5">
           <span
             className="flex h-6 w-6 items-center justify-center rounded"
@@ -71,7 +76,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
           {showCta && (
             <Link
               href="/contact"
-              className="rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200"
+              className="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
               style={{ border: `1px solid ${accent}59`, color: accent }}
             >
               Get in touch
@@ -82,7 +87,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
         <button
           ref={toggleRef}
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-md text-white md:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white md:hidden"
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
@@ -95,8 +100,12 @@ export default function SiteNav({ accent = '#00f5ff' }) {
       {open && (
         <div
           id="mobile-nav"
-          className="px-5 py-3 md:hidden"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
+          className="mx-auto mt-2 max-w-4xl rounded-2xl px-5 py-3 backdrop-blur-xl md:hidden"
+          style={{
+            border: '1px solid rgba(255,255,255,0.09)',
+            background: 'rgba(3,3,12,0.82)',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+          }}
         >
           {links.map((l) => (
             <Link
@@ -114,7 +123,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
             <Link
               href="/contact"
               onClick={() => setOpen(false)}
-              className="mt-2 block rounded-md px-4 py-3 text-center text-sm font-bold"
+              className="mt-2 block rounded-full px-4 py-3 text-center text-sm font-bold"
               style={{ background: accent, color: '#03030c' }}
             >
               Get in touch

@@ -140,7 +140,9 @@ export default function ContactView() {
                   style={{ ...fieldStyle, colorScheme: 'dark' }}
                 >
                   {REASONS.map((r) => (
-                    <option key={r.value} value={r.value}>{r.label}</option>
+                    <option key={r.value} value={r.value} style={{ background: '#0b0b16', color: '#fff' }}>
+                      {r.label}
+                    </option>
                   ))}
                 </select>
               </label>

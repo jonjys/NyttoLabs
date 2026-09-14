@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Check } from 'lucide-react'
 import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { useLocale } from '@/hooks/use-locale'
 
@@ -21,25 +21,25 @@ const COPY = {
     eyebrow: 'Products · Swedish software · F-tax',
     hero: 'Three things you can pay for today.',
     lede: 'CycleTag, Vatidence and Curl-to-Buy. Focused products, live now — not a roadmap.',
-    cycleAlt: 'Printed CycleTag labels on filters and toner.',
-    viesAlt: 'A VAT evidence sheet stamped valid.',
-    curlAlt: 'A paid file receipt beside a USB stick.',
-    cycleBody: 'QR reorder labels for filters, toner and the things you replace. Print, stick, scan. No app.',
+    cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
+    cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
     cyclePrice: '$5',
     cycleNote: '49 SEK at checkout · starter sheet',
     cyclePay: 'Buy a sheet',
     cycleBulk: 'Bulk $31',
     cycleFree: 'Free — make one tag',
-    viesBody: 'EU VAT checks against VIES, with a sealed PDF + CSV for the books.',
+    viesBody: 'EU VAT checks against VIES, with proof for the books.',
+    viesFeatures: ['Checked against VIES', 'Sealed PDF + CSV', 'Official consultation number'],
     viesPrice: '$6',
     viesNote: '€4.90 at checkout · minimum per batch',
     viesPay: 'Pay and verify',
     viesFree: 'Free — a single check',
-    curlBody: 'Sell a digital file with no account on either side. Upload, set a price, share the link.',
+    curlBody: 'Sell a digital file with no account on either side.',
+    curlFeatures: ['No account, either side', 'Any file, up to 100 MB', 'Unlimited free links'],
     curlPrice: '5%',
     curlNote: 'fee · you keep 95%',
     curlPay: 'Post a file',
-    curlFree: 'Free to try — no account',
+    curlFree: 'Free to create — 5% only when it sells',
     partnerTitle: 'Work with Nytto Labs',
     partnerBody: 'Partnerships and general questions go to the same inbox. You keep checkout, payment and fulfilment.',
     partnerCta: 'Become a partner',
@@ -48,25 +48,25 @@ const COPY = {
     eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
     hero: 'Tre saker du kan betala för idag.',
     lede: 'CycleTag, Vatidence och Curl-to-Buy. Fokuserade produkter, live nu — ingen roadmap.',
-    cycleAlt: 'Utskrivna CycleTag-etiketter på filter och toner.',
-    viesAlt: 'Ett momsbevis stämplat giltigt.',
-    curlAlt: 'Ett betalt filkvitto bredvid ett USB-minne.',
-    cycleBody: 'QR-etiketter för filter, toner och det du byter. Skriv ut, klistra, skanna. Ingen app.',
+    cycleBody: 'QR-etiketter för filter, toner och det du byter.',
+    cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
     cyclePrice: '49 kr',
     cycleNote: 'startark · engångsköp',
     cyclePay: 'Köp ett ark',
     cycleBulk: 'Bulk 299 kr',
     cycleFree: 'Gratis — gör en tagg',
-    viesBody: 'EU-momskontroll mot VIES, med förseglad PDF + CSV till bokföringen.',
+    viesBody: 'EU-momskontroll mot VIES, med bevis till bokföringen.',
+    viesFeatures: ['Kontrolleras mot VIES', 'Förseglad PDF + CSV', 'Officiellt konsultationsnummer'],
     viesPrice: '4,90 €',
     viesNote: 'minimum per batch · engångsköp',
     viesPay: 'Betala och verifiera',
     viesFree: 'Gratis — enstaka kontroll',
-    curlBody: 'Sälj en digital fil utan konto på någon sida. Ladda upp, sätt ett pris, dela länken.',
+    curlBody: 'Sälj en digital fil utan konto på någon sida.',
+    curlFeatures: ['Inget konto, någon sida', 'Valfri fil, upp till 100 MB', 'Obegränsat med gratis länkar'],
     curlPrice: '5%',
     curlNote: 'avgift · du behåller 95%',
     curlPay: 'Lägg upp en fil',
-    curlFree: 'Gratis att testa — inget konto',
+    curlFree: 'Gratis att skapa — 5% bara när den säljer',
     partnerTitle: 'Samarbeta med Nytto Labs',
     partnerBody: 'Partnerskap och allmänna frågor går till samma inkorg. Ni behåller kassa, betalning och leverans.',
     partnerCta: 'Bli partner',
@@ -78,21 +78,26 @@ const cardStyle = {
   background: 'rgba(255,255,255,0.025)',
 }
 
-function PayCard({ img, alt, name, price, note, body, actions }) {
+function PayCard({ name, price, note, body, features, actions }) {
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl backdrop-blur-sm" style={cardStyle}>
-      <div className="aspect-[16/10] overflow-hidden" style={{ background: '#0a0a16' }}>
-        <img src={img} alt={alt} width={1200} height={750} className="h-full w-full object-cover opacity-90" />
+    <article className="flex h-full flex-col rounded-2xl p-6 backdrop-blur-sm" style={cardStyle}>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="text-lg font-bold tracking-tight text-white">{name}</h2>
+        <p className="text-2xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>
       </div>
-      <div className="flex flex-1 flex-col p-6">
-        <div className="flex items-end justify-between gap-3">
-          <h2 className="text-xl font-bold tracking-tight text-white">{name}</h2>
-          <p className="text-3xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>
-        </div>
-        <p className="mt-1 text-right font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>{note}</p>
-        <p className="mt-4 flex-1 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{body}</p>
-        <div className="mt-6 flex flex-col gap-2.5">{actions}</div>
-      </div>
+      <p className="mt-1 font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>{note}</p>
+      <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{body}</p>
+
+      <ul className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+        {features.map((f) => (
+          <li key={f} className="flex items-center gap-2 text-[13px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+            <Check className="h-3.5 w-3.5 shrink-0" style={{ color: accent }} />
+            {f}
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-5 flex flex-1 flex-col justify-end gap-2.5">{actions}</div>
     </article>
   )
 }
@@ -133,14 +138,13 @@ export default function ProductsView() {
           </div>
         </div>
 
-        <div className="grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3">
           <PayCard
-            img="/images/cycletag.jpg"
-            alt={t.cycleAlt}
             name="CycleTag"
             price={t.cyclePrice}
             note={t.cycleNote}
             body={t.cycleBody}
+            features={t.cycleFeatures}
             actions={
               <>
                 <a href={CYCLE_SHEET} className={payBtn} style={{ background: accent, color: '#03030c' }}>
@@ -156,12 +160,11 @@ export default function ProductsView() {
             }
           />
           <PayCard
-            img="/images/vatidence.jpg"
-            alt={t.viesAlt}
             name="Vatidence"
             price={t.viesPrice}
             note={t.viesNote}
             body={t.viesBody}
+            features={t.viesFeatures}
             actions={
               <>
                 <a href={VATIDENCE_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>
@@ -175,12 +178,11 @@ export default function ProductsView() {
             }
           />
           <PayCard
-            img="/images/curl-to-buy.jpg"
-            alt={t.curlAlt}
             name="Curl-to-Buy"
             price={t.curlPrice}
             note={t.curlNote}
             body={t.curlBody}
+            features={t.curlFeatures}
             actions={
               <>
                 <a href={CURL_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>

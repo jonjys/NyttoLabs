@@ -163,12 +163,21 @@ export default function HomeView() {
         }}
       />
 
-      {/* Top bar */}
-      <header className="pointer-events-none absolute inset-x-0 top-0" style={{ zIndex: 40 }}>
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 2xl:max-w-[1560px]">
+      {/* Top bar — a floating glass capsule rather than a full-width strip, so
+          navigation reads as an overlay on the 3D world instead of a browser
+          chrome bar pinned to the edge. */}
+      <header className="pointer-events-none absolute inset-x-0 top-4 px-4 sm:top-6 sm:px-6" style={{ zIndex: 40 }}>
+        <div
+          className="pointer-events-auto mx-auto flex h-14 max-w-4xl items-center justify-between rounded-full px-5 backdrop-blur-xl sm:px-6 2xl:max-w-[1100px]"
+          style={{
+            border: '1px solid rgba(255,255,255,0.09)',
+            background: 'rgba(3,3,12,0.6)',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+          }}
+        >
           <Link
             href="/"
-            className="pointer-events-auto flex items-center gap-2.5"
+            className="flex items-center gap-2.5"
             onClick={(e) => {
               if (target !== null) {
                 e.preventDefault()
@@ -187,7 +196,7 @@ export default function HomeView() {
           {/* Always-visible HTML navigation. The 3D portals are an enhancement
               on top of this — with WebGL unavailable or via keyboard, these
               links keep Products, Partners and Contact reachable. */}
-          <nav className="pointer-events-auto flex items-center gap-3.5 sm:gap-6">
+          <nav className="flex items-center gap-3.5 sm:gap-6">
             {PORTALS.map((p) => (
               <Link
                 key={p.id}
@@ -199,7 +208,7 @@ export default function HomeView() {
             ))}
             <Link
               href="/contact"
-              className="rounded-md px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em] transition-colors sm:text-[10px] sm:tracking-[0.24em]"
+              className="rounded-full px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em] transition-colors sm:text-[10px] sm:tracking-[0.24em]"
               style={{ border: '1px solid rgba(0,245,255,0.35)', color: '#00f5ff' }}
             >
               Get in touch
@@ -284,7 +293,7 @@ export default function HomeView() {
         {inRoom && room && (
           <motion.div
             key={room.id}
-            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end px-4 pb-8 sm:pb-16"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-4 pb-[8vh]"
             style={{ zIndex: 40 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
