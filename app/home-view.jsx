@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Menu, X } from 'lucide-react'
 import { PORTALS } from '@/components/lobby/portals'
 
 const PortalScene = dynamic(() => import('@/components/lobby/portal-scene'), {
@@ -71,6 +72,7 @@ export default function HomeView() {
   const [target, setTarget] = useState(null)
   const [transitioning, setTransitioning] = useState(false)
   const [flash, setFlash] = useState(null)
+  const [navOpen, setNavOpen] = useState(false)
 
   const select = useCallback(
     (i) => {
@@ -95,14 +97,16 @@ export default function HomeView() {
     setFlash(null)
   }, [])
 
-  // Esc returns to the lobby
+  // Esc returns to the lobby, or closes the mobile menu first if it's open
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape' && target !== null && !transitioning) back()
+      if (e.key !== 'Escape') return
+      if (navOpen) return setNavOpen(false)
+      if (target !== null && !transitioning) back()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [target, transitioning, back])
+  }, [target, transitioning, back, navOpen])
 
   // Touch devices have no cursor to replace and no hover to hint at.
   const [finePointer, setFinePointer] = useState(false)
@@ -165,7 +169,10 @@ export default function HomeView() {
 
       {/* Top bar — a floating glass capsule rather than a full-width strip, so
           navigation reads as an overlay on the 3D world instead of a browser
-          chrome bar pinned to the edge. */}
+          chrome bar pinned to the edge. Links + CTA collapse behind a
+          hamburger below md: at phone widths, "NYTTO LABS" plus three link
+          labels plus a CTA button never fit one line, and used to spill the
+          "Get in touch" button off the right edge of the screen. */}
       <header className="pointer-events-none absolute inset-x-0 top-4 px-4 sm:top-6 sm:px-6" style={{ zIndex: 40 }}>
         <div
           className="pointer-events-auto mx-auto flex h-14 max-w-4xl items-center justify-between rounded-full px-5 backdrop-blur-xl sm:px-6 2xl:max-w-[1100px]"
@@ -177,44 +184,88 @@ export default function HomeView() {
         >
           <Link
             href="/"
-            className="flex items-center gap-2.5"
+            className="flex min-w-0 items-center gap-2.5"
             onClick={(e) => {
               if (target !== null) {
                 e.preventDefault()
                 back()
               }
+              setNavOpen(false)
             }}
           >
             <span
-              className="flex h-6 w-6 items-center justify-center rounded"
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded"
               style={{ background: '#00f5ff', boxShadow: '0 0 14px rgba(0,245,255,0.6)' }}
             >
               <span className="block h-2 w-2 rounded-full" style={{ background: '#03030c' }} />
             </span>
-            <span className="font-mono text-xs tracking-[0.3em] text-white">NYTTO LABS</span>
+            <span className="truncate whitespace-nowrap font-mono text-xs tracking-[0.3em] text-white">NYTTO LABS</span>
           </Link>
+
           {/* Always-visible HTML navigation. The 3D portals are an enhancement
               on top of this — with WebGL unavailable or via keyboard, these
               links keep Products, Partners and Contact reachable. */}
-          <nav className="flex items-center gap-3.5 sm:gap-6">
+          <nav className="hidden items-center gap-6 md:flex">
             {PORTALS.map((p) => (
               <Link
                 key={p.id}
                 href={p.href}
-                className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/55 transition-colors hover:text-white sm:text-[10px] sm:tracking-[0.24em]"
+                className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/55 transition-colors hover:text-white"
               >
                 {p.label}
               </Link>
             ))}
             <Link
               href="/contact"
-              className="rounded-full px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em] transition-colors sm:text-[10px] sm:tracking-[0.24em]"
+              className="rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-[0.24em] transition-colors"
               style={{ border: '1px solid rgba(0,245,255,0.35)', color: '#00f5ff' }}
             >
               Get in touch
             </Link>
           </nav>
+
+          <button
+            type="button"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white md:hidden"
+            onClick={() => setNavOpen((v) => !v)}
+            aria-label={navOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={navOpen}
+            aria-controls="lobby-mobile-nav"
+          >
+            {navOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
+
+        {navOpen && (
+          <div
+            id="lobby-mobile-nav"
+            className="pointer-events-auto mx-auto mt-2 max-w-4xl rounded-2xl px-5 py-3 backdrop-blur-xl md:hidden"
+            style={{
+              border: '1px solid rgba(255,255,255,0.09)',
+              background: 'rgba(3,3,12,0.82)',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+            }}
+          >
+            {PORTALS.map((p) => (
+              <Link
+                key={p.id}
+                href={p.href}
+                onClick={() => setNavOpen(false)}
+                className="block min-h-11 py-3 font-mono text-xs uppercase tracking-[0.2em] text-white/70"
+              >
+                {p.label}
+              </Link>
+            ))}
+            <Link
+              href="/contact"
+              onClick={() => setNavOpen(false)}
+              className="mt-2 block rounded-full px-4 py-3 text-center font-mono text-xs uppercase tracking-[0.2em]"
+              style={{ background: '#00f5ff', color: '#03030c' }}
+            >
+              Get in touch
+            </Link>
+          </div>
+        )}
       </header>
 
       {/* Lobby HUD */}
