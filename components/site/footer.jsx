@@ -69,6 +69,12 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
         >
           <span>© {new Date().getFullYear()} Nytto Labs. All rights reserved.</span>
           <span>
+            Inga analyskakor. Betalning via Stripe.{' '}
+            <Link href="/privacy" className="transition-colors duration-200 hover:text-white">
+              Integritet →
+            </Link>
+          </span>
+          <span>
             {FOOTER_IDENTITY_LINE}
             {' · '}
             <a href={`mailto:${helloEmail}`} className="transition-colors duration-200 hover:text-white">
