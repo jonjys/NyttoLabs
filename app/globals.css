@@ -100,3 +100,23 @@ code {
     @apply bg-background text-foreground;
     }
 }
+
+/* A rare, brief RGB-split flicker behind the lobby title — the same signal-
+   glitch cue used by high-production WebGL studio sites, kept subtle and
+   infrequent so it reads as a polish detail, not noise. */
+@keyframes glitch-flicker {
+  0%, 92%, 100% { opacity: 0; transform: translate3d(0, 0, 0); }
+  92.5% { opacity: 0.55; transform: translate3d(-3px, 1px, 0); }
+  93.5% { opacity: 0; }
+  95% { opacity: 0.4; transform: translate3d(3px, -1px, 0); }
+  95.5% { opacity: 0; }
+}
+.glitch-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: glitch-flicker 7s infinite;
+  will-change: opacity, transform;
+}

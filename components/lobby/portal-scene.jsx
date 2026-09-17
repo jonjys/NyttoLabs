@@ -67,13 +67,22 @@ void main() {
   float r = length(p) * 2.0;
   float a = atan(p.y, p.x);
 
-  float swirl = noise(vec2(a * 2.2 + uTime * 0.5, r * 3.0 - uTime * 1.1));
+  // Chromatic dispersion: sample the swirl at slightly different radii per
+  // colour channel, the way light splits crossing a glass edge. Subtle by
+  // design - a rim fringe, not a rainbow.
+  float disp = 0.035 + uHover * 0.02;
+  float swirlR = noise(vec2(a * 2.2 + uTime * 0.5, (r - disp) * 3.0 - uTime * 1.1));
+  float swirl  = noise(vec2(a * 2.2 + uTime * 0.5, r * 3.0 - uTime * 1.1));
+  float swirlB = noise(vec2(a * 2.2 + uTime * 0.5, (r + disp) * 3.0 - uTime * 1.1));
+
   float rings = sin(r * 22.0 - uTime * 3.2) * 0.5 + 0.5;
   float core  = smoothstep(0.95, 0.0, r);
   float edge  = smoothstep(1.0, 0.72, r);
+  float rim   = smoothstep(0.6, 0.98, r) * smoothstep(1.0, 0.85, r);
 
   vec3 c = uColor * (0.25 + swirl * 0.95 + rings * 0.3);
   c += vec3(1.0) * core * (0.3 + uHover * 0.35);
+  c += vec3(swirlR, swirl, swirlB) * rim * (0.55 + uHover * 0.45);
 
   float alpha = edge * (0.42 + swirl * 0.5 + uHover * 0.2);
   gl_FragColor = vec4(c, alpha * uDim);
@@ -182,6 +191,13 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
     }
     const pGeo = track(new THREE.BufferGeometry())
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
+    // A radial particle burst fires from the chosen portal's position the
+    // instant it is selected - the "explosion into the scene" beat.
+    const BURST_DURATION = 1.1
+    const BURST_RADIUS = 16
+    const BURST_STRENGTH = 34
+    const burstOrigin = new THREE.Vector3(0, 999, 0)
+    let burstStart = -Infinity
     const pMat = track(
       new THREE.PointsMaterial({
         size: 0.17,
@@ -488,10 +504,25 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
 
       // Particles
       const arr = pGeo.attributes.position.array
+      const burstAge = t - burstStart
+      const bursting = burstAge < BURST_DURATION
       for (let i = 0; i < COUNT; i++) {
         const ix = i * 3
         arr[ix + 1] += pSpeed[i] * delta * 0.55
         arr[ix] += Math.sin(t * 0.35 + i) * delta * 0.16
+        if (bursting) {
+          const dx = arr[ix] - burstOrigin.x
+          const dy = arr[ix + 1] - burstOrigin.y
+          const dz = arr[ix + 2] - burstOrigin.z
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) + 0.001
+          if (dist < BURST_RADIUS) {
+            const falloff = (1 - burstAge / BURST_DURATION) * (1 - dist / BURST_RADIUS)
+            const push = falloff * BURST_STRENGTH * delta
+            arr[ix] += (dx / dist) * push
+            arr[ix + 1] += (dy / dist) * push
+            arr[ix + 2] += (dz / dist) * push
+          }
+        }
         if (arr[ix + 1] > 23) {
           arr[ix + 1] = -3
           arr[ix] = (Math.random() - 0.5) * 74
@@ -571,6 +602,10 @@ export default function PortalScene({ target, transitioning, onSelect, onArrive 
         arrived = false
         // The lane we travel through: the portal we are entering, or the one we came from.
         lastPortalX = tgt === null ? lastPortalX : PORTALS[tgt].x
+        if (tgt !== null) {
+          burstOrigin.copy(portals[tgt].group.position)
+          burstStart = t
+        }
         prevTarget = tgt
       }
 

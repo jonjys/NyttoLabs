@@ -280,25 +280,43 @@ export default function HomeView() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.7 }}
           >
-            <motion.h1
-              className="mb-3 text-center font-black tracking-tighter text-white"
-              style={{ fontSize: 'clamp(1.9rem, 9vw, 4.4rem)', lineHeight: 0.92 }}
-              initial={{ y: 26, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {'NYTTO LABS'.split('').map((c, i) => (
-                <motion.span
-                  key={i}
-                  className="inline-block"
-                  initial={{ y: '110%', opacity: 0 }}
-                  animate={{ y: '0%', opacity: 1 }}
-                  transition={{ delay: 0.2 + i * 0.04, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {c === ' ' ? ' ' : c}
-                </motion.span>
-              ))}
-            </motion.h1>
+            <div className="relative mb-3">
+              {/* Decorative RGB-split duplicates - same text, offset color,
+                  flickering rarely behind the real (accessible) heading. */}
+              <span
+                aria-hidden="true"
+                className="glitch-layer block text-center font-black tracking-tighter"
+                style={{ fontSize: 'clamp(1.9rem, 9vw, 4.4rem)', lineHeight: 0.92, color: '#00f5ff', animationDelay: '0.6s' }}
+              >
+                NYTTO LABS
+              </span>
+              <span
+                aria-hidden="true"
+                className="glitch-layer block text-center font-black tracking-tighter"
+                style={{ fontSize: 'clamp(1.9rem, 9vw, 4.4rem)', lineHeight: 0.92, color: '#ff2bd1', animationDelay: '0.15s' }}
+              >
+                NYTTO LABS
+              </span>
+              <motion.h1
+                className="text-center font-black tracking-tighter text-white"
+                style={{ fontSize: 'clamp(1.9rem, 9vw, 4.4rem)', lineHeight: 0.92 }}
+                initial={{ y: 26, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.15, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {'NYTTO LABS'.split('').map((c, i) => (
+                  <motion.span
+                    key={i}
+                    className="inline-block"
+                    initial={{ y: '110%', opacity: 0 }}
+                    animate={{ y: '0%', opacity: 1 }}
+                    transition={{ delay: 0.2 + i * 0.04, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {c === ' ' ? ' ' : c}
+                  </motion.span>
+                ))}
+              </motion.h1>
+            </div>
 
             <motion.p
               className="mb-6 max-w-md text-center text-[13px] font-light leading-relaxed sm:text-sm"
