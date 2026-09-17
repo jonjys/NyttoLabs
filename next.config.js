@@ -26,6 +26,8 @@ const nextConfig = {
   async redirects() {
     return [
       { source: '/buy', destination: '/products', permanent: true },
+      { source: '/attest', destination: 'https://attest-gate.netlify.app', permanent: false },
+      { source: '/attest-gate', destination: 'https://attest-gate.netlify.app', permanent: false },
     ];
   },
   async headers() {
