@@ -1,5 +1,5 @@
 import './globals.css'
-import { Instrument_Sans, Instrument_Serif } from 'next/font/google'
+import { Instrument_Sans, Instrument_Serif, IBM_Plex_Mono } from 'next/font/google'
 import { Providers } from './providers'
 import { SITE_ORIGIN } from '@/lib/site'
 
@@ -13,6 +13,13 @@ const serif = Instrument_Serif({
   subsets: ['latin'],
   weight: '400',
   variable: '--font-serif',
+  display: 'swap',
+})
+
+const mono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
   display: 'swap',
 })
 
@@ -36,7 +43,7 @@ export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+    <html lang="en" className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{__html:'window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);'}} />
       </head>

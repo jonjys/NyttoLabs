@@ -120,3 +120,35 @@ code {
   animation: glitch-flicker 7s infinite;
   will-change: opacity, transform;
 }
+
+/* Nytto Labs landing page — flat-scroll design animation set. */
+@keyframes nl-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes nl-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes nl-blink { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0.08; } 100% { opacity: 1; } }
+@keyframes nl-pulse { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.55); } }
+@keyframes nl-travel { 0% { transform: translateX(-6px); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateX(var(--nl-run, 220px)); opacity: 0; } }
+@keyframes nl-scan { 0% { transform: translateY(-110%); } 100% { transform: translateY(1100%); } }
+@keyframes nl-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes nl-drift { 0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: 0.5; } 50% { transform: translate3d(3%, -4%, 0) scale(1.12); opacity: 0.8; } }
+@keyframes nl-spin { to { transform: rotate(360deg); } }
+@keyframes nl-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes nl-ripple { 0% { transform: scale(0.82); opacity: 0.55; } 70% { opacity: 0; } 100% { transform: scale(1.35); opacity: 0; } }
+@keyframes nl-sweep { 0% { opacity: 0; transform: translateX(-100%); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateX(100%); } }
+
+.nl-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.75s cubic-bezier(0.22,1,0.36,1), transform 0.75s cubic-bezier(0.22,1,0.36,1);
+}
+.nl-reveal.nl-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
