@@ -1,5 +1,6 @@
 import PartnersView from './partners-view'
 import { pageMetadata } from '@/lib/site'
+import { BreadcrumbJsonLd } from '@/components/site/json-ld'
 
 export const metadata = pageMetadata({
   title: 'Partners — Nytto Labs',
@@ -8,5 +9,10 @@ export const metadata = pageMetadata({
 })
 
 export default function Page() {
-  return <PartnersView />
+  return (
+    <>
+      <BreadcrumbJsonLd name="Partners" path="/partners" />
+      <PartnersView />
+    </>
+  )
 }

@@ -1,5 +1,6 @@
 import PrivacyView from './privacy-view'
 import { pageMetadata } from '@/lib/site'
+import { BreadcrumbJsonLd } from '@/components/site/json-ld'
 
 export const metadata = pageMetadata({
   title: 'Privacy — Nytto Labs',
@@ -8,5 +9,10 @@ export const metadata = pageMetadata({
 })
 
 export default function Page() {
-  return <PrivacyView />
+  return (
+    <>
+      <BreadcrumbJsonLd name="Privacy" path="/privacy" />
+      <PrivacyView />
+    </>
+  )
 }

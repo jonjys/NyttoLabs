@@ -1,5 +1,6 @@
 import ProductsView from './products-view'
 import { pageMetadata } from '@/lib/site'
+import { BreadcrumbJsonLd } from '@/components/site/json-ld'
 
 export const metadata = pageMetadata({
   title: 'Products — Nytto Labs',
@@ -8,5 +9,10 @@ export const metadata = pageMetadata({
 })
 
 export default function Page() {
-  return <ProductsView />
+  return (
+    <>
+      <BreadcrumbJsonLd name="Products" path="/products" />
+      <ProductsView />
+    </>
+  )
 }

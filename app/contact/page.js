@@ -1,5 +1,6 @@
 import ContactView from './contact-view'
 import { pageMetadata } from '@/lib/site'
+import { BreadcrumbJsonLd } from '@/components/site/json-ld'
 
 export const metadata = pageMetadata({
   title: 'Contact — Nytto Labs',
@@ -8,5 +9,10 @@ export const metadata = pageMetadata({
 })
 
 export default function Page() {
-  return <ContactView />
+  return (
+    <>
+      <BreadcrumbJsonLd name="Contact" path="/contact" />
+      <ContactView />
+    </>
+  )
 }
