@@ -835,22 +835,6 @@
 .log { display: grid; gap: 6px; margin: 0; padding: 12px 14px; list-style: none; border-top: 1px solid var(--line); font-size: 11px; color: var(--faint); }
 .logTag { color: var(--accent); margin-right: 10px; }
 
-/* Scope */
-.notGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 10px; }
-.notItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.015);
-  font-size: 14px;
-  color: var(--muted);
-}
-.notX { color: rgba(255, 43, 209, 0.8); }
-.note { max-width: 46rem; margin: 18px 0 0; font-size: 14px; line-height: 1.7; color: var(--faint); }
-
 /* Partners & contact */
 .duo { display: grid; gap: 14px; }
 @media (min-width: 768px) { .duo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

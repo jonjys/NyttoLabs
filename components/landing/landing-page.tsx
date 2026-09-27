@@ -13,7 +13,6 @@ import {
   HELLO_HREF,
   INBOXES,
   NAV_SECTIONS,
-  NOTS,
   PRODUCT_ACCENTS,
   PRODUCT_ANCHORS,
   RELAY_LOG,
@@ -417,27 +416,6 @@ export default function LandingPage() {
                   ))}
                 </div>
               </div>
-            </section>
-
-            {/* Scope */}
-            <section className={s.section} aria-labelledby="scope-title">
-              <div className={`${s.eyebrow} ${s.mono}`}>Scope</div>
-              <h2 id="scope-title" className={s.h2} style={{ marginBottom: 20 }}>
-                What we deliberately don&rsquo;t do.
-              </h2>
-              <div className={s.notGrid}>
-                {NOTS.map((n) => (
-                  <div key={n} className={s.notItem}>
-                    <span className={`${s.notX} ${s.mono}`} aria-hidden="true">
-                      ✕
-                    </span>
-                    {n}
-                  </div>
-                ))}
-              </div>
-              <p className={s.note}>
-                Partners keep checkout, payment, VAT, delivery, returns and product support. We keep the software honest.
-              </p>
             </section>
 
             {/* 04 · Partners & contact */}

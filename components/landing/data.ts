@@ -77,14 +77,3 @@ export const RELAY_LOG = [
   { tag: 'DELIVER', text: 'curl-to-buy · file sold, link expires in 24h' },
   { tag: 'FAIL-CLOSED', text: 'no approved destination → no redirect' },
 ]
-
-export const NOTS = [
-  'No inventory',
-  'No packaging',
-  'No third-party checkout',
-  'No shipping or returns',
-  'No dropshipping',
-  'No warehouse',
-  'No fake partners or prices',
-  'No analytics cookies',
-]
