@@ -265,3 +265,55 @@ export function CurlToBuyPreview({ productUrl, notify }: { productUrl: string; n
     </div>
   )
 }
+
+/* ---------------------------- DeployDoctor ---------------------------- */
+
+type ScanState = 'pass' | 'fail' | 'warn'
+
+// Demo data — check names come from deploydoctor.nyttolabs.com; the repo and
+// every result below are illustrative. Nothing is scanned from this page.
+const DEMO_REPO = 'github.com/example/shop'
+const DEMO_SCAN: { check: string; state: ScanState; note: string }[] = [
+  { check: 'Next.js entrypoint', state: 'pass', note: 'app/ router detected' },
+  { check: 'Broken imports', state: 'fail', note: 'case mismatch: ./Components/Header' },
+  { check: 'Vercel-incompatible server code', state: 'pass', note: 'no long-running server found' },
+  { check: 'Environment variables', state: 'warn', note: 'DATABASE_URL used but not documented' },
+]
+
+const SCAN_ICON: Record<ScanState, string> = { pass: '✓', fail: '✕', warn: '!' }
+
+export function DeployDoctorPreview() {
+  const [scanned, setScanned] = useState(false)
+  const iconClass: Record<ScanState, string> = { pass: s.scanPass, fail: s.scanFail, warn: s.scanWarn }
+
+  return (
+    <div className={s.preview}>
+      <span className={`${s.demoTag} ${s.mono}`}>DEMO</span>
+      <div className={`${s.previewLabel} ${s.mono}`}>Public GitHub repository</div>
+      <div className={s.vatForm}>
+        <span className={`${s.scanRepo} ${s.mono}`}>{DEMO_REPO}</span>
+        <button type="button" className={s.miniBtn} onClick={() => setScanned((v) => !v)} aria-pressed={scanned}>
+          {scanned ? 'Reset' : 'Run demo scan'}
+        </button>
+      </div>
+      <div aria-live="polite">
+        {scanned && (
+          <ul className={s.scanList}>
+            {DEMO_SCAN.map((row) => (
+              <li key={row.check} className={s.scanItem}>
+                <span className={`${iconClass[row.state]} ${s.mono}`} aria-hidden="true">
+                  {SCAN_ICON[row.state]}
+                </span>
+                <span>
+                  <strong>{row.check}</strong> <span className={s.srOnly}>({row.state})</span>
+                  <br />
+                  <span className={s.mono}>{row.note}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -356,7 +356,7 @@ export default function LandingPage() {
                   </h2>
                 </div>
                 <p className={s.sectionLede}>
-                  No bundles, no suite. Three live products you can open and pay for right now. Try the demos below — they
+                  No bundles, no suite. Four live products you can open and pay for right now. Try the demos below — they
                   run in your browser only.
                 </p>
               </div>

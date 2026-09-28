@@ -520,8 +520,10 @@
   .bento { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
   .tileCycletag { grid-column: span 3; }
   .tileVatidence { grid-column: span 3; }
-  .tileCurl { grid-column: span 4; }
-  .tileRelay { grid-column: span 2; }
+  .tileCurl { grid-column: span 3; }
+  .tileDeploy { grid-column: span 3; }
+  .tileRelay { grid-column: span 6; }
+  .tileRelay .endpointList { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .tile {
@@ -777,7 +779,6 @@
 .copyBtn { composes: miniBtn; min-height: 26px; padding: 0 10px; font-size: 11px; }
 
 .curlGrid { display: grid; gap: 12px; }
-@media (min-width: 1025px) { .curlGrid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } }
 .flow { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .flowStep {
   display: grid;
@@ -800,6 +801,41 @@
 
 /* Relay mini tile */
 .endpointList { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+
+/* DeployDoctor demo scan */
+.scanList { display: grid; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+.scanItem {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.scanItem strong { color: var(--text); font-weight: 600; }
+.scanPass { color: #00ff9d; }
+.scanFail { color: #ff6b85; }
+.scanWarn { color: #ffc46b; }
+.scanRepo {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .endpoint {
   display: flex;
   align-items: center;

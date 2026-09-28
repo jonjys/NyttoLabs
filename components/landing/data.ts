@@ -8,14 +8,15 @@ import { SITE_ORIGIN } from '@/lib/site'
 import type { NavSection } from './types'
 
 // Sidebar / palette sections. #top, #products, #relay and #partners are the
-// anchors the previous landing page already exposed. The three product ids are
+// anchors the previous landing page already exposed. The product ids are
 // set on the product tiles inside #products.
 export const NAV_SECTIONS: NavSection[] = [
   { num: '00', label: 'Studio Overview', href: '#top' },
   { num: '01', label: 'CycleTag', href: '#cycletag' },
   { num: '02', label: 'Vatidence', href: '#vatidence' },
   { num: '03', label: 'Curl-to-Buy', href: '#curl-to-buy' },
-  { num: '04', label: 'Partners & Contact', href: '#partners' },
+  { num: '04', label: 'DeployDoctor', href: '#deploydoctor' },
+  { num: '05', label: 'Partners & Contact', href: '#partners' },
 ]
 
 // Existing site routes (see lib/site.js PUBLIC_ROUTES and components/site/nav.jsx).
@@ -30,12 +31,14 @@ export const PRODUCT_ANCHORS: Record<string, string> = {
   cycletag: 'cycletag',
   viesproof: 'vatidence',
   'curl-to-buy': 'curl-to-buy',
+  deploydoctor: 'deploydoctor',
 }
 
 export const PRODUCT_ACCENTS: Record<string, string> = {
   cycletag: '#00ff9d',
   viesproof: '#00f5ff',
   'curl-to-buy': '#ff8a1e',
+  deploydoctor: '#b388ff',
 }
 
 export const HELLO_HREF = `mailto:${PUBLIC_HELLO_EMAIL}`
