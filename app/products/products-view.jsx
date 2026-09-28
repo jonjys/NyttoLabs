@@ -15,12 +15,14 @@ const CYCLE_BULK = 'https://cycletag.eu/bulk'
 const CYCLE_FREE = 'https://cycletag.eu/#create'
 const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
+const DEPLOYDOCTOR = 'https://deploydoctor.nyttolabs.com/'
+const DEPLOYDOCTOR_PRICING = 'https://deploydoctor.nyttolabs.com/pricing'
 
 const COPY = {
   en: {
     eyebrow: 'Products · Swedish software · F-tax',
-    hero: 'Three things you can pay for today.',
-    lede: 'CycleTag, Vatidence and Curl-to-Buy. Focused products, live now — not a roadmap.',
+    hero: 'Four things you can pay for today.',
+    lede: 'CycleTag, Vatidence, Curl-to-Buy and DeployDoctor. Focused products, live now — not a roadmap.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
     cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
     cyclePrice: '$5',
@@ -40,14 +42,21 @@ const COPY = {
     curlNote: 'fee · you keep 95%',
     curlPay: 'Post a file',
     curlFree: 'Free to create — 5% only when it sells',
+    ddBody: 'Scan a public GitHub repo for the code issues most likely to break a Vercel deployment.',
+    ddFeatures: ['Checks matched to your stack', 'No cloning, no code execution', 'Shareable report'],
+    ddPrice: '$9',
+    ddNote: 'per month · or $5 for a 7-day pass',
+    ddPay: 'Scan a repository',
+    ddPricing: 'See pricing',
+    ddFree: 'Free — 3 scans a day',
     partnerTitle: 'Work with Nytto Labs',
     partnerBody: 'Partnerships and general questions go to the same inbox. You keep checkout, payment and fulfilment.',
     partnerCta: 'Become a partner',
   },
   sv: {
     eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
-    hero: 'Tre saker du kan betala för idag.',
-    lede: 'CycleTag, Vatidence och Curl-to-Buy. Fokuserade produkter, live nu — ingen roadmap.',
+    hero: 'Fyra saker du kan betala för idag.',
+    lede: 'CycleTag, Vatidence, Curl-to-Buy och DeployDoctor. Fokuserade produkter, live nu — ingen roadmap.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter.',
     cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
     cyclePrice: '49 kr',
@@ -67,6 +76,13 @@ const COPY = {
     curlNote: 'avgift · du behåller 95%',
     curlPay: 'Lägg upp en fil',
     curlFree: 'Gratis att skapa — 5% bara när den säljer',
+    ddBody: 'Skanna ett publikt GitHub-repo efter kodfelen som oftast knäcker en Vercel-deploy.',
+    ddFeatures: ['Kontroller anpassade efter din stack', 'Ingen kloning, ingen kodkörning', 'Delbar rapport'],
+    ddPrice: '$9',
+    ddNote: 'per månad · eller $5 för 7 dagar',
+    ddPay: 'Skanna ett repo',
+    ddPricing: 'Se priser',
+    ddFree: 'Gratis — 3 skanningar per dag',
     partnerTitle: 'Samarbeta med Nytto Labs',
     partnerBody: 'Partnerskap och allmänna frågor går till samma inkorg. Ni behåller kassa, betalning och leverans.',
     partnerCta: 'Bli partner',
@@ -143,7 +159,7 @@ export default function ProductsView() {
           </div>
         </div>
 
-        <div className="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-4">
           <PayCard
             name="CycleTag"
             price={t.cyclePrice}
@@ -196,6 +212,26 @@ export default function ProductsView() {
                 <span className="hidden min-h-11 md:block" aria-hidden />
                 <a href={CURL_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
                   {t.curlFree} <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </>
+            }
+          />
+          <PayCard
+            name="DeployDoctor"
+            price={t.ddPrice}
+            note={t.ddNote}
+            body={t.ddBody}
+            features={t.ddFeatures}
+            actions={
+              <>
+                <a href={DEPLOYDOCTOR} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                  {t.ddPay} <ArrowRight className="h-4 w-4" />
+                </a>
+                <a href={DEPLOYDOCTOR_PRICING} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
+                  {t.ddPricing}
+                </a>
+                <a href={DEPLOYDOCTOR} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  {t.ddFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
             }
