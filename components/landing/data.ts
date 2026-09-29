@@ -1,22 +1,33 @@
-import {
-  PUBLIC_BILLING_EMAIL,
-  PUBLIC_HELLO_EMAIL,
-  PUBLIC_PRIVACY_EMAIL,
-  PUBLIC_SUPPORT_EMAIL,
-} from '@/lib/relay/catalog'
+import { PUBLIC_HELLO_EMAIL, PUBLIC_STATUS_GROUPS } from '@/lib/relay/catalog'
 import { SITE_ORIGIN } from '@/lib/site'
-import type { NavSection } from './types'
+import type { NavSection, PublicProduct } from './types'
+
+// Catalog statuses shown on the landing page, in display order. Only 'live'
+// counts towards the live counter; private-beta products are shown after them.
+const SHOWCASE_STATUSES = ['live', 'private-beta']
+
+export function showcaseProducts(all: ReadonlyArray<PublicProduct | null>): PublicProduct[] {
+  const list = all.filter((p): p is PublicProduct => !!p && SHOWCASE_STATUSES.includes(p.status))
+  return SHOWCASE_STATUSES.flatMap((status) => list.filter((p) => p.status === status))
+}
+
+/** Human label for a catalog status ("Live", "Private beta", …), from the catalog itself. */
+export function statusLabel(status: string): string {
+  const group = (PUBLIC_STATUS_GROUPS as ReadonlyArray<{ key: string; title: string }>).find((g) => g.key === status)
+  return group ? group.title : status
+}
 
 // Sidebar / palette sections. #top, #products, #relay and #partners are the
 // anchors the previous landing page already exposed. The product ids are
 // set on the product tiles inside #products.
 export const NAV_SECTIONS: NavSection[] = [
   { num: '00', label: 'Studio Overview', href: '#top' },
-  { num: '01', label: 'CycleTag', href: '#cycletag' },
-  { num: '02', label: 'Vatidence', href: '#vatidence' },
-  { num: '03', label: 'Curl-to-Buy', href: '#curl-to-buy' },
-  { num: '04', label: 'DeployDoctor', href: '#deploydoctor' },
-  { num: '05', label: 'Partners & Contact', href: '#partners' },
+  { num: '01', label: 'DeployDoctor', href: '#deploydoctor' },
+  { num: '02', label: 'CycleTag', href: '#cycletag' },
+  { num: '03', label: 'Vatidence', href: '#vatidence' },
+  { num: '04', label: 'Curl-to-Buy', href: '#curl-to-buy' },
+  { num: '05', label: 'Failclosed', href: '#failclosed' },
+  { num: '06', label: 'Partners & Contact', href: '#partners' },
 ]
 
 // Existing site routes (see lib/site.js PUBLIC_ROUTES and components/site/nav.jsx).
@@ -32,6 +43,7 @@ export const PRODUCT_ANCHORS: Record<string, string> = {
   viesproof: 'vatidence',
   'curl-to-buy': 'curl-to-buy',
   deploydoctor: 'deploydoctor',
+  failclosed: 'failclosed',
 }
 
 export const PRODUCT_ACCENTS: Record<string, string> = {
@@ -39,17 +51,11 @@ export const PRODUCT_ACCENTS: Record<string, string> = {
   viesproof: '#00f5ff',
   'curl-to-buy': '#ff8a1e',
   deploydoctor: '#b388ff',
+  failclosed: '#ff5c7a',
 }
 
 export const HELLO_HREF = `mailto:${PUBLIC_HELLO_EMAIL}`
-export const SUPPORT_HREF = `mailto:${PUBLIC_SUPPORT_EMAIL}`
-
-export const INBOXES = [
-  { email: PUBLIC_HELLO_EMAIL, use: 'General + partners' },
-  { email: PUBLIC_SUPPORT_EMAIL, use: 'Product support' },
-  { email: PUBLIC_PRIVACY_EMAIL, use: 'Data requests' },
-  { email: PUBLIC_BILLING_EMAIL, use: 'Invoices' },
-]
+export const HELLO_EMAIL = PUBLIC_HELLO_EMAIL
 
 // Public Relay endpoints, taken from app/api/[[...path]]/route.js, README.md and
 // docs/PARTNER-INTEGRATION.md. Only copied to the clipboard, never requested.

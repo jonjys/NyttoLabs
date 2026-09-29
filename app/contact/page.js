@@ -4,7 +4,7 @@ import { BreadcrumbJsonLd } from '@/components/site/json-ld'
 
 export const metadata = pageMetadata({
   title: 'Contact — Nytto Labs',
-  description: 'Contact Nytto Labs: hello@ for general and partnerships, plus support, privacy, and billing inboxes.',
+  description: 'Contact Nytto Labs at hello@nyttolabs.com for general questions and partnerships.',
   path: '/contact',
 })
 

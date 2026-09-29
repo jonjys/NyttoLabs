@@ -2,8 +2,15 @@
 
 import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 import { ArrowUpRight } from 'lucide-react'
-import { API_ENDPOINTS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, endpointUrl } from './data'
-import { CopyButton, CurlToBuyPreview, CycleTagPreview, DeployDoctorPreview, VatidencePreview } from './previews'
+import { API_ENDPOINTS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, endpointUrl, statusLabel } from './data'
+import {
+  CopyButton,
+  CurlToBuyPreview,
+  CycleTagPreview,
+  DeployDoctorPreview,
+  FailclosedPreview,
+  VatidencePreview,
+} from './previews'
 import type { PublicProduct } from './types'
 import s from './landing.module.css'
 
@@ -47,12 +54,13 @@ function Tile({ id, className, accent, children, labelledBy }: TileProps) {
   )
 }
 
+// Desktop grid is 6 columns: DeployDoctor (newest) spans the full row, the
+// rest pair up at half width. Anything not listed falls back to half width.
 const TILE_CLASS: Record<string, string> = {
-  cycletag: s.tileCycletag,
-  viesproof: s.tileVatidence,
-  'curl-to-buy': `${s.tileCurl} ${s.tileWide}`,
-  deploydoctor: `${s.tileDeploy} ${s.tileWide}`,
+  deploydoctor: `${s.tileFeature} ${s.tileWide}`,
+  'curl-to-buy': `${s.tileHalf} ${s.tileWide}`,
 }
+const FEATURED = 'deploydoctor'
 
 function ProductTile({ product, notify }: { product: PublicProduct; notify: Notify }) {
   const anchor = PRODUCT_ANCHORS[product.slug] ?? product.slug
@@ -64,14 +72,18 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
   else if (product.slug === 'viesproof') preview = <VatidencePreview productUrl={product.url} />
   else if (product.slug === 'curl-to-buy') preview = <CurlToBuyPreview productUrl={product.url} notify={notify} />
   else if (product.slug === 'deploydoctor') preview = <DeployDoctorPreview />
+  else if (product.slug === 'failclosed') preview = <FailclosedPreview />
 
   return (
-    <Tile id={anchor} className={TILE_CLASS[product.slug] ?? ''} accent={accent} labelledBy={titleId}>
+    <Tile id={anchor} className={TILE_CLASS[product.slug] ?? s.tileHalf} accent={accent} labelledBy={titleId}>
       <div className={s.tileTop}>
         <span className={`${s.tileCat} ${s.mono}`}>{product.category}</span>
-        <span className={`${s.status} ${s.mono}`}>
-          <span className={s.statusDot} aria-hidden="true" />
-          Live
+        <span style={{ display: 'inline-flex', gap: 6 }}>
+          {product.slug === FEATURED && <span className={`${s.status} ${s.statusNew} ${s.mono}`}>New</span>}
+          <span className={`${s.status} ${s.mono}`}>
+            <span className={product.status === 'live' ? s.statusDot : s.statusDotInvite} aria-hidden="true" />
+            {statusLabel(product.status)}
+          </span>
         </span>
       </div>
       <h3 id={titleId} className={s.productTitle}>
@@ -81,9 +93,12 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
       {preview}
       <div className={`${s.tileFoot} ${s.mono}`}>
         <span>{product.primaryMarket}</span>
-        <a href={product.url} target="_blank" rel="noreferrer" className={s.tileLink}>
-          {hostOf(product.url)} <ArrowUpRight size={14} aria-hidden="true" />
-        </a>
+        {/* Products without a published domain in the catalog render without a link. */}
+        {product.url && (
+          <a href={product.url} target="_blank" rel="noreferrer" className={s.tileLink}>
+            {hostOf(product.url)} <ArrowUpRight size={14} aria-hidden="true" />
+          </a>
+        )}
       </div>
     </Tile>
   )
@@ -91,7 +106,7 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
 
 function RelayTile({ notify }: { notify: Notify }) {
   return (
-    <Tile className={`${s.tileRelay} ${s.tileWide}`} accent="#00f5ff" labelledBy="tile-title-relay">
+    <Tile className={s.tileRelay} accent="#00f5ff" labelledBy="tile-title-relay">
       <div className={s.tileTop}>
         <span className={`${s.tileCat} ${s.mono}`}>Underneath</span>
       </div>

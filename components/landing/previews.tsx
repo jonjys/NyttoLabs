@@ -364,3 +364,85 @@ export function DeployDoctorPreview() {
     </div>
   )
 }
+
+/* ----------------------------- Failclosed ----------------------------- */
+
+// Demo data — two illustrative sync runs between a warehouse and a shop.
+// Nothing here talks to a real system.
+type SyncScenario = 'drift' | 'empty'
+const SYNC_SCENARIOS: { id: SyncScenario; label: string; warehouse: number | null; shop: number }[] = [
+  { id: 'drift', label: 'Warehouse 40 · Shop 12', warehouse: 40, shop: 12 },
+  { id: 'empty', label: 'Empty warehouse response', warehouse: null, shop: 12 },
+]
+
+export function FailclosedPreview() {
+  const [scenario, setScenario] = useState<SyncScenario>('drift')
+  const [ran, setRan] = useState(false)
+  const { complete } = useExplorer()
+  const current = SYNC_SCENARIOS.find((sc) => sc.id === scenario) ?? SYNC_SCENARIOS[0]
+  const repaired = ran && current.warehouse !== null
+  const refused = ran && current.warehouse === null
+
+  const pick = (id: SyncScenario) => {
+    setScenario(id)
+    setRan(false)
+  }
+  const run = () => {
+    setRan(true)
+    if (current.warehouse === null) complete('failclosed-refuse')
+  }
+
+  return (
+    <div className={s.preview}>
+      <span className={`${s.demoTag} ${s.mono}`}>DEMO</span>
+      <div className={`${s.previewLabel} ${s.mono}`}>Daily sync · pick a case</div>
+      <div className={s.chips} role="radiogroup" aria-label="Sync case">
+        {SYNC_SCENARIOS.map((sc) => (
+          <button
+            key={sc.id}
+            type="button"
+            role="radio"
+            aria-checked={sc.id === scenario}
+            className={`${s.pgChip} ${s.mono} ${sc.id === scenario ? s.pgChipOn : ''}`}
+            onClick={() => pick(sc.id)}
+          >
+            {sc.label}
+          </button>
+        ))}
+      </div>
+      <div className={`${s.syncTable} ${s.mono}`}>
+        <span className={s.syncHead}>Warehouse</span>
+        <span className={s.syncHead}>Shop</span>
+        <span>{current.warehouse === null ? '— (no rows)' : current.warehouse}</span>
+        <span>
+          {repaired ? (
+            <>
+              <s className={s.syncOld}>{current.shop}</s> → <strong>{current.warehouse}</strong>
+            </>
+          ) : (
+            current.shop
+          )}
+        </span>
+      </div>
+      <div className={s.scanRow}>
+        <button type="button" className={s.miniBtn} onClick={run}>
+          Run sync
+        </button>
+      </div>
+      <div aria-live="polite">
+        {repaired && (
+          <div className={`${s.vatResult} ${s.vatValid}`}>
+            <span className={`${s.vatBadge} ${s.mono}`}>✓ Repaired</span>
+            <span>Shop set to {current.warehouse} to match the warehouse.</span>
+          </div>
+        )}
+        {refused && (
+          <div className={`${s.vatResult} ${s.vatInvalid}`}>
+            <span className={`${s.vatBadge} ${s.mono}`}>✕ Refused · source_empty</span>
+            <span>The warehouse returned no rows, so nothing was written.</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

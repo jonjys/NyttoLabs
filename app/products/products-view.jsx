@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, Check } from 'lucide-react'
 import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { useLocale } from '@/hooks/use-locale'
+import { PUBLIC_STATUS_GROUPS, seedApplications } from '@/lib/relay/catalog'
 
 const accent = ACCENT.products
 
@@ -17,12 +18,16 @@ const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
 const DEPLOYDOCTOR = 'https://deploydoctor.nyttolabs.com/'
 const DEPLOYDOCTOR_PRICING = 'https://deploydoctor.nyttolabs.com/pricing'
+// Failclosed's domain and status come from the catalog (lib/relay/catalog.js).
+const FAILCLOSED = 'https://failclosed.nyttolabs.com/'
+const FAILCLOSED_STATUS =
+  PUBLIC_STATUS_GROUPS.find((g) => g.key === seedApplications().find((a) => a.slug === 'failclosed')?.status)?.title || ''
 
 const COPY = {
   en: {
     eyebrow: 'Products · Swedish software · F-tax',
-    hero: 'Four things you can pay for today.',
-    lede: 'CycleTag, Vatidence, Curl-to-Buy and DeployDoctor. Focused products, live now — not a roadmap.',
+    hero: 'Four live products.',
+    lede: 'DeployDoctor, CycleTag, Vatidence and Curl-to-Buy — live now, not a roadmap. Failclosed is invite-only while we onboard merchants.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
     cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
     cyclePrice: '$5',
@@ -49,14 +54,18 @@ const COPY = {
     ddPay: 'Scan a repository',
     ddPricing: 'See pricing',
     ddFree: 'Free — 3 scans a day',
+    failBody: 'Inventory sync that repairs the difference between two systems automatically — and refuses to write when the data looks wrong.',
+    failFeatures: ['Repairs the difference automatically', 'Refuses to write on bad data', 'Invite-only'],
+    failCategory: 'Inventory sync',
+    failVisit: 'Visit Failclosed',
     partnerTitle: 'Work with Nytto Labs',
     partnerBody: 'Partnerships and general questions go to the same inbox. You keep checkout, payment and fulfilment.',
     partnerCta: 'Become a partner',
   },
   sv: {
     eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
-    hero: 'Fyra saker du kan betala för idag.',
-    lede: 'CycleTag, Vatidence, Curl-to-Buy och DeployDoctor. Fokuserade produkter, live nu — ingen roadmap.',
+    hero: 'Fyra produkter, live nu.',
+    lede: 'DeployDoctor, CycleTag, Vatidence och Curl-to-Buy — live nu, ingen roadmap. Failclosed är endast på inbjudan medan vi tar in handlare.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter.',
     cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
     cyclePrice: '49 kr',
@@ -83,6 +92,10 @@ const COPY = {
     ddPay: 'Skanna ett repo',
     ddPricing: 'Se priser',
     ddFree: 'Gratis — 3 skanningar per dag',
+    failBody: 'Lagersynk som automatiskt reparerar skillnaden mellan två system — och vägrar skriva när datan ser fel ut.',
+    failFeatures: ['Reparerar skillnaden automatiskt', 'Vägrar skriva vid felaktig data', 'Endast på inbjudan'],
+    failCategory: 'Lagersynk',
+    failVisit: 'Besök Failclosed',
     partnerTitle: 'Samarbeta med Nytto Labs',
     partnerBody: 'Partnerskap och allmänna frågor går till samma inkorg. Ni behåller kassa, betalning och leverans.',
     partnerCta: 'Bli partner',
@@ -104,9 +117,9 @@ function PayCard({ name, price, note, body, features, actions }) {
     >
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-lg font-bold tracking-tight text-white">{name}</h2>
-        <p className="text-2xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>
+        {price && <p className="text-2xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>}
       </div>
-      <p className="mt-1 font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>{note}</p>
+      {note && <p className="mt-1 font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>{note}</p>}
       <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{body}</p>
 
       <ul className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
@@ -159,7 +172,27 @@ export default function ProductsView() {
           </div>
         </div>
 
-        <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <PayCard
+            name="DeployDoctor"
+            price={t.ddPrice}
+            note={t.ddNote}
+            body={t.ddBody}
+            features={t.ddFeatures}
+            actions={
+              <>
+                <a href={DEPLOYDOCTOR} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                  {t.ddPay} <ArrowRight className="h-4 w-4" />
+                </a>
+                <a href={DEPLOYDOCTOR_PRICING} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
+                  {t.ddPricing}
+                </a>
+                <a href={DEPLOYDOCTOR} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  {t.ddFree} <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </>
+            }
+          />
           <PayCard
             name="CycleTag"
             price={t.cyclePrice}
@@ -217,23 +250,14 @@ export default function ProductsView() {
             }
           />
           <PayCard
-            name="DeployDoctor"
-            price={t.ddPrice}
-            note={t.ddNote}
-            body={t.ddBody}
-            features={t.ddFeatures}
+            name="Failclosed"
+            note={`${FAILCLOSED_STATUS} · ${t.failCategory}`}
+            body={t.failBody}
+            features={t.failFeatures}
             actions={
-              <>
-                <a href={DEPLOYDOCTOR} className={payBtn} style={{ background: accent, color: '#03030c' }}>
-                  {t.ddPay} <ArrowRight className="h-4 w-4" />
-                </a>
-                <a href={DEPLOYDOCTOR_PRICING} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
-                  {t.ddPricing}
-                </a>
-                <a href={DEPLOYDOCTOR} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
-                  {t.ddFree} <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              </>
+              <a href={FAILCLOSED} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                {t.failVisit} <ArrowRight className="h-4 w-4" />
+              </a>
             }
           />
         </div>

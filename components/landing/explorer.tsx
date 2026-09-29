@@ -13,14 +13,23 @@ export interface Mission {
   href: `#${string}`
 }
 
-export type MissionId = 'scan-label' | 'check-vat' | 'curl-flow' | 'deploy-scan' | 'route-intent' | 'palette' | 'shortcuts'
+export type MissionId =
+  | 'scan-label'
+  | 'check-vat'
+  | 'curl-flow'
+  | 'deploy-scan'
+  | 'failclosed-refuse'
+  | 'route-intent'
+  | 'palette'
+  | 'shortcuts'
 
 export const MISSIONS: Mission[] = [
   { id: 'route-intent', label: 'Route an intent through Relay', hint: 'Run the Relay playground', href: '#relay' },
+  { id: 'deploy-scan', label: 'Run a DeployDoctor scan', hint: 'Run the demo scan', href: '#deploydoctor' },
   { id: 'scan-label', label: 'Scan a CycleTag label', hint: 'Simulate a scan on the CycleTag tile', href: '#cycletag' },
   { id: 'check-vat', label: 'Verify a VAT number', hint: 'Check a number in the Vatidence demo', href: '#vatidence' },
   { id: 'curl-flow', label: 'Walk a Curl-to-Buy sale', hint: 'Step through the sale or copy the snippet', href: '#curl-to-buy' },
-  { id: 'deploy-scan', label: 'Run a DeployDoctor scan', hint: 'Run the demo scan', href: '#deploydoctor' },
+  { id: 'failclosed-refuse', label: 'Watch Failclosed refuse a write', hint: 'Run the empty-warehouse case', href: '#failclosed' },
   { id: 'palette', label: 'Open the command palette', hint: 'Press ⌘K / Ctrl K', href: '#top' },
   { id: 'shortcuts', label: 'Find the keyboard map', hint: 'Press ?', href: '#top' },
 ]
