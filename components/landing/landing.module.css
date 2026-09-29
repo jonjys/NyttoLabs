@@ -378,29 +378,53 @@
   isolation: isolate;
   display: grid;
   align-items: center;
-  min-height: 560px;
-  padding: 40px 0 16px;
+  padding: 36px 0 8px;
 }
-@media (min-width: 1025px) {
+@media (min-width: 1280px) {
   .hero { min-height: min(720px, calc(100vh - var(--header-h) - 24px)); padding: 48px 0 24px; }
 }
 .heroCanvas {
+  /* Below 1280px: the signal field is its own panel under the hero copy. */
+  position: relative;
+  order: 2;
+  height: 230px;
+  margin-top: 28px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+}
+.heroCanvas::before {
+  content: 'LIVE ROUTING · TAP A NODE';
   position: absolute;
-  inset: 0 calc(var(--gutter) * -1) 0 -24px;
-  z-index: -1;
-  opacity: 0.45;
-  /* Keep the copy column clean: the field fades in to the right of the text. */
-  mask-image: linear-gradient(90deg, transparent 0%, transparent 42%, #000 64%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 42%, #000 64%);
+  top: 12px;
+  left: 14px;
+  z-index: 1;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--faint);
+  pointer-events: none;
 }
-@media (max-width: 767px) {
+@media (hover: hover) { .heroCanvas::before { content: 'LIVE ROUTING · CLICK A NODE'; } }
+@media (min-width: 1280px) {
+  /* Wide screens: full-bleed field behind the copy, masked away from the text. */
   .heroCanvas {
-    mask-image: linear-gradient(90deg, transparent 0%, transparent 55%, #000 80%);
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 55%, #000 80%);
+    position: absolute;
+    inset: 0 calc(var(--gutter) * -1) 0 -24px;
+    z-index: -1;
+    order: 0;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    mask-image: linear-gradient(90deg, transparent 0%, transparent 42%, #000 64%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 42%, #000 64%);
   }
+  .heroCanvas::before { content: none; }
 }
-@media (min-width: 768px) { .heroCanvas { opacity: 0.8; } }
-@media (min-width: 1025px) { .heroCanvas { opacity: 1; } }
 .heroCopy { position: relative; max-width: 44rem; }
 /* Clickable hot-spot over each signal-field node. */
 .fieldNode {
@@ -412,8 +436,11 @@
   cursor: pointer;
 }
 .fieldNode:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 1279px) { .fieldNode { width: 64px; height: 72px; border-radius: 14px; transform: translate(-50%, -38%); } }
 .h1Line { display: block; }
 .heroChips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+/* Below 1280px the node panel under the copy is the product switcher. */
+@media (max-width: 1279px) { .heroChips { display: none; } }
 .heroChip {
   --chip: var(--accent);
   display: inline-flex;
@@ -440,7 +467,7 @@
 .heroChipHost { font-size: 10px; font-weight: 400; color: var(--faint); }
 @media (max-width: 767px) { .heroChipHost { display: none; } }
 .heroHint { margin: 22px 0 0; font-size: 11px; letter-spacing: 0.04em; color: var(--faint); }
-@media (hover: none) { .heroHint { display: none; } }
+@media (hover: none), (max-width: 1279px) { .heroHint { display: none; } }
 .pill {
   display: inline-flex;
   align-items: center;
@@ -453,6 +480,7 @@
   font-size: 10px;
   letter-spacing: 0.22em;
 }
+@media (max-width: 767px) { .pill { font-size: 9px; letter-spacing: 0.14em; } }
 .pillDot { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .h1 {
   margin: 22px 0 0;
@@ -497,9 +525,11 @@
 .btnGhost:hover { color: var(--text); border-color: rgba(255, 255, 255, 0.34); }
 .btnPrimary:active, .btnGhost:active { transform: translateY(1px); }
 
-.facts { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 32px; }
+.facts { display: flex; flex-wrap: wrap; gap: 20px 28px; margin-top: 32px; }
+@media (max-width: 767px) { .facts { flex-wrap: nowrap; justify-content: space-between; gap: 12px; margin-top: 28px; } }
 .factValue { font-family: var(--font-serif), Georgia, serif; font-size: 30px; line-height: 1; }
 .factLabel { margin-top: 8px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); }
+@media (max-width: 767px) { .factLabel { font-size: 9px; letter-spacing: 0.12em; } }
 
 /* Glass panel (hero index + general) */
 .glass {

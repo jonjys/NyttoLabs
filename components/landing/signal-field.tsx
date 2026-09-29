@@ -16,11 +16,31 @@ export interface FieldNode {
   href: string
 }
 
+/**
+ * Layout mode. "overlay": wide screens, the field sits behind the hero with
+ * nodes on an arc to the right of the copy. "band": below 1280px the field is
+ * its own panel under the copy (see .heroCanvas in the CSS) with nodes in a row.
+ * Must match the CSS breakpoint.
+ */
+export const OVERLAY_QUERY = '(min-width: 1280px)'
+
+type Layout = 'overlay' | 'row' | 'grid'
+
+function layoutFor(canvasWidth: number): Layout {
+  if (window.matchMedia(OVERLAY_QUERY).matches) return 'overlay'
+  // Narrow panels (phones) use a 2x2 grid so labels never collide.
+  return canvasWidth < 560 ? 'grid' : 'row'
+}
+
 /** Node position as fractions of the canvas size (shared by canvas and links). */
-function nodeFrac(i: number, count: number, narrow: boolean): { x: number; y: number } {
-  // A gentle arc on the right; on narrow canvases a tight column along the right edge.
+function nodeFrac(i: number, count: number, layout: Layout): { x: number; y: number } {
   const f = count === 1 ? 0.5 : i / (count - 1)
-  if (narrow) return { x: 0.9 - Math.sin(f * Math.PI) * 0.04, y: 0.12 + f * 0.5 }
+  if (layout === 'grid') {
+    const cols = 2
+    const rows = Math.ceil(count / cols)
+    return { x: 0.27 + (i % cols) * 0.46, y: 0.3 + (rows > 1 ? Math.floor(i / cols) / (rows - 1) : 0.2) * 0.42 }
+  }
+  if (layout === 'row') return { x: 0.14 + f * 0.72, y: 0.46 }
   return { x: 0.9 - Math.sin(f * Math.PI) * 0.1, y: 0.16 + f * 0.68 }
 }
 
@@ -49,7 +69,7 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
   nodesRef.current = nodes
   const hoverRef = useRef<number | null>(null)
   const burstRef = useRef<((i: number) => void) | null>(null)
-  const [narrow, setNarrow] = useState(false)
+  const [layout, setLayout] = useState<Layout>('overlay')
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -59,6 +79,8 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let width = 0
+    let mode: Layout = layoutFor(canvas.getBoundingClientRect().width)
+    let isBand = mode !== 'overlay'
     let height = 0
     let dpr = 1
     let raf = 0
@@ -70,7 +92,7 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
     const hits: number[] = []
 
     const nodePos = (i: number, count: number) => {
-      const f = nodeFrac(i, count, width < 768)
+      const f = nodeFrac(i, count, mode)
       return { x: width * f.x, y: height * f.y }
     }
 
@@ -82,7 +104,9 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
       canvas.width = Math.max(1, Math.round(width * dpr))
       canvas.height = Math.max(1, Math.round(height * dpr))
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      setNarrow(width < 768)
+      mode = layoutFor(width)
+      isBand = mode !== 'overlay'
+      setLayout(mode)
     }
 
     const spawn = (from?: { x: number; y: number }, target?: number) => {
@@ -92,6 +116,8 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
         ? from
         : pointer.active
         ? pointer
+        : isBand
+        ? { x: width * (0.5 + Math.sin(t * 0.0007) * 0.35), y: height * (0.9 + Math.cos(t * 0.0011) * 0.05) }
         : { x: width * (0.66 + Math.sin(t * 0.0006) * 0.08), y: height * (0.5 + Math.cos(t * 0.0009) * 0.3) }
       const angle = Math.random() * Math.PI * 2
       const speed = 0.6 + Math.random() * 1.4
@@ -143,8 +169,11 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
         ctx.beginPath()
         ctx.arc(p.x, p.y, radius + 6 + hover * 4, 0, Math.PI * 2)
         ctx.stroke()
-        if (width >= 768) {
-          ctx.fillStyle = hover ? `rgb(${r},${g},${b})` : 'rgba(255,255,255,0.55)'
+        ctx.fillStyle = hover ? `rgb(${r},${g},${b})` : 'rgba(255,255,255,0.6)'
+        if (isBand) {
+          ctx.textAlign = 'center'
+          ctx.fillText(node.label.toUpperCase(), p.x, p.y + 30)
+        } else {
           ctx.textAlign = 'right'
           ctx.fillText(node.label.toUpperCase(), p.x - 18, p.y)
         }
@@ -291,10 +320,9 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
   return (
     <>
       <canvas ref={canvasRef} aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
-      {/* Real links over the canvas nodes (desktop/tablet; mobile uses the hero chips). */}
-      {!narrow &&
-        nodes.map((node, i) => {
-          const f = nodeFrac(i, nodes.length, false)
+      {/* Real links over the canvas nodes, so they work by mouse, touch and keyboard. */}
+      {nodes.map((node, i) => {
+          const f = nodeFrac(i, nodes.length, layout)
           return (
             <a
               key={node.href}
@@ -303,6 +331,7 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
               style={{ left: `${f.x * 100}%`, top: `${f.y * 100}%` }}
               aria-label={`Jump to ${node.label}`}
               title={node.label}
+              onPointerDown={() => (hoverRef.current = i)}
               onMouseEnter={() => (hoverRef.current = i)}
               onMouseLeave={() => (hoverRef.current = null)}
               onFocus={() => (hoverRef.current = i)}
