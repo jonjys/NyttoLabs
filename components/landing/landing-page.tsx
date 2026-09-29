@@ -6,6 +6,12 @@ import { usePublicProducts } from '@/hooks/use-public-catalog'
 import SiteFooter from '@/components/site/footer'
 import BentoGrid from './bento-grid'
 import CommandPalette from './command-palette'
+import DecodeText from './decode-text'
+import { ExplorerProvider, useExplorer } from './explorer'
+import ExplorerHud from './explorer-hud'
+import RelayPlayground from './relay-playground'
+import ShortcutsDialog from './shortcuts-dialog'
+import SignalField from './signal-field'
 import { copyText } from './clipboard'
 import { MobileDrawer, Sidebar } from './sidebar'
 import {
@@ -15,7 +21,6 @@ import {
   NAV_SECTIONS,
   PRODUCT_ACCENTS,
   PRODUCT_ANCHORS,
-  RELAY_LOG,
   RESOLVE_CURL,
   SITE_ROUTES,
   STEPS,
@@ -88,6 +93,19 @@ function useActiveSection(): string {
 }
 
 export default function LandingPage() {
+  return (
+    <ExplorerProvider>
+      <Landing />
+    </ExplorerProvider>
+  )
+}
+
+function isTypingTarget(el: EventTarget | null): boolean {
+  if (!(el instanceof HTMLElement)) return false
+  return el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)
+}
+
+function Landing() {
   // Catalog module is plain JS; narrow its inferred type to the documented shape.
   const allProducts = usePublicProducts() as ReadonlyArray<PublicProduct | null>
   const products = useMemo(
@@ -98,6 +116,8 @@ export default function LandingPage() {
   const [collapsed, setCollapsed] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
+  const { complete } = useExplorer()
   const [toast, setToast] = useState<string | null>(null)
   const [shortcut, setShortcut] = useState('⌘K')
   const barRef = useRef<HTMLDivElement>(null)
@@ -125,18 +145,41 @@ export default function LandingPage() {
     })
   }, [])
 
-  // Global Cmd/Ctrl+K toggle.
+  // Global keys: Cmd/Ctrl+K palette; plain keys (when not typing and no overlay
+  // is open) jump to sections, R opens the playground, ? the keyboard map.
+  const overlayOpen = paletteOpen || shortcutsOpen || menuOpen
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         setMenuOpen(false)
+        setShortcutsOpen(false)
         setPaletteOpen((v) => !v)
+        return
       }
+      if (e.metaKey || e.ctrlKey || e.altKey || overlayOpen || isTypingTarget(e.target)) return
+      if (e.key === '?') {
+        e.preventDefault()
+        setShortcutsOpen(true)
+        return
+      }
+      if (e.key === 'r' || e.key === 'R') {
+        jumpTo('#relay')
+        return
+      }
+      const section = NAV_SECTIONS.find((n) => String(Number(n.num)) === e.key)
+      if (section) jumpTo(section.href)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [overlayOpen])
+
+  useEffect(() => {
+    if (paletteOpen) complete('palette')
+  }, [paletteOpen, complete])
+  useEffect(() => {
+    if (shortcutsOpen) complete('shortcuts')
+  }, [shortcutsOpen, complete])
 
   // Close the mobile drawer when resizing up to the sidebar layout.
   useEffect(() => {
@@ -223,10 +266,19 @@ export default function LandingPage() {
         },
       })),
     ]
-    return [...jump, ...copies, ...opens]
+    const extras: Command[] = [
+      { id: 'jump-playground', group: 'Jump to', label: 'Relay playground — route an intent', hint: 'R', keywords: 'simulate resolve demo', run: () => jumpTo('#relay') },
+      { id: 'open-shortcuts', group: 'Open', label: 'Keyboard map', hint: '?', keywords: 'shortcuts keys help', run: () => setShortcutsOpen(true) },
+    ]
+    return [...jump, ...extras.slice(0, 1), ...copies, ...opens, ...extras.slice(1)]
   }, [copy, products])
 
   const closePalette = useCallback(() => setPaletteOpen(false), [])
+  const closeShortcuts = useCallback(() => setShortcutsOpen(false), [])
+  const fieldNodes = useMemo(
+    () => products.map((p) => ({ label: p.name, color: PRODUCT_ACCENTS[p.slug] ?? '#00f5ff' })),
+    [products],
+  )
   const closeMenu = useCallback(() => setMenuOpen(false), [])
 
   const facts = [
@@ -273,6 +325,7 @@ export default function LandingPage() {
             <span className={s.searchLabel}>Search or jump to…</span>
             <kbd className={s.kbd}>{shortcut}</kbd>
           </button>
+          <ExplorerHud notify={notify} />
           <a href={HELLO_HREF} className={s.headerCta}>
             Get in touch
           </a>
@@ -284,13 +337,18 @@ export default function LandingPage() {
           <main id="top" className={`${s.content} ${s.anchor}`}>
             {/* 00 · Studio overview */}
             <section className={s.hero} aria-labelledby="hero-title">
-              <div>
+              <div className={s.heroCanvas}>
+                <SignalField nodes={fieldNodes} />
+              </div>
+              <div className={s.heroCopy}>
                 <span className={`${s.pill} ${s.mono}`}>
                   <span className={s.pillDot} aria-hidden="true" />
                   SWEDISH SOFTWARE COMPANY · F-TAX APPROVED
                 </span>
                 <h1 id="hero-title" className={s.h1}>
-                  Focused software.
+                  <span className={s.h1Line}>
+                    <DecodeText text="Focused software." />
+                  </span>
                   <span className={s.h1Alt}>Invisible infrastructure.</span>
                 </h1>
                 <p className={s.lede}>
@@ -305,6 +363,23 @@ export default function LandingPage() {
                     How Relay works
                   </a>
                 </div>
+                <nav className={s.heroChips} aria-label="Live products">
+                  {products.map((p) => {
+                    const anchor = PRODUCT_ANCHORS[p.slug] ?? p.slug
+                    return (
+                      <a
+                        key={p.slug}
+                        href={`#${anchor}`}
+                        className={s.heroChip}
+                        style={{ '--chip': PRODUCT_ACCENTS[p.slug] ?? '#00f5ff' } as CSSProperties}
+                      >
+                        <span className={s.heroChipDot} aria-hidden="true" />
+                        {p.name}
+                        <span className={`${s.heroChipHost} ${s.mono}`}>{hostOf(p.url)}</span>
+                      </a>
+                    )
+                  })}
+                </nav>
                 <div className={s.facts}>
                   {facts.map((f) => (
                     <div key={f.label}>
@@ -313,37 +388,10 @@ export default function LandingPage() {
                     </div>
                   ))}
                 </div>
+                <p className={`${s.heroHint} ${s.mono}`} aria-hidden="true">
+                  ↳ move your cursor — every particle is an intent being routed · press ? for keys
+                </p>
               </div>
-
-              <nav className={s.glass} aria-label="Live products">
-                <div className={`${s.indexHead} ${s.mono}`}>
-                  <span>LIVE PRODUCTS</span>
-                  <span>{products.length} / {products.length}</span>
-                </div>
-                <ul className={s.indexList}>
-                  {products.map((p) => {
-                    const anchor = PRODUCT_ANCHORS[p.slug] ?? p.slug
-                    const num = NAV_SECTIONS.find((n) => n.href === `#${anchor}`)?.num ?? '··'
-                    return (
-                      <li key={p.slug}>
-                        <a href={`#${anchor}`} className={s.indexRow}>
-                          <span className={`${s.sideNum} ${s.mono}`}>{num}</span>
-                          <span style={{ minWidth: 0 }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <span className={s.swatch} style={{ background: PRODUCT_ACCENTS[p.slug] ?? '#00f5ff' }} aria-hidden="true" />
-                              <span className={s.indexName}>{p.name}</span>
-                            </span>
-                            <span className={s.indexMeta} style={{ display: 'block' }}>
-                              {p.category} · {hostOf(p.url)}
-                            </span>
-                          </span>
-                          <ArrowRight size={16} className={s.indexArrow} aria-hidden="true" />
-                        </a>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </nav>
             </section>
 
             {/* Products — bento showcase */}
@@ -367,7 +415,7 @@ export default function LandingPage() {
             <section id="relay" className={`${s.section} ${s.anchor}`} aria-labelledby="relay-title">
               <div className={s.relayPanel}>
                 <div>
-                  <div className={`${s.eyebrow} ${s.mono}`}>Relay</div>
+                  <div className={`${s.eyebrow} ${s.mono}`}>Relay · playground</div>
                   <h2 id="relay-title" className={s.h2}>
                     Intent in.{' '}
                     <span className={s.h1Alt} style={{ display: 'inline' }}>
@@ -377,34 +425,11 @@ export default function LandingPage() {
                   <p className={s.sectionLede} style={{ marginTop: 14, maxWidth: '34rem' }}>
                     Products create or detect commercial intent. Relay resolves it deterministically against an
                     allowlist of approved partner destinations, records attribution, and fails closed when no good answer
-                    exists.
+                    exists. Try it — pick an app, an action and a market, and watch the route resolve.
                   </p>
                 </div>
 
-                <div className={s.terminal} style={{ '--tile-accent': '#00f5ff' } as CSSProperties}>
-                  <div className={s.termBar}>
-                    <span className={s.termDot} />
-                    <span className={s.termDot} />
-                    <span className={s.termDot} />
-                    <span className={`${s.termTitle} ${s.mono}`}>RESOLVER · EXAMPLE PAYLOAD</span>
-                  </div>
-                  <pre className={s.code}>
-                    <span className={s.codeComment}>POST /api/resolve</span>
-                    {'\n'}
-                    {'{ "app": "cycletag", "action": "reorder", "country": "SE" }'}
-                    {'\n'}
-                    <span className={s.codeOk}>200 OK</span>
-                    {' · { "click_id": "c_8f3a…", "fallback": false }'}
-                  </pre>
-                  <ul className={`${s.log} ${s.mono}`}>
-                    {RELAY_LOG.map((row) => (
-                      <li key={row.tag}>
-                        <span className={s.logTag}>{row.tag}</span>
-                        {row.text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <RelayPlayground products={products} />
 
                 <div className={s.steps}>
                   {STEPS.map((step) => (
@@ -461,6 +486,7 @@ export default function LandingPage() {
 
       <MobileDrawer open={menuOpen} activeHref={activeHref} onClose={closeMenu} />
       <CommandPalette open={paletteOpen} onClose={closePalette} commands={commands} />
+      <ShortcutsDialog open={shortcutsOpen} onClose={closeShortcuts} paletteKey={shortcut} />
 
       <div className={s.srOnly} role="status" aria-live="polite">
         {toast ?? ''}

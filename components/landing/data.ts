@@ -73,10 +73,3 @@ export const STEPS = [
   { n: '03', title: 'Attribution recorded', body: 'A safe redirect through /go carries a click id; conversions arrive on a signed webhook.' },
   { n: '04', title: 'Or nothing happens', body: 'No approved answer means no redirect. Fail-closed beats a bad recommendation.' },
 ]
-
-export const RELAY_LOG = [
-  { tag: 'RESOLVE', text: 'cycletag · reorder · SE → partner allowlist' },
-  { tag: 'VERIFY', text: 'vatidence · VIES consultation number stored' },
-  { tag: 'DELIVER', text: 'curl-to-buy · file sold, link expires in 24h' },
-  { tag: 'FAIL-CLOSED', text: 'no approved destination → no redirect' },
-]
