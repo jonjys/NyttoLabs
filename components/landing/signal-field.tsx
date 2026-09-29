@@ -38,7 +38,10 @@ function nodeFrac(i: number, count: number, layout: Layout): { x: number; y: num
   if (layout === 'grid') {
     const cols = 2
     const rows = Math.ceil(count / cols)
-    return { x: 0.27 + (i % cols) * 0.46, y: 0.26 + (rows > 1 ? Math.floor(i / cols) / (rows - 1) : 0.4) * 0.52 }
+    const y = 0.26 + (rows > 1 ? Math.floor(i / cols) / (rows - 1) : 0.4) * 0.52
+    // A lone node on the last row is centred instead of hanging on the left.
+    const lone = i === count - 1 && count % cols === 1
+    return { x: lone ? 0.5 : 0.27 + (i % cols) * 0.46, y }
   }
   if (layout === 'row') return { x: 0.14 + f * 0.72, y: 0.46 }
   return { x: 0.9 - Math.sin(f * Math.PI) * 0.1, y: 0.16 + f * 0.68 }

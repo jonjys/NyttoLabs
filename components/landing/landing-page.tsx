@@ -25,6 +25,7 @@ import {
   SITE_ROUTES,
   STEPS,
   endpointUrl,
+  showcaseProducts,
 } from './data'
 import type { Command, PublicProduct } from './types'
 import s from './landing.module.css'
@@ -113,10 +114,10 @@ function isTypingTarget(el: EventTarget | null): boolean {
 function Landing() {
   // Catalog module is plain JS; narrow its inferred type to the documented shape.
   const allProducts = usePublicProducts() as ReadonlyArray<PublicProduct | null>
-  const products = useMemo(
-    () => allProducts.filter((p): p is PublicProduct => !!p && p.status === 'live'),
-    [allProducts],
-  )
+  // `products`: everything shown on the page (live first, then private beta).
+  // `liveCount`: the live counter — only status === 'live' counts.
+  const products = useMemo(() => showcaseProducts(allProducts), [allProducts])
+  const liveCount = products.filter((p) => p.status === 'live').length
 
   const [collapsed, setCollapsed] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -227,7 +228,7 @@ function Landing() {
         hint: item.href,
         run: () => jumpTo(item.href),
       })),
-      { id: 'jump-products', group: 'Jump to', label: 'All live products', hint: '#products', run: () => jumpTo('#products') },
+      { id: 'jump-products', group: 'Jump to', label: 'All products', hint: '#products', run: () => jumpTo('#products') },
       { id: 'jump-relay', group: 'Jump to', label: 'How Relay works', hint: '#relay', run: () => jumpTo('#relay') },
     ]
     const copies: Command[] = [
@@ -291,7 +292,7 @@ function Landing() {
   const closeMenu = useCallback(() => setMenuOpen(false), [])
 
   const facts = [
-    { value: String(products.length), label: 'Live products' },
+    { value: String(liveCount), label: 'Live products' },
     { value: '1', label: 'Routing layer' },
     { value: 'SE', label: 'Built in Sweden' },
   ]
@@ -372,7 +373,7 @@ function Landing() {
                     How Relay works
                   </a>
                 </div>
-                <nav className={s.heroChips} aria-label="Live products">
+                <nav className={s.heroChips} aria-label="Products">
                   {products.map((p) => {
                     const anchor = PRODUCT_ANCHORS[p.slug] ?? p.slug
                     return (
@@ -413,8 +414,8 @@ function Landing() {
                   </h2>
                 </div>
                 <p className={s.sectionLede}>
-                  No bundles, no suite. {countWord(products.length)} live products, each under its own name. Try the demos
-                  below — they run in your browser only.
+                  No bundles, no suite. {countWord(liveCount)} live products, each under its own name. Try the demos below
+                  — they run in your browser only.
                 </p>
               </div>
               <BentoGrid products={products} notify={notify} />

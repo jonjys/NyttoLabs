@@ -1,6 +1,21 @@
-import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
+import { PUBLIC_HELLO_EMAIL, PUBLIC_STATUS_GROUPS } from '@/lib/relay/catalog'
 import { SITE_ORIGIN } from '@/lib/site'
-import type { NavSection } from './types'
+import type { NavSection, PublicProduct } from './types'
+
+// Catalog statuses shown on the landing page, in display order. Only 'live'
+// counts towards the live counter; private-beta products are shown after them.
+const SHOWCASE_STATUSES = ['live', 'private-beta']
+
+export function showcaseProducts(all: ReadonlyArray<PublicProduct | null>): PublicProduct[] {
+  const list = all.filter((p): p is PublicProduct => !!p && SHOWCASE_STATUSES.includes(p.status))
+  return SHOWCASE_STATUSES.flatMap((status) => list.filter((p) => p.status === status))
+}
+
+/** Human label for a catalog status ("Live", "Private beta", …), from the catalog itself. */
+export function statusLabel(status: string): string {
+  const group = (PUBLIC_STATUS_GROUPS as ReadonlyArray<{ key: string; title: string }>).find((g) => g.key === status)
+  return group ? group.title : status
+}
 
 // Sidebar / palette sections. #top, #products, #relay and #partners are the
 // anchors the previous landing page already exposed. The product ids are
@@ -11,9 +26,8 @@ export const NAV_SECTIONS: NavSection[] = [
   { num: '02', label: 'CycleTag', href: '#cycletag' },
   { num: '03', label: 'Vatidence', href: '#vatidence' },
   { num: '04', label: 'Curl-to-Buy', href: '#curl-to-buy' },
-  { num: '05', label: 'LiveProof', href: '#liveproof' },
-  { num: '06', label: 'Failclosed', href: '#failclosed' },
-  { num: '07', label: 'Partners & Contact', href: '#partners' },
+  { num: '05', label: 'Failclosed', href: '#failclosed' },
+  { num: '06', label: 'Partners & Contact', href: '#partners' },
 ]
 
 // Existing site routes (see lib/site.js PUBLIC_ROUTES and components/site/nav.jsx).
@@ -29,7 +43,6 @@ export const PRODUCT_ANCHORS: Record<string, string> = {
   viesproof: 'vatidence',
   'curl-to-buy': 'curl-to-buy',
   deploydoctor: 'deploydoctor',
-  liveproof: 'liveproof',
   failclosed: 'failclosed',
 }
 
@@ -38,7 +51,6 @@ export const PRODUCT_ACCENTS: Record<string, string> = {
   viesproof: '#00f5ff',
   'curl-to-buy': '#ff8a1e',
   deploydoctor: '#b388ff',
-  liveproof: '#ffd84d',
   failclosed: '#ff5c7a',
 }
 

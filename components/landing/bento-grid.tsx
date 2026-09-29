@@ -2,14 +2,13 @@
 
 import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 import { ArrowUpRight } from 'lucide-react'
-import { API_ENDPOINTS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, endpointUrl } from './data'
+import { API_ENDPOINTS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, endpointUrl, statusLabel } from './data'
 import {
   CopyButton,
   CurlToBuyPreview,
   CycleTagPreview,
   DeployDoctorPreview,
   FailclosedPreview,
-  LiveProofPreview,
   VatidencePreview,
 } from './previews'
 import type { PublicProduct } from './types'
@@ -73,7 +72,6 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
   else if (product.slug === 'viesproof') preview = <VatidencePreview productUrl={product.url} />
   else if (product.slug === 'curl-to-buy') preview = <CurlToBuyPreview productUrl={product.url} notify={notify} />
   else if (product.slug === 'deploydoctor') preview = <DeployDoctorPreview />
-  else if (product.slug === 'liveproof') preview = <LiveProofPreview />
   else if (product.slug === 'failclosed') preview = <FailclosedPreview />
 
   return (
@@ -83,8 +81,8 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
         <span style={{ display: 'inline-flex', gap: 6 }}>
           {product.slug === FEATURED && <span className={`${s.status} ${s.statusNew} ${s.mono}`}>New</span>}
           <span className={`${s.status} ${s.mono}`}>
-            <span className={s.statusDot} aria-hidden="true" />
-            Live
+            <span className={product.status === 'live' ? s.statusDot : s.statusDotInvite} aria-hidden="true" />
+            {statusLabel(product.status)}
           </span>
         </span>
       </div>
@@ -108,7 +106,7 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
 
 function RelayTile({ notify }: { notify: Notify }) {
   return (
-    <Tile className={`${s.tileHalf} ${s.tileWide}`} accent="#00f5ff" labelledBy="tile-title-relay">
+    <Tile className={s.tileRelay} accent="#00f5ff" labelledBy="tile-title-relay">
       <div className={s.tileTop}>
         <span className={`${s.tileCat} ${s.mono}`}>Underneath</span>
       </div>

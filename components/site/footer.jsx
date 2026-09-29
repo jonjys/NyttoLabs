@@ -11,13 +11,14 @@ const FOOTER_LABELS = {
   cycletag: 'CycleTag reorder labels',
   viesproof: 'Vatidence VAT checks',
   'curl-to-buy': 'Curl-to-Buy file sales',
-  liveproof: 'LiveProof uptime attestation',
-  failclosed: 'Failclosed access control',
+  failclosed: 'Failclosed inventory sync',
 }
 
 export default function SiteFooter({ accent = '#00f5ff' }) {
   const s = usePublicSettings()
-  const liveProducts = (usePublicProducts() || []).filter((p) => p && p.status === 'live')
+  // Same set and order as the home page: live products, then private beta.
+  const all = (usePublicProducts() || []).filter(Boolean)
+  const listedProducts = ['live', 'private-beta'].flatMap((status) => all.filter((p) => p.status === status))
   const helloEmail = s.helloEmail || PUBLIC_HELLO_EMAIL
 
   const linkCls = 'inline-flex min-h-8 items-center transition-colors duration-200 hover:text-white'
@@ -67,7 +68,7 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
               Products
             </div>
             <ul className="mt-4 space-y-1.5 text-sm" style={muted}>
-              {liveProducts.map((p) => {
+              {listedProducts.map((p) => {
                 const label = FOOTER_LABELS[p.slug] || p.name
                 return (
                   <li key={p.slug}>

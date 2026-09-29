@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, Check } from 'lucide-react'
 import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { useLocale } from '@/hooks/use-locale'
+import { PUBLIC_STATUS_GROUPS, seedApplications } from '@/lib/relay/catalog'
 
 const accent = ACCENT.products
 
@@ -17,15 +18,16 @@ const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
 const DEPLOYDOCTOR = 'https://deploydoctor.nyttolabs.com/'
 const DEPLOYDOCTOR_PRICING = 'https://deploydoctor.nyttolabs.com/pricing'
-// Failclosed's domain comes from the catalog (lib/relay/catalog.js). LiveProof
-// has no public domain in the repo yet, so its card renders without a link.
+// Failclosed's domain and status come from the catalog (lib/relay/catalog.js).
 const FAILCLOSED = 'https://failclosed.nyttolabs.com/'
+const FAILCLOSED_STATUS =
+  PUBLIC_STATUS_GROUPS.find((g) => g.key === seedApplications().find((a) => a.slug === 'failclosed')?.status)?.title || ''
 
 const COPY = {
   en: {
     eyebrow: 'Products · Swedish software · F-tax',
-    hero: 'Six live products.',
-    lede: 'DeployDoctor, CycleTag, Vatidence, Curl-to-Buy, LiveProof and Failclosed. Focused products, live now — not a roadmap.',
+    hero: 'Four live products.',
+    lede: 'DeployDoctor, CycleTag, Vatidence and Curl-to-Buy — live now, not a roadmap. Failclosed is invite-only while we onboard merchants.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
     cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
     cyclePrice: '$5',
@@ -52,10 +54,9 @@ const COPY = {
     ddPay: 'Scan a repository',
     ddPricing: 'See pricing',
     ddFree: 'Free — 3 scans a day',
-    liveBody: 'Continuous uptime attestation with a signed, timestamped trail.',
-    liveFeatures: ['Continuous uptime checks', 'Signed, timestamped trail'],
-    failBody: 'Access control that defaults to denied the instant any part of the check is uncertain.',
-    failFeatures: ['Denied by default', 'Any uncertain signal means deny'],
+    failBody: 'Inventory sync that repairs the difference between two systems automatically — and refuses to write when the data looks wrong.',
+    failFeatures: ['Repairs the difference automatically', 'Refuses to write on bad data', 'Invite-only'],
+    failCategory: 'Inventory sync',
     failVisit: 'Visit Failclosed',
     partnerTitle: 'Work with Nytto Labs',
     partnerBody: 'Partnerships and general questions go to the same inbox. You keep checkout, payment and fulfilment.',
@@ -63,8 +64,8 @@ const COPY = {
   },
   sv: {
     eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
-    hero: 'Sex produkter, live nu.',
-    lede: 'DeployDoctor, CycleTag, Vatidence, Curl-to-Buy, LiveProof och Failclosed. Fokuserade produkter, live nu — ingen roadmap.',
+    hero: 'Fyra produkter, live nu.',
+    lede: 'DeployDoctor, CycleTag, Vatidence och Curl-to-Buy — live nu, ingen roadmap. Failclosed är endast på inbjudan medan vi tar in handlare.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter.',
     cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
     cyclePrice: '49 kr',
@@ -91,10 +92,9 @@ const COPY = {
     ddPay: 'Skanna ett repo',
     ddPricing: 'Se priser',
     ddFree: 'Gratis — 3 skanningar per dag',
-    liveBody: 'Kontinuerlig attestering av drifttid med ett signerat, tidsstämplat spår.',
-    liveFeatures: ['Kontinuerliga drifttidskontroller', 'Signerat, tidsstämplat spår'],
-    failBody: 'Åtkomstkontroll som nekar direkt så fort någon del av kontrollen är osäker.',
-    failFeatures: ['Nekad som standard', 'Minsta osäkerhet ger nekad'],
+    failBody: 'Lagersynk som automatiskt reparerar skillnaden mellan två system — och vägrar skriva när datan ser fel ut.',
+    failFeatures: ['Reparerar skillnaden automatiskt', 'Vägrar skriva vid felaktig data', 'Endast på inbjudan'],
+    failCategory: 'Lagersynk',
     failVisit: 'Besök Failclosed',
     partnerTitle: 'Samarbeta med Nytto Labs',
     partnerBody: 'Partnerskap och allmänna frågor går till samma inkorg. Ni behåller kassa, betalning och leverans.',
@@ -250,13 +250,8 @@ export default function ProductsView() {
             }
           />
           <PayCard
-            name="LiveProof"
-            body={t.liveBody}
-            features={t.liveFeatures}
-            actions={null}
-          />
-          <PayCard
             name="Failclosed"
+            note={`${FAILCLOSED_STATUS} · ${t.failCategory}`}
             body={t.failBody}
             features={t.failFeatures}
             actions={

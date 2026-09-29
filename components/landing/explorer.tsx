@@ -18,8 +18,7 @@ export type MissionId =
   | 'check-vat'
   | 'curl-flow'
   | 'deploy-scan'
-  | 'liveproof-verify'
-  | 'failclosed-deny'
+  | 'failclosed-refuse'
   | 'route-intent'
   | 'palette'
   | 'shortcuts'
@@ -30,8 +29,7 @@ export const MISSIONS: Mission[] = [
   { id: 'scan-label', label: 'Scan a CycleTag label', hint: 'Simulate a scan on the CycleTag tile', href: '#cycletag' },
   { id: 'check-vat', label: 'Verify a VAT number', hint: 'Check a number in the Vatidence demo', href: '#vatidence' },
   { id: 'curl-flow', label: 'Walk a Curl-to-Buy sale', hint: 'Step through the sale or copy the snippet', href: '#curl-to-buy' },
-  { id: 'liveproof-verify', label: 'Verify a LiveProof trail', hint: 'Verify the chain, then tamper with it', href: '#liveproof' },
-  { id: 'failclosed-deny', label: 'Get denied by Failclosed', hint: 'Make one signal uncertain', href: '#failclosed' },
+  { id: 'failclosed-refuse', label: 'Watch Failclosed refuse a write', hint: 'Run the empty-warehouse case', href: '#failclosed' },
   { id: 'palette', label: 'Open the command palette', hint: 'Press ⌘K / Ctrl K', href: '#top' },
   { id: 'shortcuts', label: 'Find the keyboard map', hint: 'Press ?', href: '#top' },
 ]
