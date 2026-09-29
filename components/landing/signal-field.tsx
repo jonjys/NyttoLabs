@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import s from './landing.module.css'
 
 // Hero background: "intent" particles stream from the pointer (or a drifting
 // source when there is no pointer) and get routed to one node per product —
@@ -11,6 +12,16 @@ import { useEffect, useRef } from 'react'
 export interface FieldNode {
   label: string
   color: string
+  /** In-page anchor the node links to. */
+  href: string
+}
+
+/** Node position as fractions of the canvas size (shared by canvas and links). */
+function nodeFrac(i: number, count: number, narrow: boolean): { x: number; y: number } {
+  // A gentle arc on the right; on narrow canvases a tight column along the right edge.
+  const f = count === 1 ? 0.5 : i / (count - 1)
+  if (narrow) return { x: 0.9 - Math.sin(f * Math.PI) * 0.04, y: 0.12 + f * 0.5 }
+  return { x: 0.9 - Math.sin(f * Math.PI) * 0.1, y: 0.16 + f * 0.68 }
 }
 
 interface Particle {
@@ -36,6 +47,9 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const nodesRef = useRef(nodes)
   nodesRef.current = nodes
+  const hoverRef = useRef<number | null>(null)
+  const burstRef = useRef<((i: number) => void) | null>(null)
+  const [narrow, setNarrow] = useState(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -56,11 +70,8 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
     const hits: number[] = []
 
     const nodePos = (i: number, count: number) => {
-      // Nodes sit on a gentle arc on the right; on narrow screens a tight
-      // column along the right edge so they stay clear of the text.
-      const f = count === 1 ? 0.5 : i / (count - 1)
-      if (width < 768) return { x: width * (0.9 - Math.sin(f * Math.PI) * 0.04), y: height * (0.12 + f * 0.5) }
-      return { x: width * (0.9 - Math.sin(f * Math.PI) * 0.1), y: height * (0.16 + f * 0.68) }
+      const f = nodeFrac(i, count, width < 768)
+      return { x: width * f.x, y: height * f.y }
     }
 
     const resize = () => {
@@ -71,12 +82,15 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
       canvas.width = Math.max(1, Math.round(width * dpr))
       canvas.height = Math.max(1, Math.round(height * dpr))
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      setNarrow(width < 768)
     }
 
-    const spawn = () => {
+    const spawn = (from?: { x: number; y: number }, target?: number) => {
       const count = nodesRef.current.length
       if (!count) return
-      const src = pointer.active
+      const src = from
+        ? from
+        : pointer.active
         ? pointer
         : { x: width * (0.66 + Math.sin(t * 0.0006) * 0.08), y: height * (0.5 + Math.cos(t * 0.0009) * 0.3) }
       const angle = Math.random() * Math.PI * 2
@@ -86,7 +100,7 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
         y: src.y + (Math.random() - 0.5) * 24,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        target: Math.floor(Math.random() * count),
+        target: target ?? Math.floor(Math.random() * count),
         life: 0,
         trail: [],
       })
@@ -112,7 +126,8 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
         const p = nodePos(i, list.length)
         const [r, g, b] = hexToRgb(node.color)
         const pulse = hits[i] ?? 0
-        const radius = 5 + pulse * 6
+        const hover = hoverRef.current === i ? 1 : 0
+        const radius = 5 + pulse * 6 + hover * 3
         const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 34 + pulse * 20)
         glow.addColorStop(0, `rgba(${r},${g},${b},${0.28 + pulse * 0.3})`)
         glow.addColorStop(1, `rgba(${r},${g},${b},0)`)
@@ -126,10 +141,10 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
         ctx.fill()
         ctx.strokeStyle = `rgba(${r},${g},${b},0.5)`
         ctx.beginPath()
-        ctx.arc(p.x, p.y, radius + 6, 0, Math.PI * 2)
+        ctx.arc(p.x, p.y, radius + 6 + hover * 4, 0, Math.PI * 2)
         ctx.stroke()
         if (width >= 768) {
-          ctx.fillStyle = 'rgba(255,255,255,0.55)'
+          ctx.fillStyle = hover ? `rgb(${r},${g},${b})` : 'rgba(255,255,255,0.55)'
           ctx.textAlign = 'right'
           ctx.fillText(node.label.toUpperCase(), p.x - 18, p.y)
         }
@@ -214,6 +229,20 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
     }
     const onVisibility = () => (document.hidden ? stop() : start())
 
+    // Clicking a node: a burst of intents converges on it.
+    burstRef.current = (i: number) => {
+      hits[i] = 1
+      const p = nodePos(i, nodesRef.current.length)
+      for (let k = 0; k < 28; k += 1) {
+        const a = (k / 28) * Math.PI * 2
+        spawn({ x: p.x + Math.cos(a) * 90, y: p.y + Math.sin(a) * 90 }, i)
+      }
+      if (reduced) {
+        for (let k = 0; k < 30; k += 1) step()
+        draw()
+      }
+    }
+
     resize()
     if (reduced) {
       // One static frame: routes drawn as settled particles.
@@ -248,5 +277,40 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
     }
   }, [])
 
-  return <canvas ref={canvasRef} aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+  const onNodeClick = (e: MouseEvent<HTMLAnchorElement>, i: number, href: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
+    burstRef.current?.(i)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    // Let the burst land before scrolling to the product.
+    e.preventDefault()
+    window.setTimeout(() => {
+      window.location.hash = href
+    }, 220)
+  }
+
+  return (
+    <>
+      <canvas ref={canvasRef} aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+      {/* Real links over the canvas nodes (desktop/tablet; mobile uses the hero chips). */}
+      {!narrow &&
+        nodes.map((node, i) => {
+          const f = nodeFrac(i, nodes.length, false)
+          return (
+            <a
+              key={node.href}
+              href={node.href}
+              className={s.fieldNode}
+              style={{ left: `${f.x * 100}%`, top: `${f.y * 100}%` }}
+              aria-label={`Jump to ${node.label}`}
+              title={node.label}
+              onMouseEnter={() => (hoverRef.current = i)}
+              onMouseLeave={() => (hoverRef.current = null)}
+              onFocus={() => (hoverRef.current = i)}
+              onBlur={() => (hoverRef.current = null)}
+              onClick={(e) => onNodeClick(e, i, node.href)}
+            />
+          )
+        })}
+    </>
+  )
 }

@@ -276,7 +276,12 @@ function Landing() {
   const closePalette = useCallback(() => setPaletteOpen(false), [])
   const closeShortcuts = useCallback(() => setShortcutsOpen(false), [])
   const fieldNodes = useMemo(
-    () => products.map((p) => ({ label: p.name, color: PRODUCT_ACCENTS[p.slug] ?? '#00f5ff' })),
+    () =>
+      products.map((p) => ({
+        label: p.name,
+        color: PRODUCT_ACCENTS[p.slug] ?? '#00f5ff',
+        href: `#${PRODUCT_ANCHORS[p.slug] ?? p.slug}`,
+      })),
     [products],
   )
   const closeMenu = useCallback(() => setMenuOpen(false), [])
