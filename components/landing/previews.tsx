@@ -3,6 +3,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Check, Copy } from 'lucide-react'
 import { copyText } from './clipboard'
+import { useExplorer } from './explorer'
 import s from './landing.module.css'
 
 // Every preview in this file is self-contained and client-side only.
@@ -23,10 +24,28 @@ function useCopy(notify: Notify) {
   return { copied, copy }
 }
 
-export function CopyButton({ text, label, notify }: { text: string; label: string; notify: Notify }) {
+export function CopyButton({
+  text,
+  label,
+  notify,
+  onCopied,
+}: {
+  text: string
+  label: string
+  notify: Notify
+  onCopied?: () => void
+}) {
   const { copied, copy } = useCopy(notify)
   return (
-    <button type="button" className={s.copyBtn} onClick={() => copy(text, label)} aria-label={`Copy ${label}`}>
+    <button
+      type="button"
+      className={s.copyBtn}
+      onClick={() => {
+        void copy(text, label)
+        onCopied?.()
+      }}
+      aria-label={`Copy ${label}`}
+    >
       {copied ? <Check size={12} aria-hidden="true" /> : <Copy size={12} aria-hidden="true" />}
       {copied ? 'Copied' : 'Copy'}
     </button>
@@ -73,6 +92,7 @@ const DEMO_LABEL = {
 export function CycleTagPreview() {
   const cells = useMemo(demoQrCells, [])
   const [scanned, setScanned] = useState(false)
+  const { complete } = useExplorer()
 
   return (
     <div className={s.preview}>
@@ -92,7 +112,15 @@ export function CycleTagPreview() {
         </div>
       </div>
       <div className={s.scanRow}>
-        <button type="button" className={s.miniBtn} onClick={() => setScanned((v) => !v)} aria-pressed={scanned}>
+        <button
+          type="button"
+          className={s.miniBtn}
+          onClick={() => {
+            setScanned((v) => !v)
+            complete('scan-label')
+          }}
+          aria-pressed={scanned}
+        >
           {scanned ? 'Reset' : 'Simulate a scan'}
         </button>
       </div>
@@ -134,14 +162,20 @@ function checkDemoVat(raw: string): VatOutcome {
 export function VatidencePreview({ productUrl }: { productUrl: string }) {
   const [value, setValue] = useState('')
   const [result, setResult] = useState<VatOutcome | null>(null)
+  const { complete } = useExplorer()
 
+  const check = (v: string) => {
+    const outcome = checkDemoVat(v)
+    setResult(outcome)
+    if (outcome.state === 'valid' || outcome.state === 'invalid') complete('check-vat')
+  }
   const submit = (e: FormEvent) => {
     e.preventDefault()
-    setResult(checkDemoVat(value))
+    check(value)
   }
   const tryValue = (v: string) => {
     setValue(v)
-    setResult(checkDemoVat(v))
+    check(v)
   }
 
   return (
@@ -220,6 +254,7 @@ const CURL_FLOW = [
 
 export function CurlToBuyPreview({ productUrl, notify }: { productUrl: string; notify: Notify }) {
   const [step, setStep] = useState(0)
+  const { complete } = useExplorer()
   // Static snippet: a HEAD request to the product's existing public URL.
   const snippet = `curl -sI ${productUrl}`
 
@@ -231,7 +266,7 @@ export function CurlToBuyPreview({ productUrl, notify }: { productUrl: string; n
           <span className={s.termDot} />
           <span className={s.termDot} />
           <span className={`${s.termTitle} ${s.mono}`}>TERMINAL</span>
-          <CopyButton text={snippet} label="curl snippet" notify={notify} />
+          <CopyButton text={snippet} label="curl snippet" notify={notify} onCopied={() => complete('curl-flow')} />
         </div>
         <pre className={s.code}>
           <span className={s.codePrompt}>$ </span>
@@ -252,7 +287,10 @@ export function CurlToBuyPreview({ productUrl, notify }: { productUrl: string; n
             <button
               type="button"
               className={`${s.flowStep} ${i === step ? s.flowStepOn : ''}`}
-              onClick={() => setStep(i)}
+              onClick={() => {
+                setStep(i)
+                if (i === CURL_FLOW.length - 1) complete('curl-flow')
+              }}
               aria-pressed={i === step}
               style={{ width: '100%' }}
             >
@@ -262,6 +300,67 @@ export function CurlToBuyPreview({ productUrl, notify }: { productUrl: string; n
           </li>
         ))}
       </ol>
+    </div>
+  )
+}
+
+/* ---------------------------- DeployDoctor ---------------------------- */
+
+type ScanState = 'pass' | 'fail' | 'warn'
+
+// Demo data — check names come from deploydoctor.nyttolabs.com; the repo and
+// every result below are illustrative. Nothing is scanned from this page.
+const DEMO_REPO = 'github.com/example/shop'
+const DEMO_SCAN: { check: string; state: ScanState; note: string }[] = [
+  { check: 'Next.js entrypoint', state: 'pass', note: 'app/ router detected' },
+  { check: 'Broken imports', state: 'fail', note: 'case mismatch: ./Components/Header' },
+  { check: 'Vercel-incompatible server code', state: 'pass', note: 'no long-running server found' },
+  { check: 'Environment variables', state: 'warn', note: 'DATABASE_URL used but not documented' },
+]
+
+const SCAN_ICON: Record<ScanState, string> = { pass: '✓', fail: '✕', warn: '!' }
+
+export function DeployDoctorPreview() {
+  const [scanned, setScanned] = useState(false)
+  const { complete } = useExplorer()
+  const iconClass: Record<ScanState, string> = { pass: s.scanPass, fail: s.scanFail, warn: s.scanWarn }
+
+  return (
+    <div className={s.preview}>
+      <span className={`${s.demoTag} ${s.mono}`}>DEMO</span>
+      <div className={`${s.previewLabel} ${s.mono}`}>Public GitHub repository</div>
+      <div className={s.vatForm}>
+        <span className={`${s.scanRepo} ${s.mono}`}>{DEMO_REPO}</span>
+        <button
+          type="button"
+          className={s.miniBtn}
+          onClick={() => {
+            setScanned((v) => !v)
+            complete('deploy-scan')
+          }}
+          aria-pressed={scanned}
+        >
+          {scanned ? 'Reset' : 'Run demo scan'}
+        </button>
+      </div>
+      <div aria-live="polite">
+        {scanned && (
+          <ul className={s.scanList}>
+            {DEMO_SCAN.map((row) => (
+              <li key={row.check} className={s.scanItem}>
+                <span className={`${iconClass[row.state]} ${s.mono}`} aria-hidden="true">
+                  {SCAN_ICON[row.state]}
+                </span>
+                <span>
+                  <strong>{row.check}</strong> <span className={s.srOnly}>({row.state})</span>
+                  <br />
+                  <span className={s.mono}>{row.note}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   )
 }

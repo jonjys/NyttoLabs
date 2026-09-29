@@ -3,7 +3,7 @@
 import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { API_ENDPOINTS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, endpointUrl } from './data'
-import { CopyButton, CurlToBuyPreview, CycleTagPreview, VatidencePreview } from './previews'
+import { CopyButton, CurlToBuyPreview, CycleTagPreview, DeployDoctorPreview, VatidencePreview } from './previews'
 import type { PublicProduct } from './types'
 import s from './landing.module.css'
 
@@ -51,6 +51,7 @@ const TILE_CLASS: Record<string, string> = {
   cycletag: s.tileCycletag,
   viesproof: s.tileVatidence,
   'curl-to-buy': `${s.tileCurl} ${s.tileWide}`,
+  deploydoctor: `${s.tileDeploy} ${s.tileWide}`,
 }
 
 function ProductTile({ product, notify }: { product: PublicProduct; notify: Notify }) {
@@ -62,6 +63,7 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
   if (product.slug === 'cycletag') preview = <CycleTagPreview />
   else if (product.slug === 'viesproof') preview = <VatidencePreview productUrl={product.url} />
   else if (product.slug === 'curl-to-buy') preview = <CurlToBuyPreview productUrl={product.url} notify={notify} />
+  else if (product.slug === 'deploydoctor') preview = <DeployDoctorPreview />
 
   return (
     <Tile id={anchor} className={TILE_CLASS[product.slug] ?? ''} accent={accent} labelledBy={titleId}>
