@@ -364,3 +364,132 @@ export function DeployDoctorPreview() {
     </div>
   )
 }
+
+/* ------------------------------ LiveProof ----------------------------- */
+
+// Demo data — an illustrative attestation trail. Each record carries the hash
+// of the previous one; nothing here is fetched or signed for real.
+const DEMO_TRAIL = [
+  { at: '09:00:00Z', status: 200, ms: 84, hash: '7f3a91c2', prev: '00000000' },
+  { at: '09:01:00Z', status: 200, ms: 91, hash: 'c04be817', prev: '7f3a91c2' },
+  { at: '09:02:00Z', status: 200, ms: 88, hash: '5d2e6f40', prev: 'c04be817' },
+  { at: '09:03:00Z', status: 200, ms: 79, hash: 'a91f03bd', prev: '5d2e6f40' },
+]
+
+export function LiveProofPreview() {
+  const [tampered, setTampered] = useState(false)
+  const [verdict, setVerdict] = useState<null | { ok: boolean; text: string }>(null)
+  const { complete } = useExplorer()
+  const rows = tampered ? DEMO_TRAIL.map((r, i) => (i === 2 ? { ...r, status: 503 } : r)) : DEMO_TRAIL
+
+  const verify = () => {
+    setVerdict(
+      tampered
+        ? { ok: false, text: 'Chain broken at record 3 — its content no longer matches the signed hash.' }
+        : { ok: true, text: `Chain intact · ${rows.length} records · signatures valid` },
+    )
+    complete('liveproof-verify')
+  }
+
+  return (
+    <div className={s.preview}>
+      <span className={`${s.demoTag} ${s.mono}`}>DEMO</span>
+      <div className={`${s.previewLabel} ${s.mono}`}>Signed uptime trail</div>
+      <ol className={`${s.trail} ${s.mono}`}>
+        {rows.map((r, i) => (
+          <li key={r.at} className={`${s.trailRow} ${tampered && i === 2 ? s.trailBad : ''}`}>
+            <span>{r.at}</span>
+            <span className={r.status === 200 ? s.scanPass : s.scanFail}>{r.status}</span>
+            <span>{r.ms}ms</span>
+            <span className={s.trailHash}>#{r.hash}</span>
+          </li>
+        ))}
+      </ol>
+      <div className={s.scanRow}>
+        <button type="button" className={s.miniBtn} onClick={verify}>
+          Verify chain
+        </button>
+        <button
+          type="button"
+          className={s.chip}
+          aria-pressed={tampered}
+          onClick={() => {
+            setTampered((v) => !v)
+            setVerdict(null)
+          }}
+        >
+          {tampered ? 'Restore record 3' : 'Tamper with record 3'}
+        </button>
+      </div>
+      <div aria-live="polite">
+        {verdict && (
+          <div className={`${s.vatResult} ${verdict.ok ? s.vatValid : s.vatInvalid}`}>
+            <span className={`${s.vatBadge} ${s.mono}`}>{verdict.ok ? '✓ VERIFIED' : '✕ TAMPERED'}</span>
+            <span>{verdict.text}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ----------------------------- Failclosed ----------------------------- */
+
+// Demo data — three illustrative signals behind one access check. Any signal
+// that is not a clear "yes" makes the decision DENIED.
+type Signal = 'ok' | 'uncertain'
+const SIGNALS = [
+  { id: 'identity', label: 'Identity verified' },
+  { id: 'device', label: 'Device posture' },
+  { id: 'policy', label: 'Policy source reachable' },
+] as const
+type SignalId = (typeof SIGNALS)[number]['id']
+
+export function FailclosedPreview() {
+  const [state, setState] = useState<Record<SignalId, Signal>>({ identity: 'ok', device: 'ok', policy: 'ok' })
+  const { complete } = useExplorer()
+  const uncertain = SIGNALS.filter((sig) => state[sig.id] === 'uncertain')
+  const allowed = uncertain.length === 0
+
+  const toggle = (id: SignalId) => {
+    setState((prev) => ({ ...prev, [id]: prev[id] === 'ok' ? 'uncertain' : 'ok' }))
+    complete('failclosed-deny')
+  }
+
+  return (
+    <div className={s.preview}>
+      <span className={`${s.demoTag} ${s.mono}`}>DEMO</span>
+      <div className={`${s.previewLabel} ${s.mono}`}>Access check · tap a signal</div>
+      <ul className={s.scanList}>
+        {SIGNALS.map((sig) => {
+          const ok = state[sig.id] === 'ok'
+          return (
+            <li key={sig.id}>
+              <button
+                type="button"
+                className={s.signalBtn}
+                onClick={() => toggle(sig.id)}
+                aria-pressed={!ok}
+                aria-label={`${sig.label}: ${ok ? 'confirmed' : 'uncertain'}. Toggle.`}
+              >
+                <span className={`${ok ? s.scanPass : s.scanWarn} ${s.mono}`} aria-hidden="true">
+                  {ok ? '✓' : '?'}
+                </span>
+                <span>{sig.label}</span>
+                <span className={`${s.mono} ${s.signalState}`}>{ok ? 'confirmed' : 'uncertain'}</span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+      <div aria-live="polite" className={`${s.vatResult} ${allowed ? s.vatValid : s.vatInvalid}`}>
+        <span className={`${s.vatBadge} ${s.mono}`}>{allowed ? '✓ ALLOW' : '✕ DENIED'}</span>
+        <span>
+          {allowed
+            ? 'Every signal is a clear yes.'
+            : `${uncertain.map((u) => u.label).join(', ')} uncertain → default deny.`}
+        </span>
+      </div>
+    </div>
+  )
+}

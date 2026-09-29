@@ -38,7 +38,7 @@ function nodeFrac(i: number, count: number, layout: Layout): { x: number; y: num
   if (layout === 'grid') {
     const cols = 2
     const rows = Math.ceil(count / cols)
-    return { x: 0.27 + (i % cols) * 0.46, y: 0.3 + (rows > 1 ? Math.floor(i / cols) / (rows - 1) : 0.2) * 0.42 }
+    return { x: 0.27 + (i % cols) * 0.46, y: 0.26 + (rows > 1 ? Math.floor(i / cols) / (rows - 1) : 0.4) * 0.52 }
   }
   if (layout === 'row') return { x: 0.14 + f * 0.72, y: 0.46 }
   return { x: 0.9 - Math.sin(f * Math.PI) * 0.1, y: 0.16 + f * 0.68 }

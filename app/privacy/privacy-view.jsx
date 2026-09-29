@@ -2,7 +2,7 @@
 
 import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { FTAX_LINE, OPERATOR_LINE } from '@/lib/site'
-import { PUBLIC_PRIVACY_EMAIL } from '@/lib/relay/catalog'
+import { PRIVACY_EMAIL } from '@/lib/privacy'
 import { usePublicSettings } from '@/hooks/use-public-catalog'
 
 const body = { color: 'rgba(255,255,255,0.5)' }
@@ -54,7 +54,7 @@ export default function PrivacyView() {
             name, work email, and the partnership information you provide — solely to evaluate and
             respond to your inquiry. We keep it only as long as needed for that conversation and any
             resulting partnership, and you can ask us to delete it at any time by emailing{' '}
-            {PUBLIC_PRIVACY_EMAIL}.
+            {PRIVACY_EMAIL}.
           </p>
 
           <h2 className={h2}>Affiliate disclosure</h2>
@@ -66,9 +66,9 @@ export default function PrivacyView() {
             <a
               className="font-medium transition-opacity hover:opacity-80"
               style={{ color: ACCENT.home }}
-              href={`mailto:${PUBLIC_PRIVACY_EMAIL}`}
+              href={`mailto:${PRIVACY_EMAIL}`}
             >
-              {PUBLIC_PRIVACY_EMAIL}
+              {PRIVACY_EMAIL}
             </a>
             .
           </p>

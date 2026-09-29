@@ -5,28 +5,12 @@ import Link from 'next/link'
 import { CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react'
 import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { FTAX_LINE, OPERATOR_LINE } from '@/lib/site'
-import {
-  PUBLIC_HELLO_EMAIL,
-  PUBLIC_SUPPORT_EMAIL,
-  PUBLIC_PRIVACY_EMAIL,
-  PUBLIC_BILLING_EMAIL,
-} from '@/lib/relay/catalog'
+import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
 
 const accent = ACCENT.contact
 
-const inboxes = [
-  { label: 'General & partnerships', email: PUBLIC_HELLO_EMAIL },
-  { label: 'Support', email: PUBLIC_SUPPORT_EMAIL },
-  { label: 'Privacy', email: PUBLIC_PRIVACY_EMAIL },
-  { label: 'Billing', email: PUBLIC_BILLING_EMAIL },
-]
-
-const REASONS = [
-  { value: 'general', label: 'General & partnerships' },
-  { value: 'support', label: 'Support' },
-  { value: 'privacy', label: 'Privacy' },
-  { value: 'billing', label: 'Billing' },
-]
+// hello@ is the only public contact address.
+const inboxes = [{ label: 'General & partnerships', email: PUBLIC_HELLO_EMAIL }]
 
 export default function ContactView() {
   const [form, setForm] = useState({ name: '', email: '', reason: 'general', message: '', consent: false })
@@ -43,7 +27,7 @@ export default function ContactView() {
       })
       const data = await res.json()
       if (res.ok) {
-        setStatus({ ok: true, msg: 'Message received — we will reply from the right inbox.' })
+        setStatus({ ok: true, msg: 'Message received.' })
         setForm({ name: '', email: '', reason: 'general', message: '', consent: false })
       } else if (res.status === 503) {
         setStatus({ ok: false, msg: `Messages can't be stored right now. Email ${PUBLIC_HELLO_EMAIL} instead.` })
@@ -87,14 +71,14 @@ export default function ContactView() {
       accent={accent}
       wide
       eyebrow="Contact"
-      title="A real inbox, not a ticket queue."
-      lead={`Send a message, or reach the right inbox directly. ${OPERATOR_LINE} ${FTAX_LINE}`}
+      title="Get in touch."
+      lead={`General questions and partnerships. ${OPERATOR_LINE} ${FTAX_LINE}`}
     >
       <section className="mx-auto max-w-6xl px-5 py-10 2xl:max-w-[1560px]">
         <div className="grid gap-12 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <p className="font-mono text-[10px] uppercase tracking-[0.34em]" style={{ color: accent }}>
-              Direct inboxes
+              Email
             </p>
             <ul className="mt-5 divide-y" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
               {inboxes.map((item) => (
@@ -132,19 +116,6 @@ export default function ContactView() {
               <label className={labelCls} style={labelStyle}>
                 Email*
                 <input required type="email" {...text('email')} />
-              </label>
-              <label className={`sm:col-span-2 ${labelCls}`} style={labelStyle}>
-                Reason
-                <select
-                  {...text('reason')}
-                  style={{ ...fieldStyle, colorScheme: 'dark' }}
-                >
-                  {REASONS.map((r) => (
-                    <option key={r.value} value={r.value} style={{ background: '#0b0b16', color: '#fff' }}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
               </label>
             </div>
 

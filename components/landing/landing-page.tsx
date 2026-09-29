@@ -17,14 +17,13 @@ import { MobileDrawer, Sidebar } from './sidebar'
 import {
   API_ENDPOINTS,
   HELLO_HREF,
-  INBOXES,
+  HELLO_EMAIL,
   NAV_SECTIONS,
   PRODUCT_ACCENTS,
   PRODUCT_ANCHORS,
   RESOLVE_CURL,
   SITE_ROUTES,
   STEPS,
-  SUPPORT_HREF,
   endpointUrl,
 } from './data'
 import type { Command, PublicProduct } from './types'
@@ -45,6 +44,12 @@ function writeCollapsed(value: boolean) {
   } catch {
     // storage unavailable (private mode etc.) — preference just isn't kept
   }
+}
+
+const NUMBER_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
+/** "Six" for 6 — the product count always comes from the catalog. */
+function countWord(n: number): string {
+  return NUMBER_WORDS[n] ?? String(n)
 }
 
 function hostOf(url: string): string {
@@ -244,9 +249,8 @@ function Landing() {
       },
     ]
     const opens: Command[] = [
-      { id: 'open-support', group: 'Open', label: 'Contact support', hint: SUPPORT_HREF.replace('mailto:', ''), keywords: 'help email', run: () => { window.location.href = SUPPORT_HREF } },
       { id: 'open-hello', group: 'Open', label: 'Get in touch', hint: HELLO_HREF.replace('mailto:', ''), keywords: 'email partners', run: () => { window.location.href = HELLO_HREF } },
-      ...products.map((p) => ({
+      ...products.filter((p) => p.url).map((p) => ({
         id: `open-${p.slug}`,
         group: 'Open' as const,
         label: `Open ${p.name}`,
@@ -353,11 +357,11 @@ function Landing() {
                 <h1 id="hero-title" className={s.h1}>
                   <span className={s.h1Line}>
                     <DecodeText text="Focused software." />
-                  </span>
+                  </span>{' '}
                   <span className={s.h1Alt}>Invisible infrastructure.</span>
                 </h1>
                 <p className={s.lede}>
-                  We build small products that finish a job — VAT proof, reorder labels, API spend limits — and one routing
+                  We build small products that finish a job — VAT proof, reorder labels, Vercel deploy checks — and one routing
                   layer underneath them that turns real intent into the right next action.
                 </p>
                 <div className={s.ctaRow}>
@@ -380,7 +384,7 @@ function Landing() {
                       >
                         <span className={s.heroChipDot} aria-hidden="true" />
                         {p.name}
-                        <span className={`${s.heroChipHost} ${s.mono}`}>{hostOf(p.url)}</span>
+                        {p.url && <span className={`${s.heroChipHost} ${s.mono}`}>{hostOf(p.url)}</span>}
                       </a>
                     )
                   })}
@@ -409,8 +413,8 @@ function Landing() {
                   </h2>
                 </div>
                 <p className={s.sectionLede}>
-                  No bundles, no suite. Four live products you can open and pay for right now. Try the demos below — they
-                  run in your browser only.
+                  No bundles, no suite. {countWord(products.length)} live products, each under its own name. Try the demos
+                  below — they run in your browser only.
                 </p>
               </div>
               <BentoGrid products={products} notify={notify} />
@@ -448,7 +452,7 @@ function Landing() {
               </div>
             </section>
 
-            {/* 04 · Partners & contact */}
+            {/* 07 · Partners & contact */}
             <section id="partners" className={`${s.section} ${s.anchor}`} aria-labelledby="partners-title">
               <div className={s.duo}>
                 <div className={`${s.card} ${s.cardAccent}`}>
@@ -468,17 +472,14 @@ function Landing() {
                   <div className={`${s.eyebrow} ${s.mono}`} style={{ color: 'var(--faint)' }}>
                     Contact
                   </div>
-                  <h3 className={s.h3}>A real inbox, read by the people who write the code.</h3>
-                  <p className={s.cardBody}>No ticket queue, no sales funnel.</p>
+                  <h3 className={s.h3}>General questions and partnerships.</h3>
                   <div className={s.mono}>
-                    {INBOXES.map((i) => (
-                      <div key={i.email} className={s.inbox}>
-                        <a href={`mailto:${i.email}`} className={s.inboxLink}>
-                          {i.email}
-                        </a>
-                        <span className={s.inboxUse}>{i.use}</span>
-                      </div>
-                    ))}
+                    <div className={s.inbox}>
+                      <a href={HELLO_HREF} className={s.inboxLink}>
+                        {HELLO_EMAIL}
+                      </a>
+                      <span className={s.inboxUse}>General + partners</span>
+                    </div>
                   </div>
                 </div>
               </div>

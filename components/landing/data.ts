@@ -1,9 +1,4 @@
-import {
-  PUBLIC_BILLING_EMAIL,
-  PUBLIC_HELLO_EMAIL,
-  PUBLIC_PRIVACY_EMAIL,
-  PUBLIC_SUPPORT_EMAIL,
-} from '@/lib/relay/catalog'
+import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
 import { SITE_ORIGIN } from '@/lib/site'
 import type { NavSection } from './types'
 
@@ -12,11 +7,13 @@ import type { NavSection } from './types'
 // set on the product tiles inside #products.
 export const NAV_SECTIONS: NavSection[] = [
   { num: '00', label: 'Studio Overview', href: '#top' },
-  { num: '01', label: 'CycleTag', href: '#cycletag' },
-  { num: '02', label: 'Vatidence', href: '#vatidence' },
-  { num: '03', label: 'Curl-to-Buy', href: '#curl-to-buy' },
-  { num: '04', label: 'DeployDoctor', href: '#deploydoctor' },
-  { num: '05', label: 'Partners & Contact', href: '#partners' },
+  { num: '01', label: 'DeployDoctor', href: '#deploydoctor' },
+  { num: '02', label: 'CycleTag', href: '#cycletag' },
+  { num: '03', label: 'Vatidence', href: '#vatidence' },
+  { num: '04', label: 'Curl-to-Buy', href: '#curl-to-buy' },
+  { num: '05', label: 'LiveProof', href: '#liveproof' },
+  { num: '06', label: 'Failclosed', href: '#failclosed' },
+  { num: '07', label: 'Partners & Contact', href: '#partners' },
 ]
 
 // Existing site routes (see lib/site.js PUBLIC_ROUTES and components/site/nav.jsx).
@@ -32,6 +29,8 @@ export const PRODUCT_ANCHORS: Record<string, string> = {
   viesproof: 'vatidence',
   'curl-to-buy': 'curl-to-buy',
   deploydoctor: 'deploydoctor',
+  liveproof: 'liveproof',
+  failclosed: 'failclosed',
 }
 
 export const PRODUCT_ACCENTS: Record<string, string> = {
@@ -39,17 +38,12 @@ export const PRODUCT_ACCENTS: Record<string, string> = {
   viesproof: '#00f5ff',
   'curl-to-buy': '#ff8a1e',
   deploydoctor: '#b388ff',
+  liveproof: '#ffd84d',
+  failclosed: '#ff5c7a',
 }
 
 export const HELLO_HREF = `mailto:${PUBLIC_HELLO_EMAIL}`
-export const SUPPORT_HREF = `mailto:${PUBLIC_SUPPORT_EMAIL}`
-
-export const INBOXES = [
-  { email: PUBLIC_HELLO_EMAIL, use: 'General + partners' },
-  { email: PUBLIC_SUPPORT_EMAIL, use: 'Product support' },
-  { email: PUBLIC_PRIVACY_EMAIL, use: 'Data requests' },
-  { email: PUBLIC_BILLING_EMAIL, use: 'Invoices' },
-]
+export const HELLO_EMAIL = PUBLIC_HELLO_EMAIL
 
 // Public Relay endpoints, taken from app/api/[[...path]]/route.js, README.md and
 // docs/PARTNER-INTEGRATION.md. Only copied to the clipboard, never requested.

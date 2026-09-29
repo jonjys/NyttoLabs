@@ -407,6 +407,9 @@
   pointer-events: none;
 }
 @media (hover: hover) { .heroCanvas::before { content: 'LIVE ROUTING · CLICK A NODE'; } }
+/* Phones: nodes sit in a 2-column grid (see signal-field layoutFor), so give
+   the panel room for three rows plus labels. */
+@media (max-width: 599px) { .heroCanvas { height: 340px; } }
 @media (min-width: 1280px) {
   /* Wide screens: full-bleed field behind the copy, masked away from the text. */
   .heroCanvas {
@@ -438,6 +441,17 @@
 .fieldNode:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (max-width: 1279px) { .fieldNode { width: 64px; height: 72px; border-radius: 14px; transform: translate(-50%, -38%); } }
 .h1Line { display: block; }
+/* DecodeText: while decoding, the real text is transparent and the scrambled
+   glyphs are painted by a pseudo-element (not part of the text content). */
+.decoding { position: relative; color: transparent; }
+.decoding::after {
+  content: attr(data-glyphs);
+  position: absolute;
+  inset: 0;
+  color: var(--text);
+  white-space: pre;
+  pointer-events: none;
+}
 .heroChips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 /* Below 1280px the node panel under the copy is the product switcher. */
 @media (max-width: 1279px) { .heroChips { display: none; } }
@@ -604,12 +618,19 @@
 }
 @media (min-width: 1025px) {
   .bento { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
-  .tileCycletag { grid-column: span 3; }
-  .tileVatidence { grid-column: span 3; }
-  .tileCurl { grid-column: span 3; }
-  .tileDeploy { grid-column: span 3; }
-  .tileRelay { grid-column: span 6; }
-  .tileRelay .endpointList { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tileFeature { grid-column: span 6; }
+  .tileHalf { grid-column: span 3; }
+  /* Featured (newest) product: copy on the left, live demo on the right. */
+  /* .tile.tileFeature: must beat the base .tile { display: flex } declared below. */
+  .tile.tileFeature {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    column-gap: 32px;
+    row-gap: 14px;
+    align-content: start;
+  }
+  .tile.tileFeature > * { grid-column: 1; }
+  .tile.tileFeature > .preview { grid-column: 2; grid-row: 1 / span 4; align-self: start; }
 }
 
 .tile {
@@ -678,6 +699,7 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
+.statusNew { border-color: color-mix(in srgb, var(--tile-accent) 55%, transparent); color: var(--tile-accent); }
 .statusDot { display: block; width: 6px; height: 6px; border-radius: 50%; background: #00ff9d; box-shadow: 0 0 8px rgba(0, 255, 157, 0.7); }
 
 /* Product titles: bold, scannable, 24–32px. */
@@ -884,6 +906,42 @@
 .flowStep:hover { color: var(--text); }
 .flowStepOn { border-color: color-mix(in srgb, var(--tile-accent) 45%, transparent); background: color-mix(in srgb, var(--tile-accent) 7%, transparent); color: var(--text); }
 .flowNum { font-size: 11px; color: var(--tile-accent); padding-top: 2px; }
+
+/* LiveProof trail */
+.trail { display: grid; gap: 4px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 11px; }
+.trailRow {
+  display: grid;
+  grid-template-columns: auto auto auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--muted);
+}
+.trailBad { border-color: rgba(255, 82, 110, 0.45); background: rgba(255, 82, 110, 0.06); }
+.trailHash { overflow: hidden; text-align: right; text-overflow: ellipsis; color: var(--faint); }
+
+/* Failclosed signals */
+.signalBtn {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--t) ease, background var(--t) ease;
+}
+.signalBtn:hover { border-color: color-mix(in srgb, var(--tile-accent) 45%, transparent); }
+.signalBtn[aria-pressed='true'] { border-color: rgba(255, 196, 107, 0.45); background: rgba(255, 196, 107, 0.06); }
+.signalState { font-size: 11px; color: var(--faint); }
 
 /* Relay mini tile */
 .endpointList { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }

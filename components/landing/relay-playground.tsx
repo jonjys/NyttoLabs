@@ -72,7 +72,7 @@ export default function RelayPlayground({ products }: { products: PublicProduct[
         ? { tag: '200', text: `{ "click_id": "${outcome.clickId}", "fallback": false }` }
         : { tag: 'FAIL', text: 'fail-closed → no redirect issued' },
       outcome.kind === 'match'
-        ? { tag: 'GO', text: `/go/${outcome.clickId} → ${new URL(product.url).hostname}` }
+        ? { tag: 'GO', text: `/go/${outcome.clickId} → ${product.url ? new URL(product.url).hostname : `${product.slug} (no public site yet)`}` }
         : { tag: 'DONE', text: 'nothing happens. that is the feature.' },
     ]
   }, [product, action, country, outcome])
@@ -189,10 +189,12 @@ export default function RelayPlayground({ products }: { products: PublicProduct[
           <div className={s.pgResult}>
             {outcome?.kind === 'match' ? (
               <>
-                <span>Routed. In production this is where the visitor lands:</span>
-                <a href={product.url} target="_blank" rel="noreferrer" className={s.tileLink}>
-                  Open {product.name} <ArrowUpRight size={14} aria-hidden="true" />
-                </a>
+                <span>{product.url ? 'Routed. In production this is where the visitor lands:' : 'Routed.'}</span>
+                {product.url && (
+                  <a href={product.url} target="_blank" rel="noreferrer" className={s.tileLink}>
+                    Open {product.name} <ArrowUpRight size={14} aria-hidden="true" />
+                  </a>
+                )}
               </>
             ) : (
               <span>Fail-closed: no approved answer, so no redirect. Try an EU country.</span>
