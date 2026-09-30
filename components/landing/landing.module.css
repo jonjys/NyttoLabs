@@ -364,6 +364,16 @@
 .content { min-width: 0; padding: 0 0 72px; }
 
 .anchor { scroll-margin-top: calc(var(--header-h) + 16px); }
+/* An old anchor id kept inside a renamed product's tile (see LEGACY_ANCHORS). */
+.anchorAlias {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
 
 .eyebrow {
   font-size: 11px;
@@ -762,7 +772,7 @@
 }
 .previewLabel { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); }
 
-/* CycleTag label */
+/* StayTag label */
 .label {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

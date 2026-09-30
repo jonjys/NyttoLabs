@@ -20,14 +20,14 @@ export default function PortalView({ directory = false }) {
             <p className="portal-hero-description">Reorder the right part. Check the numbers. Keep the evidence. Nine focused products, built by Nytto Labs to make the next step easier.</p>
             <div className="portal-hero-actions">
               <a href="#products" className="portal-button">Find your tool <ArrowRight size={18} aria-hidden="true" /></a>
-              <a href="https://cycletag.eu/" className="portal-text-link">Try CycleTag free <ArrowUpRight size={17} aria-hidden="true" /></a>
+              <a href="https://staytag.nyttolabs.com/" className="portal-text-link">Try StayTag free <ArrowUpRight size={17} aria-hidden="true" /></a>
             </div>
             <p className="portal-hero-note"><Grid2X2 size={15} aria-hidden="true" /> 9 products <span>·</span> Open directly in your browser</p>
           </div>
           <div className="portal-launcher" aria-label="Product shortcuts">
             <div className="portal-launcher-header"><span>THE NYTTO TOOLBOX</span><span>01—09</span></div>
             <div className="portal-launcher-grid">
-              {PORTAL_PRODUCTS.map((product) => <a key={product.slug} href={`/products#product-${product.slug}`} aria-label={`Find ${product.name}`}><ProductIcon product={product} /><span>{product.slug === 'curl-to-buy' ? 'Curl-to-Buy' : product.name}</span></a>)}
+              {PORTAL_PRODUCTS.map((product) => <a key={product.slug} href={`/products#product-${product.slug}`} aria-label={`Find ${product.name}`}><ProductIcon product={product} /><span>{product.name}</span></a>)}
             </div>
             <div className="portal-launcher-footer"><span>Built to do a useful job.</span><ArrowRight size={17} aria-hidden="true" /></div>
           </div>

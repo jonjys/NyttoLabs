@@ -52,7 +52,7 @@ export function CopyButton({
   )
 }
 
-/* ------------------------------ CycleTag ------------------------------ */
+/* ------------------------------ StayTag ------------------------------- */
 
 // Demo data — a decorative QR-like grid (not a scannable code).
 const QR_SIZE = 21
@@ -89,7 +89,7 @@ const DEMO_LABEL = {
   query: 'Brita Maxtra Pro',
 }
 
-export function CycleTagPreview() {
+export function StayTagPreview() {
   const cells = useMemo(demoQrCells, [])
   const [scanned, setScanned] = useState(false)
   const { complete } = useExplorer()
@@ -242,7 +242,7 @@ export function VatidencePreview({ productUrl }: { productUrl: string }) {
   )
 }
 
-/* ----------------------------- Curl-to-Buy ---------------------------- */
+/* ---------------------------- Nytto Checkout --------------------------- */
 
 // Demo data — illustrative flow steps based on the product description.
 const CURL_FLOW = [
@@ -252,7 +252,7 @@ const CURL_FLOW = [
   { title: 'Time-limited download', detail: 'Link expires after 24h' },
 ]
 
-export function CurlToBuyPreview({ productUrl, notify }: { productUrl: string; notify: Notify }) {
+export function NyttoCheckoutPreview({ productUrl, notify }: { productUrl: string; notify: Notify }) {
   const [step, setStep] = useState(0)
   const { complete } = useExplorer()
   // Static snippet: a HEAD request to the product's existing public URL.
