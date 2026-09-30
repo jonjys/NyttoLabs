@@ -26,9 +26,10 @@ export type MissionId =
 export const MISSIONS: Mission[] = [
   { id: 'route-intent', label: 'Route an intent through Relay', hint: 'Run the Relay playground', href: '#relay' },
   { id: 'deploy-scan', label: 'Run a DeployDoctor scan', hint: 'Run the demo scan', href: '#deploydoctor' },
-  { id: 'scan-label', label: 'Scan a CycleTag label', hint: 'Simulate a scan on the CycleTag tile', href: '#cycletag' },
+  { id: 'scan-label', label: 'Scan a StayTag label', hint: 'Simulate a scan on the StayTag tile', href: '#staytag' },
   { id: 'check-vat', label: 'Verify a VAT number', hint: 'Check a number in the Vatidence demo', href: '#vatidence' },
-  { id: 'curl-flow', label: 'Walk a Curl-to-Buy sale', hint: 'Step through the sale or copy the snippet', href: '#curl-to-buy' },
+  // The id predates the rename; it is kept so saved progress survives.
+  { id: 'curl-flow', label: 'Walk a Nytto Checkout sale', hint: 'Step through the sale or copy the snippet', href: '#nytto-checkout' },
   { id: 'failclosed-refuse', label: 'Watch Failclosed refuse a write', hint: 'Run the empty-warehouse case', href: '#failclosed' },
   { id: 'palette', label: 'Open the command palette', hint: 'Press ⌘K / Ctrl K', href: '#top' },
   { id: 'shortcuts', label: 'Find the keyboard map', hint: 'Press ?', href: '#top' },

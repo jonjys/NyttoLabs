@@ -10,7 +10,7 @@ const accent = ACCENT.partners
 const points = [
   { icon: Boxes, title: 'No inventory held by Nytto Labs', body: 'You keep checkout, payment, VAT, delivery, returns, and product support. We never touch your stock.' },
   { icon: Handshake, title: 'Flexible relationships', body: 'Affiliate links, direct referral agreements, revenue sharing, embedded partnerships, and licensing.' },
-  { icon: BadgeCheck, title: 'CycleTag Inside', body: 'Recurring consumables or devices can ship with an embedded reorder path back to your store.' },
+  { icon: BadgeCheck, title: 'StayTag Inside', body: 'Recurring consumables or devices can ship with an embedded reorder path back to your store.' },
   { icon: Layers, title: 'Relevance first', body: 'Partner placement must stay relevant to the user’s intent. Sponsored placements are always disclosed.' },
 ]
 

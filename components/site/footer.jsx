@@ -8,17 +8,17 @@ import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
 // Short descriptors for the footer list; the list itself comes from the catalog.
 const FOOTER_LABELS = {
   deploydoctor: 'DeployDoctor Vercel checks',
-  cycletag: 'CycleTag reorder labels',
+  cycletag: 'StayTag reorder labels',
   viesproof: 'Vatidence VAT checks',
-  'curl-to-buy': 'Curl-to-Buy file sales',
+  'curl-to-buy': 'Nytto Checkout file sales',
   failclosed: 'Failclosed inventory sync',
 }
 
 export default function SiteFooter({ accent = '#00f5ff' }) {
   const s = usePublicSettings()
-  // Same set and order as the home page: live products, then private beta.
+  // Same set and order as the home page: live products only.
   const all = (usePublicProducts() || []).filter(Boolean)
-  const listedProducts = ['live', 'private-beta'].flatMap((status) => all.filter((p) => p.status === status))
+  const listedProducts = all.filter((p) => p.status === 'live')
   const helloEmail = s.helloEmail || PUBLIC_HELLO_EMAIL
 
   const linkCls = 'inline-flex min-h-8 items-center transition-colors duration-200 hover:text-white'

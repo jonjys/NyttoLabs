@@ -28,7 +28,7 @@ export default function PrivacyView() {
             This policy covers the nyttolabs.com website, its routing infrastructure, and partner
             inquiries. Each product handles its own data under its own privacy policy — for example
             Vatidence processes the VAT numbers you submit, GateZero stores encrypted keys, and
-            Curl-to-Buy handles uploaded files and payments. See the individual product for the
+            Nytto Checkout handles uploaded files and payments. See the individual product for the
             details that apply when you use it.
           </p>
 
@@ -36,7 +36,7 @@ export default function PrivacyView() {
           <ul className="list-disc space-y-1.5 pl-5">
             <li>Names or email addresses of anonymous product users</li>
             <li>Full IP addresses or full user-agent strings</li>
-            <li>Complete QR payloads from CycleTag labels</li>
+            <li>Complete QR payloads from StayTag labels</li>
             <li>Personal document content, payment records, or VAT-number lists</li>
             <li>API keys or secrets belonging to product users</li>
           </ul>

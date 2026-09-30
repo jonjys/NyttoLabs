@@ -10,25 +10,25 @@ Nytto Relay is the private control plane and deterministic offer-routing engine 
 - A deterministic, auditable resolver at `POST /api/resolve`
 - A safe redirect + attribution layer at `/go/[click_id]`
 - A signed conversion webhook at `POST /api/event`
-- A partner & offer database, a CycleTag adapter, and a generic adapter for any Nytto Labs app
+- A partner & offer database, a StayTag adapter (Relay app id `cycletag`), and a generic adapter for any Nytto Labs app
 
 ## How it makes money
-Affiliate commission, direct referral agreements, revenue share, disclosed sponsored placement, CycleTag Inside licensing, white-label licensing, and (later) paid API access.
+Affiliate commission, direct referral agreements, revenue share, disclosed sponsored placement, StayTag Inside licensing, white-label licensing, and (later) paid API access.
 
 ## What it does NOT do
 No inventory, no packaging, no third-party checkout, no shipping, no returns, no dropshipping, no warehouse. Partners keep checkout, payment, VAT, delivery, returns, and product support. No fake products/partners/prices/conversions/integrations.
 
 ## Active portfolio (authoritative)
-1. **CycleTag** — Live (`https://cycletag.eu/`)
+1. **StayTag** (formerly CycleTag) — Live (`https://staytag.nyttolabs.com/`; `cycletag.eu` redirects there)
 2. **VIESProof** — Live (`https://viesproof.eu/`)
 3. **GateZero** — Public beta (`https://getgatezero.com/`)
-4. **Failclosed** — Private beta (`https://failclosed.nyttolabs.com/`)
+4. **Failclosed** — Live (`https://failclosed.nyttolabs.com/`)
 5. **AI Venture Worker** — Ventures/internal (not on the public grid)
 6. **Nytto Relay** — internal infrastructure (not shown on the public product grid)
 
 > Netfold, Skrivklart, and Invoic are intentionally out of scope and absent everywhere.
 
-Live product URLs for CycleTag, VIESProof, GateZero, and Failclosed are defined in `lib/relay/catalog.js` and applied on every public catalog response, so a stale Mongo document cannot send visitors to the wrong host. Optional env overrides: `PRODUCT_URL_CYCLETAG`, `PRODUCT_URL_VIESPROOF`, `PRODUCT_URL_GATEZERO`, `PRODUCT_URL_FAILCLOSED`.
+Live product URLs for StayTag, VIESProof, GateZero, and Failclosed are defined in `lib/relay/catalog.js` and applied on every public catalog response, so a stale Mongo document cannot send visitors to the wrong host. Optional env overrides: `PRODUCT_URL_CYCLETAG`, `PRODUCT_URL_VIESPROOF`, `PRODUCT_URL_GATEZERO`, `PRODUCT_URL_FAILCLOSED`.
 
 ## Data store note
 The reference spec suggests Supabase Postgres. **This deployment runs on MongoDB** (per the hosting environment) with the same logical tables/collections, RLS-equivalent server-side authorization, and the same routing/attribution/revenue logic. Auth uses an email + passcode admin session (allowlisted via `ADMIN_EMAILS`) instead of Supabase magic links. All business logic lives in `lib/relay/*` and is store-agnostic.

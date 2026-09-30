@@ -2,13 +2,13 @@
 
 import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 import { ArrowUpRight } from 'lucide-react'
-import { API_ENDPOINTS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, endpointUrl, statusLabel } from './data'
+import { API_ENDPOINTS, LEGACY_ANCHORS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, endpointUrl, statusLabel } from './data'
 import {
   CopyButton,
-  CurlToBuyPreview,
-  CycleTagPreview,
   DeployDoctorPreview,
   FailclosedPreview,
+  NyttoCheckoutPreview,
+  StayTagPreview,
   VatidencePreview,
 } from './previews'
 import type { PublicProduct } from './types'
@@ -68,14 +68,17 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
   const titleId = `tile-title-${anchor}`
 
   let preview: ReactNode = null
-  if (product.slug === 'cycletag') preview = <CycleTagPreview />
+  if (product.slug === 'cycletag') preview = <StayTagPreview />
   else if (product.slug === 'viesproof') preview = <VatidencePreview productUrl={product.url} />
-  else if (product.slug === 'curl-to-buy') preview = <CurlToBuyPreview productUrl={product.url} notify={notify} />
+  else if (product.slug === 'curl-to-buy') preview = <NyttoCheckoutPreview productUrl={product.url} notify={notify} />
   else if (product.slug === 'deploydoctor') preview = <DeployDoctorPreview />
   else if (product.slug === 'failclosed') preview = <FailclosedPreview />
 
   return (
     <Tile id={anchor} className={TILE_CLASS[product.slug] ?? s.tileHalf} accent={accent} labelledBy={titleId}>
+      {(LEGACY_ANCHORS[product.slug] ?? []).map((legacy) => (
+        <span key={legacy} id={legacy} className={s.anchorAlias} aria-hidden="true" />
+      ))}
       <div className={s.tileTop}>
         <span className={`${s.tileCat} ${s.mono}`}>{product.category}</span>
         <span style={{ display: 'inline-flex', gap: 6 }}>

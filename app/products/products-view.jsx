@@ -11,14 +11,16 @@ const accent = ACCENT.products
 // Stripe payment links are preserved verbatim from the previous homepage — do
 // not edit these hrefs without checking the live links in the Nytto Labs
 // Stripe account first.
-const CYCLE_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
-const CYCLE_BULK = 'https://cycletag.eu/bulk'
-const CYCLE_FREE = 'https://cycletag.eu/#create'
+const STAYTAG_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
+// StayTag's own domain; cycletag.eu 308-redirects to it (checked 2026-09-30).
+const STAYTAG_BULK = 'https://staytag.nyttolabs.com/bulk'
+const STAYTAG_FREE = 'https://staytag.nyttolabs.com/#create'
 const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
 const DEPLOYDOCTOR = 'https://deploydoctor.nyttolabs.com/'
 const DEPLOYDOCTOR_PRICING = 'https://deploydoctor.nyttolabs.com/pricing'
 // Failclosed's domain and status come from the catalog (lib/relay/catalog.js).
+// It is live, so the note reads "Live · Inventory sync".
 const FAILCLOSED = 'https://failclosed.nyttolabs.com/'
 const FAILCLOSED_STATUS =
   PUBLIC_STATUS_GROUPS.find((g) => g.key === seedApplications().find((a) => a.slug === 'failclosed')?.status)?.title || ''
@@ -26,8 +28,8 @@ const FAILCLOSED_STATUS =
 const COPY = {
   en: {
     eyebrow: 'Products · Swedish software · F-tax',
-    hero: 'Four live products.',
-    lede: 'DeployDoctor, CycleTag, Vatidence and Curl-to-Buy — live now, not a roadmap. Failclosed is invite-only while we onboard merchants.',
+    hero: 'Five live products.',
+    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout and Failclosed — live now, not a roadmap.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
     cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
     cyclePrice: '$5',
@@ -55,7 +57,7 @@ const COPY = {
     ddPricing: 'See pricing',
     ddFree: 'Free — 3 scans a day',
     failBody: 'Inventory sync that repairs the difference between two systems automatically — and refuses to write when the data looks wrong.',
-    failFeatures: ['Repairs the difference automatically', 'Refuses to write on bad data', 'Invite-only'],
+    failFeatures: ['Repairs the difference automatically', 'Refuses to write on bad data', 'Starts in watch-only mode'],
     failCategory: 'Inventory sync',
     failVisit: 'Visit Failclosed',
     partnerTitle: 'Work with Nytto Labs',
@@ -64,8 +66,8 @@ const COPY = {
   },
   sv: {
     eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
-    hero: 'Fyra produkter, live nu.',
-    lede: 'DeployDoctor, CycleTag, Vatidence och Curl-to-Buy — live nu, ingen roadmap. Failclosed är endast på inbjudan medan vi tar in handlare.',
+    hero: 'Fem produkter, live nu.',
+    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout och Failclosed — live nu, ingen roadmap.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter.',
     cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
     cyclePrice: '49 kr',
@@ -93,7 +95,7 @@ const COPY = {
     ddPricing: 'Se priser',
     ddFree: 'Gratis — 3 skanningar per dag',
     failBody: 'Lagersynk som automatiskt reparerar skillnaden mellan två system — och vägrar skriva när datan ser fel ut.',
-    failFeatures: ['Reparerar skillnaden automatiskt', 'Vägrar skriva vid felaktig data', 'Endast på inbjudan'],
+    failFeatures: ['Reparerar skillnaden automatiskt', 'Vägrar skriva vid felaktig data', 'Startar i bevakningsläge'],
     failCategory: 'Lagersynk',
     failVisit: 'Besök Failclosed',
     partnerTitle: 'Samarbeta med Nytto Labs',
@@ -194,20 +196,20 @@ export default function ProductsView() {
             }
           />
           <PayCard
-            name="CycleTag"
+            name="StayTag"
             price={t.cyclePrice}
             note={t.cycleNote}
             body={t.cycleBody}
             features={t.cycleFeatures}
             actions={
               <>
-                <a href={CYCLE_SHEET} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                <a href={STAYTAG_SHEET} className={payBtn} style={{ background: accent, color: '#03030c' }}>
                   {t.cyclePay} <ArrowRight className="h-4 w-4" />
                 </a>
-                <a href={CYCLE_BULK} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
+                <a href={STAYTAG_BULK} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
                   {t.cycleBulk}
                 </a>
-                <a href={CYCLE_FREE} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={STAYTAG_FREE} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
                   {t.cycleFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
@@ -232,7 +234,7 @@ export default function ProductsView() {
             }
           />
           <PayCard
-            name="Curl-to-Buy"
+            name="Nytto Checkout"
             price={t.curlPrice}
             note={t.curlNote}
             body={t.curlBody}
