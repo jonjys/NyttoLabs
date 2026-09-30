@@ -114,7 +114,7 @@ function isTypingTarget(el: EventTarget | null): boolean {
 function Landing() {
   // Catalog module is plain JS; narrow its inferred type to the documented shape.
   const allProducts = usePublicProducts() as ReadonlyArray<PublicProduct | null>
-  // `products`: everything shown on the page (live first, then private beta).
+  // `products`: everything shown on the page — live catalog products only.
   // `liveCount`: the live counter — only status === 'live' counts.
   const products = useMemo(() => showcaseProducts(allProducts), [allProducts])
   const liveCount = products.filter((p) => p.status === 'live').length

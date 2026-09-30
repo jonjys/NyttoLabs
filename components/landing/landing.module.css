@@ -364,6 +364,8 @@
 .content { min-width: 0; padding: 0 0 72px; }
 
 .anchor { scroll-margin-top: calc(var(--header-h) + 16px); }
+/* Old product anchor kept on a renamed tile; out of flow so it never shifts layout. */
+.legacyAnchor { position: absolute; top: 0; left: 0; width: 0; height: 0; overflow: hidden; }
 
 .eyebrow {
   font-size: 11px;
@@ -762,7 +764,7 @@
 }
 .previewLabel { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); }
 
-/* CycleTag label */
+/* StayTag label */
 .label {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

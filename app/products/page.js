@@ -4,7 +4,7 @@ import { BreadcrumbJsonLd } from '@/components/site/json-ld'
 
 export const metadata = pageMetadata({
   title: 'Products — Nytto Labs',
-  description: 'Four live products: DeployDoctor Vercel checks, CycleTag reorder labels, Vatidence VAT checks and Curl-to-Buy file sales. Swedish software, F-tax.',
+  description: 'Five live products: DeployDoctor Vercel checks, StayTag reorder labels, Vatidence VAT checks, Nytto Checkout file sales and Failclosed inventory sync. Swedish software, F-tax.',
   path: '/products',
 })
 

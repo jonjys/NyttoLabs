@@ -223,7 +223,7 @@ function Applications() {
   const toggle = async (a, key) => { await api.put(`/admin/applications/${a.id}`, { [key]: !a[key] }); load() }
   return (
     <div>
-      <Head title="Applications" desc="Products and internal apps that call Relay. Public visibility drives the website product grid. CycleTag, VIESProof, GateZero and Failclosed URLs are repaired from canonical values on seed." />
+      <Head title="Applications" desc="Products and internal apps that call Relay. Public visibility drives the website product grid. StayTag, VIESProof, GateZero and Failclosed URLs are repaired from canonical values on seed." />
       <Table
         empty="No applications."
         rows={items}
@@ -555,7 +555,7 @@ function Simulator() {
   const run = async () => { setBusy(true); const r = await api.post('/admin/simulate', f); setRes(r); setBusy(false) }
   return (
     <div>
-      <Head title="Simulator" desc="Run a CycleTag (or any app) request through the real resolver and inspect the decision." />
+      <Head title="Simulator" desc="Run a StayTag (or any app) request through the real resolver and inspect the decision." />
       <div className="grid gap-4 lg:grid-cols-2">
         <div className={card}>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -633,7 +633,7 @@ function Docs() {
   const [base, setBase] = useState('https://nyttolabs.com')
   useEffect(() => { setBase(window.location.origin) }, [])
 
-  const example = `// CycleTag \u2192 Nytto Relay (client helper, TypeScript)
+  const example = `// StayTag \u2192 Nytto Relay (client helper, TypeScript)
 export async function resolveReorder(ctx: {
   query: string; country: string; language?: string;
   category?: string; brand?: string; model?: string; source?: string;
@@ -675,15 +675,15 @@ Header: X-Relay-Signature: hex(hmac_sha256(rawBody, RELAY_WEBHOOK_SECRET))
       <Head title="Integration documentation" desc="Every Nytto Labs app uses the same Relay API with its own slug and action." />
       <div className="space-y-4">
         <div className={card}>
-          <div className="text-sm font-medium text-white">How CycleTag connects (privacy-first)</div>
+          <div className="text-sm font-medium text-white">How StayTag connects (privacy-first)</div>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-stone-300">
-            <li>No CycleTag account required; tag contents stay client-side.</li>
+            <li>No StayTag account required; tag contents stay client-side.</li>
             <li>Relay receives only minimal commerce context (query, market, category, brand, model, source).</li>
             <li>The complete QR payload is never sent or persisted.</li>
-            <li>Introduce this via a separate reviewed change in the CycleTag repository \u2014 do not modify the live app here.</li>
+            <li>Introduce this via a separate reviewed change in the StayTag repository \u2014 do not modify the live app here.</li>
           </ul>
         </div>
-        <Block title="CycleTag client helper (copy into the CycleTag repo)" code={example} />
+        <Block title="StayTag client helper (copy into the StayTag repo)" code={example} />
         <Block title="Generic app request (any application)" code={generic} />
         <Block title="Conversion webhook (server-to-server, signed)" code={webhook} />
       </div>

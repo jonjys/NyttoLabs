@@ -52,7 +52,7 @@ export function CopyButton({
   )
 }
 
-/* ------------------------------ CycleTag ------------------------------ */
+/* ------------------------------ StayTag ------------------------------- */
 
 // Demo data — a decorative QR-like grid (not a scannable code).
 const QR_SIZE = 21
@@ -89,7 +89,7 @@ const DEMO_LABEL = {
   query: 'Brita Maxtra Pro',
 }
 
-export function CycleTagPreview() {
+export function StayTagPreview() {
   const cells = useMemo(demoQrCells, [])
   const [scanned, setScanned] = useState(false)
   const { complete } = useExplorer()
@@ -242,17 +242,17 @@ export function VatidencePreview({ productUrl }: { productUrl: string }) {
   )
 }
 
-/* ----------------------------- Curl-to-Buy ---------------------------- */
+/* ---------------------------- Nytto Checkout --------------------------- */
 
 // Demo data — illustrative flow steps based on the product description.
-const CURL_FLOW = [
+const CHECKOUT_FLOW = [
   { title: 'Upload a file', detail: 'report.pdf · 2.4 MB' },
   { title: 'Set a price', detail: '49 SEK · 5% fee only when it sells' },
   { title: 'Share the link', detail: 'Buyer pays by card, no account' },
   { title: 'Time-limited download', detail: 'Link expires after 24h' },
 ]
 
-export function CurlToBuyPreview({ productUrl, notify }: { productUrl: string; notify: Notify }) {
+export function CheckoutPreview({ productUrl, notify }: { productUrl: string; notify: Notify }) {
   const [step, setStep] = useState(0)
   const { complete } = useExplorer()
   // Static snippet: a HEAD request to the product's existing public URL.
@@ -275,21 +275,21 @@ export function CurlToBuyPreview({ productUrl, notify }: { productUrl: string; n
           <span className={s.codeComment}># Demo data — illustrative, not live output</span>
           {'\n'}
           <span className={s.codeComment}># step {step + 1}/4: </span>
-          <span className={s.codeOk}>{CURL_FLOW[step].title.toLowerCase()}</span>
+          <span className={s.codeOk}>{CHECKOUT_FLOW[step].title.toLowerCase()}</span>
           {'\n'}
           <span className={s.codeComment}>#   </span>
-          {CURL_FLOW[step].detail}
+          {CHECKOUT_FLOW[step].detail}
         </pre>
       </div>
       <ol className={s.flow} aria-label="How a sale works (demo)">
-        {CURL_FLOW.map((f, i) => (
+        {CHECKOUT_FLOW.map((f, i) => (
           <li key={f.title}>
             <button
               type="button"
               className={`${s.flowStep} ${i === step ? s.flowStepOn : ''}`}
               onClick={() => {
                 setStep(i)
-                if (i === CURL_FLOW.length - 1) complete('curl-flow')
+                if (i === CHECKOUT_FLOW.length - 1) complete('curl-flow')
               }}
               aria-pressed={i === step}
               style={{ width: '100%' }}

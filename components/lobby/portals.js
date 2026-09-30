@@ -23,7 +23,7 @@ export const PORTALS = [
     label: 'PRODUCTS',
     href: '/products',
     heading: 'The Product Showcase',
-    blurb: 'Three things you can pay for today — CycleTag, Vatidence and Curl-to-Buy. The rest of the lab is one click further in.',
+    blurb: 'Three things you can pay for today — StayTag, Vatidence and Nytto Checkout. The rest of the lab is one click further in.',
     cta: 'What you can buy',
   },
   {

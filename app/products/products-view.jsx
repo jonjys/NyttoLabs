@@ -12,8 +12,8 @@ const accent = ACCENT.products
 // not edit these hrefs without checking the live links in the Nytto Labs
 // Stripe account first.
 const CYCLE_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
-const CYCLE_BULK = 'https://cycletag.eu/bulk'
-const CYCLE_FREE = 'https://cycletag.eu/#create'
+const CYCLE_BULK = 'https://staytag.nyttolabs.com/bulk'
+const CYCLE_FREE = 'https://staytag.nyttolabs.com/#create'
 const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
 const DEPLOYDOCTOR = 'https://deploydoctor.nyttolabs.com/'
@@ -26,8 +26,8 @@ const FAILCLOSED_STATUS =
 const COPY = {
   en: {
     eyebrow: 'Products · Swedish software · F-tax',
-    hero: 'Four live products.',
-    lede: 'DeployDoctor, CycleTag, Vatidence and Curl-to-Buy — live now, not a roadmap. Failclosed is invite-only while we onboard merchants.',
+    hero: 'Five live products.',
+    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout and Failclosed — live now, not a roadmap.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
     cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
     cyclePrice: '$5',
@@ -55,7 +55,7 @@ const COPY = {
     ddPricing: 'See pricing',
     ddFree: 'Free — 3 scans a day',
     failBody: 'Inventory sync that repairs the difference between two systems automatically — and refuses to write when the data looks wrong.',
-    failFeatures: ['Repairs the difference automatically', 'Refuses to write on bad data', 'Invite-only'],
+    failFeatures: ['Repairs the difference automatically', 'Refuses to write on bad data', 'Tells you which rule stopped it'],
     failCategory: 'Inventory sync',
     failVisit: 'Visit Failclosed',
     partnerTitle: 'Work with Nytto Labs',
@@ -64,8 +64,8 @@ const COPY = {
   },
   sv: {
     eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
-    hero: 'Fyra produkter, live nu.',
-    lede: 'DeployDoctor, CycleTag, Vatidence och Curl-to-Buy — live nu, ingen roadmap. Failclosed är endast på inbjudan medan vi tar in handlare.',
+    hero: 'Fem produkter, live nu.',
+    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout och Failclosed — live nu, ingen roadmap.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter.',
     cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
     cyclePrice: '49 kr',
@@ -93,7 +93,7 @@ const COPY = {
     ddPricing: 'Se priser',
     ddFree: 'Gratis — 3 skanningar per dag',
     failBody: 'Lagersynk som automatiskt reparerar skillnaden mellan två system — och vägrar skriva när datan ser fel ut.',
-    failFeatures: ['Reparerar skillnaden automatiskt', 'Vägrar skriva vid felaktig data', 'Endast på inbjudan'],
+    failFeatures: ['Reparerar skillnaden automatiskt', 'Vägrar skriva vid felaktig data', 'Visar vilken regel som stoppade den'],
     failCategory: 'Lagersynk',
     failVisit: 'Besök Failclosed',
     partnerTitle: 'Samarbeta med Nytto Labs',
@@ -194,7 +194,7 @@ export default function ProductsView() {
             }
           />
           <PayCard
-            name="CycleTag"
+            name="StayTag"
             price={t.cyclePrice}
             note={t.cycleNote}
             body={t.cycleBody}
@@ -232,7 +232,7 @@ export default function ProductsView() {
             }
           />
           <PayCard
-            name="Curl-to-Buy"
+            name="Nytto Checkout"
             price={t.curlPrice}
             note={t.curlNote}
             body={t.curlBody}
