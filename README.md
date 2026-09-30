@@ -28,7 +28,7 @@ No inventory, no packaging, no third-party checkout, no shipping, no returns, no
 
 > Netfold, Skrivklart, and Invoic are intentionally out of scope and absent everywhere.
 
-Live product URLs for StayTag, VIESProof, GateZero, and Failclosed are defined in `lib/relay/catalog.js` and applied on every public catalog response, so a stale Mongo document cannot send visitors to the wrong host. Optional env overrides: `PRODUCT_URL_CYCLETAG`, `PRODUCT_URL_VIESPROOF`, `PRODUCT_URL_GATEZERO`, `PRODUCT_URL_FAILCLOSED`.
+Live product URLs for StayTag, VIESProof, GateZero, and Failclosed are defined in `lib/relay/catalog.js` and applied on every public catalog response, so a stale Mongo document cannot send visitors to the wrong host. Optional env overrides: `PRODUCT_URL_STAYTAG` (the old `PRODUCT_URL_CYCLETAG` is ignored, and an override pointing at cycletag.eu is ignored too), `PRODUCT_URL_VIESPROOF`, `PRODUCT_URL_GATEZERO`, `PRODUCT_URL_FAILCLOSED`.
 
 ## Data store note
 The reference spec suggests Supabase Postgres. **This deployment runs on MongoDB** (per the hosting environment) with the same logical tables/collections, RLS-equivalent server-side authorization, and the same routing/attribution/revenue logic. Auth uses an email + passcode admin session (allowlisted via `ADMIN_EMAILS`) instead of Supabase magic links. All business logic lives in `lib/relay/*` and is store-agnostic.
