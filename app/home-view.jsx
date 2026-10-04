@@ -116,6 +116,7 @@ export default function HomeView() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [room, setRoom] = useState(null)
   const barRef = useRef(null)
+  const spotlightRef = useRef(null)
   const allProducts = usePublicProducts()
 
   useEffect(() => {
@@ -140,6 +141,42 @@ export default function HomeView() {
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Escape returns to the lobby from a room, or closes the mobile menu —
+  // the same convention the old 3D lobby used, carried over here.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return
+      if (menuOpen) return setMenuOpen(false)
+      if (room) setRoom(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menuOpen, room])
+
+  // A faint pointer-follow glow behind the hero — skipped on touch devices
+  // (no hover) and left static under prefers-reduced-motion.
+  useEffect(() => {
+    const fine = window.matchMedia?.('(pointer: fine)')?.matches
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+    if (!fine || reduced) return undefined
+    let raf = null
+    const onMove = (e) => {
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        raf = null
+        const el = spotlightRef.current
+        if (!el) return
+        el.style.setProperty('--mx', `${(e.clientX / window.innerWidth) * 100}%`)
+        el.style.setProperty('--my', `${(e.clientY / window.innerHeight) * 100}%`)
+      })
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [])
 
   const products = useMemo(
@@ -222,6 +259,30 @@ export default function HomeView() {
           background: 'radial-gradient(closest-side, rgba(255,43,209,0.09), transparent 70%)',
           filter: 'blur(10px)',
           animation: 'nl-drift 22s ease-in-out infinite reverse',
+        }}
+      />
+      <div
+        ref={spotlightRef}
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 1,
+          pointerEvents: 'none',
+          background: 'radial-gradient(640px circle at var(--mx, 50%) var(--my, 14%), rgba(0,245,255,0.07), transparent 62%)',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 2,
+          pointerEvents: 'none',
+          opacity: 0.035,
+          mixBlendMode: 'overlay',
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
         }}
       />
 
@@ -589,10 +650,10 @@ export default function HomeView() {
                   users to approved destinations only.
                 </p>
                 <div style={roomActionsStyle}>
-                  <a href="#partners" onClick={closeRoom} style={{ ...roomPrimaryBtn, background: '#ff2bd1' }}>
+                  <a href="#partners" onClick={closeRoom} className="nl-room-cta" style={{ ...roomPrimaryBtn, background: '#ff2bd1' }}>
                     Open Partners →
                   </a>
-                  <button type="button" onClick={closeRoom} style={roomGhostBtn}>
+                  <button type="button" onClick={closeRoom} className="nl-ghost-btn" style={roomGhostBtn}>
                     ← Back to lobby
                   </button>
                 </div>
@@ -604,10 +665,10 @@ export default function HomeView() {
                 <h2 style={roomHeadingStyle}>Three things you can pay for today.</h2>
                 <p style={roomBodyStyle}>{showcaseLede}</p>
                 <div style={roomActionsStyle}>
-                  <a href="#products" onClick={closeRoom} style={{ ...roomPrimaryBtn, background: '#00ff9d' }}>
+                  <a href="#products" onClick={closeRoom} className="nl-room-cta" style={{ ...roomPrimaryBtn, background: '#00ff9d' }}>
                     What you can buy →
                   </a>
-                  <button type="button" onClick={closeRoom} style={roomGhostBtn}>
+                  <button type="button" onClick={closeRoom} className="nl-ghost-btn" style={roomGhostBtn}>
                     ← Back to lobby
                   </button>
                 </div>
@@ -622,10 +683,10 @@ export default function HomeView() {
                   for the rest.
                 </p>
                 <div style={roomActionsStyle}>
-                  <a href={`mailto:${PUBLIC_HELLO_EMAIL}`} style={{ ...roomPrimaryBtn, background: '#ff8a1e' }}>
+                  <a href={`mailto:${PUBLIC_HELLO_EMAIL}`} className="nl-room-cta" style={{ ...roomPrimaryBtn, background: '#ff8a1e' }}>
                     Write to hello@ →
                   </a>
-                  <button type="button" onClick={closeRoom} style={roomGhostBtn}>
+                  <button type="button" onClick={closeRoom} className="nl-ghost-btn" style={roomGhostBtn}>
                     ← Back to lobby
                   </button>
                 </div>
@@ -963,19 +1024,53 @@ export default function HomeView() {
       <SiteFooter accent="#00f5ff" />
 
       <style jsx>{`
+        .nl-nav-link {
+          transition: color 0.2s ease;
+        }
         .nl-nav-link:hover {
           color: #fff;
+        }
+        .nl-nav-cta {
+          transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
         }
         .nl-nav-cta:hover {
           background: rgba(0, 245, 255, 0.12);
           color: #00f5ff;
+          transform: translateY(-1px);
+        }
+        .nl-cta-primary {
+          transition: background 0.2s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
         }
         .nl-cta-primary:hover {
           background: #7ffbff;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 28px rgba(0, 245, 255, 0.3);
+        }
+        .nl-cta-secondary {
+          transition: color 0.2s ease, border-color 0.2s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .nl-cta-secondary:hover {
           color: #fff;
           border-color: rgba(255, 255, 255, 0.4);
+          transform: translateY(-2px);
+        }
+        .nl-room-cta {
+          transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), filter 0.22s ease;
+        }
+        .nl-room-cta:hover {
+          transform: translateY(-2px);
+          filter: brightness(1.1);
+        }
+        .nl-ghost-btn {
+          transition: color 0.2s ease, border-color 0.2s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .nl-ghost-btn:hover {
+          color: #fff;
+          border-color: rgba(255, 255, 255, 0.3);
+          transform: translateY(-2px);
+        }
+        .nl-back-link {
+          transition: color 0.2s ease;
         }
         .nl-back-link:hover {
           color: #fff;
@@ -984,6 +1079,9 @@ export default function HomeView() {
           border-color: rgba(0, 245, 255, 0.38) !important;
           background: rgba(0, 245, 255, 0.045) !important;
           transform: translateY(-4px);
+        }
+        .nl-inbox-link {
+          transition: color 0.2s ease;
         }
         .nl-inbox-link:hover {
           color: #00f5ff;
