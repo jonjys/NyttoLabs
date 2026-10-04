@@ -12,6 +12,7 @@ const FOOTER_LABELS = {
   viesproof: 'Vatidence VAT checks',
   'curl-to-buy': 'Nytto Checkout file sales',
   failclosed: 'Failclosed inventory sync',
+  'csv-rescue': 'CSV Rescue file cleanup',
 }
 
 export default function SiteFooter({ accent = '#00f5ff' }) {
