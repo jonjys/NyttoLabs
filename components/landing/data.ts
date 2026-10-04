@@ -28,7 +28,8 @@ export const NAV_SECTIONS: NavSection[] = [
   { num: '03', label: 'Vatidence', href: '#vatidence' },
   { num: '04', label: 'Nytto Checkout', href: '#nytto-checkout' },
   { num: '05', label: 'Failclosed', href: '#failclosed' },
-  { num: '06', label: 'Partners & Contact', href: '#partners' },
+  { num: '06', label: 'CSV Rescue', href: '#csv-rescue' },
+  { num: '07', label: 'Partners & Contact', href: '#partners' },
 ]
 
 // Site pages for the sidebar and palette: the shared menu minus Home (this page).
@@ -57,6 +58,7 @@ export const PRODUCT_ACCENTS: Record<string, string> = {
   'curl-to-buy': '#ff8a1e',
   deploydoctor: '#b388ff',
   failclosed: '#ff5c7a',
+  'csv-rescue': '#bafa68',
 }
 
 export const HELLO_HREF = `mailto:${PUBLIC_HELLO_EMAIL}`
