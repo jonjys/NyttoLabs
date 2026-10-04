@@ -17,6 +17,7 @@ const STAYTAG_BULK = 'https://staytag.nyttolabs.com/bulk'
 const STAYTAG_FREE = 'https://staytag.nyttolabs.com/#create'
 const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
+const CSV_RESCUE = 'https://importfix.nyttolabs.com/csv'
 const DEPLOYDOCTOR = 'https://deploydoctor.nyttolabs.com/'
 const DEPLOYDOCTOR_PRICING = 'https://deploydoctor.nyttolabs.com/pricing'
 // Failclosed's domain and status come from the catalog (lib/relay/catalog.js).
@@ -28,8 +29,8 @@ const FAILCLOSED_STATUS =
 const COPY = {
   en: {
     eyebrow: 'Products · Swedish software · F-tax',
-    hero: 'Five live products.',
-    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout and Failclosed — live now, not a roadmap.',
+    hero: 'Six live products.',
+    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout, Failclosed and CSV Rescue — live now, not a roadmap.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
     cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
     cyclePrice: '49 SEK',
@@ -66,8 +67,8 @@ const COPY = {
   },
   sv: {
     eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
-    hero: 'Fem produkter, live nu.',
-    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout och Failclosed — live nu, ingen roadmap.',
+    hero: 'Sex produkter, live nu.',
+    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout, Failclosed och CSV Rescue — live nu, ingen roadmap.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter.',
     cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
     cyclePrice: '49 kr',
@@ -267,6 +268,15 @@ export default function ProductsView() {
                 {t.failVisit} <ArrowRight className="h-4 w-4" />
               </a>
             }
+          />
+          <PayCard
+            className="md:col-span-2 xl:col-span-6"
+            name="CSV Rescue"
+            price={locale === 'sv' ? '29 kr' : '29 SEK'}
+            note={locale === 'sv' ? 'per fil · engångsköp' : 'per file · one-time'}
+            body={locale === 'sv' ? 'Fixa teckenkodning och separatorer i CSV utan att tappa inledande nollor.' : 'Fix CSV encoding and separators without losing leading zeros.'}
+            features={locale === 'sv' ? ['Exakta dubbletter som tillval', 'Ingen prenumeration', 'Originalfilen lämnas orörd'] : ['Optional exact duplicate removal', 'No subscription', 'Original file stays untouched']}
+            actions={<a href={CSV_RESCUE} className={payBtn} style={{ background: accent, color: '#03030c' }}>{locale === 'sv' ? 'Öppna CSV Rescue' : 'Open CSV Rescue'} <ArrowRight className="h-4 w-4" /></a>}
           />
         </div>
       </section>
