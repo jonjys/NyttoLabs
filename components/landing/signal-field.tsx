@@ -239,8 +239,11 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
       raf = running ? requestAnimationFrame(loop) : 0
     }
 
+    // The animation waits until the browser is idle after first paint, so it
+    // never competes with the hero text for the main thread (LCP / TBT).
+    let ready = false
     const start = () => {
-      if (running || reduced || !visible || document.hidden) return
+      if (!ready || running || reduced || !visible || document.hidden) return
       running = true
       raf = requestAnimationFrame(loop)
     }
@@ -297,9 +300,17 @@ export default function SignalField({ nodes }: { nodes: FieldNode[] }) {
     window.addEventListener('pointermove', onMove, { passive: true })
     document.addEventListener('pointerleave', onLeave)
     document.addEventListener('visibilitychange', onVisibility)
-    start()
+    const begin = () => {
+      ready = true
+      start()
+    }
+    // Safari < 18 has no requestIdleCallback; fall back to a short timeout.
+    const hasIdle = typeof window.requestIdleCallback === 'function'
+    const idle = hasIdle ? window.requestIdleCallback(begin, { timeout: 1500 }) : window.setTimeout(begin, 600)
 
     return () => {
+      if (hasIdle) window.cancelIdleCallback(idle)
+      else window.clearTimeout(idle)
       stop()
       ro.disconnect()
       io.disconnect()

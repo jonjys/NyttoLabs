@@ -103,8 +103,8 @@ export default function PartnersView() {
               >
                 <p.icon className="h-5 w-5" />
               </span>
-              <h3 className="mt-4 font-bold text-white">{p.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>
+              <h2 className="mt-4 text-base font-bold text-white">{p.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
                 {p.body}
               </p>
             </div>
@@ -117,7 +117,7 @@ export default function PartnersView() {
           <div className="lg:col-span-2">
             <Eyebrow accent={accent}>Partner inquiry</Eyebrow>
             <h2 className="mt-3 text-2xl font-bold text-white">Tell us what you sell.</h2>
-            <p className="mt-4 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)' }}>
+            <p className="mt-4 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
               Tell us about your products and markets. We’ll assess relevance and follow up.
               Prefer email? Reach us at{' '}
               <a
@@ -182,7 +182,7 @@ export default function PartnersView() {
 
             <label
               className="mt-5 flex items-start gap-2.5 text-sm"
-              style={{ color: 'rgba(255,255,255,0.45)' }}
+              style={{ color: 'rgba(255,255,255,0.6)' }}
             >
               <input
                 type="checkbox"

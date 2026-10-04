@@ -22,7 +22,7 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
   const helloEmail = s.helloEmail || PUBLIC_HELLO_EMAIL
 
   const linkCls = 'inline-flex min-h-8 items-center transition-colors duration-200 hover:text-white'
-  const muted = { color: 'rgba(255,255,255,0.4)' }
+  const muted = { color: 'rgba(255,255,255,0.6)' }
 
   return (
     <footer
@@ -44,7 +44,7 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
             <p className="mt-4 max-w-sm text-sm leading-relaxed" style={muted}>
               Swedish software company. Each product lives under its own name and its own site.
             </p>
-            <p className="mt-4 max-w-sm text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.26)' }}>
+            <p className="mt-4 max-w-sm text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
               {s.affiliateDisclosure}
             </p>
           </div>
@@ -87,7 +87,7 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
 
         <div
           className="mt-12 flex flex-col gap-2 pt-6 text-xs md:flex-row md:items-center md:justify-between"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.28)' }}
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.55)' }}
         >
           <span>© {new Date().getFullYear()} Nytto Labs. All rights reserved.</span>
           <span>

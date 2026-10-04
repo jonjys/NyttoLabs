@@ -109,10 +109,10 @@ const cardStyle = {
   background: 'rgba(255,255,255,0.025)',
 }
 
-function PayCard({ name, price, note, body, features, actions }) {
+function PayCard({ name, price, note, body, features, actions, className = '' }) {
   return (
     <article
-      className="flex h-full flex-col rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_var(--card-accent)]"
+      className={`flex h-full flex-col rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_var(--card-accent)] ${className}`}
       style={{ ...cardStyle, '--card-accent': `${accent}55`, borderColor: 'var(--card-border, rgba(255,255,255,0.08))' }}
       onMouseEnter={(e) => e.currentTarget.style.setProperty('--card-border', `${accent}4d`)}
       onMouseLeave={(e) => e.currentTarget.style.setProperty('--card-border', 'rgba(255,255,255,0.08)')}
@@ -121,7 +121,7 @@ function PayCard({ name, price, note, body, features, actions }) {
         <h2 className="text-lg font-bold tracking-tight text-white">{name}</h2>
         {price && <p className="text-2xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>}
       </div>
-      {note && <p className="mt-1 font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>{note}</p>}
+      {note && <p className="mt-1 font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.55)' }}>{note}</p>}
       <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{body}</p>
 
       <ul className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
@@ -174,8 +174,10 @@ export default function ProductsView() {
           </div>
         </div>
 
-        <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {/* Five cards fill whole rows: 2 + 2 + 1 (full width) on tablets, 3 + 2 on desktops. */}
+        <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-6">
           <PayCard
+            className="xl:col-span-2"
             name="DeployDoctor"
             price={t.ddPrice}
             note={t.ddNote}
@@ -189,13 +191,14 @@ export default function ProductsView() {
                 <a href={DEPLOYDOCTOR_PRICING} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
                   {t.ddPricing}
                 </a>
-                <a href={DEPLOYDOCTOR} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={DEPLOYDOCTOR} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {t.ddFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
             }
           />
           <PayCard
+            className="xl:col-span-2"
             name="StayTag"
             price={t.cyclePrice}
             note={t.cycleNote}
@@ -209,13 +212,14 @@ export default function ProductsView() {
                 <a href={STAYTAG_BULK} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
                   {t.cycleBulk}
                 </a>
-                <a href={STAYTAG_FREE} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={STAYTAG_FREE} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {t.cycleFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
             }
           />
           <PayCard
+            className="xl:col-span-2"
             name="Vatidence"
             price={t.viesPrice}
             note={t.viesNote}
@@ -227,13 +231,14 @@ export default function ProductsView() {
                   {t.viesPay} <ArrowRight className="h-4 w-4" />
                 </a>
                 <span className="hidden min-h-11 md:block" aria-hidden />
-                <a href={VATIDENCE_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={VATIDENCE_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {t.viesFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
             }
           />
           <PayCard
+            className="xl:col-span-3"
             name="Nytto Checkout"
             price={t.curlPrice}
             note={t.curlNote}
@@ -245,13 +250,14 @@ export default function ProductsView() {
                   {t.curlPay} <ArrowRight className="h-4 w-4" />
                 </a>
                 <span className="hidden min-h-11 md:block" aria-hidden />
-                <a href={CURL_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={CURL_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {t.curlFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
             }
           />
           <PayCard
+            className="md:col-span-2 xl:col-span-3"
             name="Failclosed"
             note={`${FAILCLOSED_STATUS} · ${t.failCategory}`}
             body={t.failBody}
