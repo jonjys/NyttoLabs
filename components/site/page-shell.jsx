@@ -77,7 +77,7 @@ export default function PageShell({
                 className="mb-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.26em] transition-colors duration-200 hover:text-white"
                 style={{ color: 'rgba(255,255,255,0.3)' }}
               >
-                ← Back to the lobby
+                ← Back to home
               </Link>
               {eyebrow && <Eyebrow accent={accent}>{eyebrow}</Eyebrow>}
               {title && (

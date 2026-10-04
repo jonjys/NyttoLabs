@@ -4,13 +4,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { SITE_NAV_CTA, SITE_NAV_LINKS } from './nav-links'
 
-const links = [
-  { href: '/', label: 'Home' },
-  { href: '/products', label: 'Products' },
-  { href: '/partners', label: 'Partners' },
-  { href: '/contact', label: 'Contact' },
-]
+const links = SITE_NAV_LINKS
+
 
 export default function SiteNav({ accent = '#00f5ff' }) {
   const [open, setOpen] = useState(false)
@@ -28,7 +25,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
   }, [])
 
   const isActive = (href) => (href === '/' ? pathname === '/' : pathname?.startsWith(href))
-  const showCta = pathname !== '/contact'
+  const showCta = pathname !== SITE_NAV_CTA.href
 
   return (
     // A floating glass capsule, inset from the top edge, so the chrome reads
@@ -75,11 +72,11 @@ export default function SiteNav({ accent = '#00f5ff' }) {
           ))}
           {showCta && (
             <Link
-              href="/contact"
+              href={SITE_NAV_CTA.href}
               className="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
               style={{ border: `1px solid ${accent}59`, color: accent }}
             >
-              Get in touch
+              {SITE_NAV_CTA.label}
             </Link>
           )}
         </nav>
@@ -121,12 +118,12 @@ export default function SiteNav({ accent = '#00f5ff' }) {
           ))}
           {showCta && (
             <Link
-              href="/contact"
+              href={SITE_NAV_CTA.href}
               onClick={() => setOpen(false)}
               className="mt-2 block rounded-full px-4 py-3 text-center text-sm font-bold"
               style={{ background: accent, color: '#03030c' }}
             >
-              Get in touch
+              {SITE_NAV_CTA.label}
             </Link>
           )}
         </div>
