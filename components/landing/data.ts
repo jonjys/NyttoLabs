@@ -59,6 +59,16 @@ export const PRODUCT_ACCENTS: Record<string, string> = {
   failclosed: '#ff5c7a',
 }
 
+// Action copy stays separate from catalog URLs, so catalog overrides still
+// determine where visitors go. Unlisted products get a named fallback.
+export const PRODUCT_CTA_LABELS: Record<string, string> = {
+  deploydoctor: 'Scan a repository',
+  cycletag: 'Create a reorder tag',
+  viesproof: 'Check a VAT number',
+  'curl-to-buy': 'Sell a digital file',
+  failclosed: 'Explore inventory sync',
+}
+
 export const HELLO_HREF = `mailto:${PUBLIC_HELLO_EMAIL}`
 export const HELLO_EMAIL = PUBLIC_HELLO_EMAIL
 
