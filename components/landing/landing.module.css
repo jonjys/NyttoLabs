@@ -757,6 +757,22 @@
   transition: background var(--t) ease;
 }
 .tileLink:hover { background: color-mix(in srgb, var(--tile-accent) 12%, transparent); }
+.productHost {
+  display: block;
+  max-width: 100%;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  font-size: 10px;
+  letter-spacing: 0;
+}
+.productCta {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 14px;
+  background: color-mix(in srgb, var(--tile-accent) 8%, transparent);
+}
+.productCta svg { flex-shrink: 0; }
+.sectionLede a { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
 
 /* Preview panes */
 .preview {
