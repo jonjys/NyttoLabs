@@ -16,7 +16,7 @@ export default function NotFound() {
             className="rounded-lg px-6 py-3 text-sm font-bold transition-transform duration-200 hover:scale-[1.03]"
             style={{ background: ACCENT.home, color: '#03030c' }}
           >
-            Back to the lobby
+            Back to home
           </Link>
           <Link
             href="/products"

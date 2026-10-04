@@ -1,5 +1,6 @@
 import { PUBLIC_HELLO_EMAIL, PUBLIC_STATUS_GROUPS } from '@/lib/relay/catalog'
 import { SITE_ORIGIN } from '@/lib/site'
+import { SITE_NAV_LINKS } from '@/components/site/nav-links'
 import type { NavSection, PublicProduct } from './types'
 
 // Catalog statuses shown on the landing page. Only live products are shown,
@@ -30,12 +31,8 @@ export const NAV_SECTIONS: NavSection[] = [
   { num: '06', label: 'Partners & Contact', href: '#partners' },
 ]
 
-// Existing site routes (see lib/site.js PUBLIC_ROUTES and components/site/nav.jsx).
-export const SITE_ROUTES = [
-  { href: '/products', label: 'All products' },
-  { href: '/partners', label: 'Partners' },
-  { href: '/contact', label: 'Contact' },
-] as const
+// Site pages for the sidebar and palette: the shared menu minus Home (this page).
+export const SITE_ROUTES: ReadonlyArray<{ href: string; label: string }> = SITE_NAV_LINKS.filter((l) => l.href !== '/')
 
 // Maps catalog slugs to the in-page anchor used for each product tile.
 export const PRODUCT_ANCHORS: Record<string, string> = {

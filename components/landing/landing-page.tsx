@@ -1,14 +1,14 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import Link from 'next/link'
+import { SITE_NAV_CTA, SITE_NAV_LINKS } from '@/components/site/nav-links'
 import { ArrowRight, Menu, Search } from 'lucide-react'
 import { usePublicProducts } from '@/hooks/use-public-catalog'
 import SiteFooter from '@/components/site/footer'
 import BentoGrid from './bento-grid'
 import CommandPalette from './command-palette'
 import DecodeText from './decode-text'
-import { ExplorerProvider, useExplorer } from './explorer'
-import ExplorerHud from './explorer-hud'
 import RelayPlayground from './relay-playground'
 import ShortcutsDialog from './shortcuts-dialog'
 import SignalField from './signal-field'
@@ -99,11 +99,7 @@ function useActiveSection(): string {
 }
 
 export default function LandingPage() {
-  return (
-    <ExplorerProvider>
-      <Landing />
-    </ExplorerProvider>
-  )
+  return <Landing />
 }
 
 function isTypingTarget(el: EventTarget | null): boolean {
@@ -123,7 +119,6 @@ function Landing() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
-  const { complete } = useExplorer()
   const [toast, setToast] = useState<string | null>(null)
   const [shortcut, setShortcut] = useState('⌘K')
   const barRef = useRef<HTMLDivElement>(null)
@@ -179,13 +174,6 @@ function Landing() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [overlayOpen])
-
-  useEffect(() => {
-    if (paletteOpen) complete('palette')
-  }, [paletteOpen, complete])
-  useEffect(() => {
-    if (shortcutsOpen) complete('shortcuts')
-  }, [shortcutsOpen, complete])
 
   // Close the mobile drawer when resizing up to the sidebar layout.
   useEffect(() => {
@@ -323,6 +311,13 @@ function Landing() {
             </span>
             <span className={`${s.brandText} ${s.mono}`}>NYTTO LABS</span>
           </a>
+          <nav className={s.headerNav} aria-label="Company">
+            {SITE_NAV_LINKS.map((l) => (
+              <Link key={l.href} href={l.href} className={s.headerNavLink} aria-current={l.href === '/' ? 'page' : undefined}>
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           <div className={s.headerSpacer} />
           <button
             type="button"
@@ -335,10 +330,9 @@ function Landing() {
             <span className={s.searchLabel}>Search or jump to…</span>
             <kbd className={s.kbd}>{shortcut}</kbd>
           </button>
-          <ExplorerHud notify={notify} />
-          <a href={HELLO_HREF} className={s.headerCta}>
-            Get in touch
-          </a>
+          <Link href={SITE_NAV_CTA.href} className={s.headerCta}>
+            {SITE_NAV_CTA.label}
+          </Link>
         </header>
 
         <div className={`${s.layout} ${collapsed ? s.layoutCollapsed : ''}`}>
