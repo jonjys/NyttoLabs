@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { ArrowUpRight, Play, RotateCcw } from 'lucide-react'
 import { PRODUCT_ACCENTS } from './data'
-import { useExplorer } from './explorer'
 import type { PublicProduct } from './types'
 import s from './landing.module.css'
 
@@ -40,7 +39,6 @@ function resolveDemo(product: PublicProduct, action: string, country: Country): 
 const STAGE_MS = 190
 
 export default function RelayPlayground({ products }: { products: PublicProduct[] }) {
-  const { complete } = useExplorer()
   const [slug, setSlug] = useState(products[0]?.slug ?? '')
   const product = products.find((p) => p.slug === slug) ?? products[0]
   const actions = product?.actions.length ? product.actions : ['open']
@@ -89,7 +87,6 @@ export default function RelayPlayground({ products }: { products: PublicProduct[
         timers.current.push(window.setTimeout(() => setStage(i), i * STAGE_MS))
       }
     }
-    complete('route-intent')
   }
 
   // Changing an input resets the trace so it never shows stale results.

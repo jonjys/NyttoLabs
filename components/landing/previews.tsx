@@ -3,7 +3,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Check, Copy } from 'lucide-react'
 import { copyText } from './clipboard'
-import { useExplorer } from './explorer'
 import s from './landing.module.css'
 
 // Every preview in this file is self-contained and client-side only.
@@ -92,7 +91,6 @@ const DEMO_LABEL = {
 export function StayTagPreview() {
   const cells = useMemo(demoQrCells, [])
   const [scanned, setScanned] = useState(false)
-  const { complete } = useExplorer()
 
   return (
     <div className={s.preview}>
@@ -117,7 +115,6 @@ export function StayTagPreview() {
           className={s.miniBtn}
           onClick={() => {
             setScanned((v) => !v)
-            complete('scan-label')
           }}
           aria-pressed={scanned}
         >
@@ -162,12 +159,10 @@ function checkDemoVat(raw: string): VatOutcome {
 export function VatidencePreview({ productUrl }: { productUrl: string }) {
   const [value, setValue] = useState('')
   const [result, setResult] = useState<VatOutcome | null>(null)
-  const { complete } = useExplorer()
 
   const check = (v: string) => {
     const outcome = checkDemoVat(v)
     setResult(outcome)
-    if (outcome.state === 'valid' || outcome.state === 'invalid') complete('check-vat')
   }
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -254,7 +249,6 @@ const CURL_FLOW = [
 
 export function NyttoCheckoutPreview({ productUrl, notify }: { productUrl: string; notify: Notify }) {
   const [step, setStep] = useState(0)
-  const { complete } = useExplorer()
   // Static snippet: a HEAD request to the product's existing public URL.
   const snippet = `curl -sI ${productUrl}`
 
@@ -266,7 +260,7 @@ export function NyttoCheckoutPreview({ productUrl, notify }: { productUrl: strin
           <span className={s.termDot} />
           <span className={s.termDot} />
           <span className={`${s.termTitle} ${s.mono}`}>TERMINAL</span>
-          <CopyButton text={snippet} label="curl snippet" notify={notify} onCopied={() => complete('curl-flow')} />
+          <CopyButton text={snippet} label="curl snippet" notify={notify} />
         </div>
         <pre className={s.code}>
           <span className={s.codePrompt}>$ </span>
@@ -289,7 +283,6 @@ export function NyttoCheckoutPreview({ productUrl, notify }: { productUrl: strin
               className={`${s.flowStep} ${i === step ? s.flowStepOn : ''}`}
               onClick={() => {
                 setStep(i)
-                if (i === CURL_FLOW.length - 1) complete('curl-flow')
               }}
               aria-pressed={i === step}
               style={{ width: '100%' }}
@@ -322,7 +315,6 @@ const SCAN_ICON: Record<ScanState, string> = { pass: '✓', fail: '✕', warn: '
 
 export function DeployDoctorPreview() {
   const [scanned, setScanned] = useState(false)
-  const { complete } = useExplorer()
   const iconClass: Record<ScanState, string> = { pass: s.scanPass, fail: s.scanFail, warn: s.scanWarn }
 
   return (
@@ -336,7 +328,6 @@ export function DeployDoctorPreview() {
           className={s.miniBtn}
           onClick={() => {
             setScanned((v) => !v)
-            complete('deploy-scan')
           }}
           aria-pressed={scanned}
         >
@@ -378,7 +369,6 @@ const SYNC_SCENARIOS: { id: SyncScenario; label: string; warehouse: number | nul
 export function FailclosedPreview() {
   const [scenario, setScenario] = useState<SyncScenario>('drift')
   const [ran, setRan] = useState(false)
-  const { complete } = useExplorer()
   const current = SYNC_SCENARIOS.find((sc) => sc.id === scenario) ?? SYNC_SCENARIOS[0]
   const repaired = ran && current.warehouse !== null
   const refused = ran && current.warehouse === null
@@ -389,7 +379,6 @@ export function FailclosedPreview() {
   }
   const run = () => {
     setRan(true)
-    if (current.warehouse === null) complete('failclosed-refuse')
   }
 
   return (
