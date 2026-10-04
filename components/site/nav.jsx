@@ -65,7 +65,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
               href={l.href}
               aria-current={isActive(l.href) ? 'page' : undefined}
               className="inline-flex min-h-11 items-center text-sm transition-colors duration-200 hover:text-white"
-              style={{ color: isActive(l.href) ? '#fff' : 'rgba(255,255,255,0.45)' }}
+              style={{ color: isActive(l.href) ? '#fff' : 'rgba(255,255,255,0.6)' }}
             >
               {l.label}
             </Link>

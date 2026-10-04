@@ -9,8 +9,9 @@
   --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.14);
   --text: #f4f4f8;
-  --muted: rgba(255, 255, 255, 0.56);
-  --faint: rgba(255, 255, 255, 0.36);
+  --muted: rgba(255, 255, 255, 0.62);
+  /* ≥ 4.5:1 on the darkest surface for the small mono labels that use it. */
+  --faint: rgba(255, 255, 255, 0.55);
   --accent: #00f5ff;
   --header-h: 64px;
   --gutter: 16px;

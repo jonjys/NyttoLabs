@@ -83,7 +83,7 @@ export default function ContactView() {
             <ul className="mt-5 divide-y" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
               {inboxes.map((item) => (
                 <li key={item.email} className="flex flex-col gap-0.5 py-4 first:pt-0">
-                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.42)' }}>{item.label}</span>
+                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>{item.label}</span>
                   <a
                     href={`mailto:${item.email}`}
                     className="inline-flex min-h-9 w-fit items-center break-all text-[15px] font-medium transition-opacity duration-200 hover:opacity-80"
@@ -126,7 +126,7 @@ export default function ContactView() {
 
             <label
               className="mt-5 flex items-start gap-2.5 text-sm"
-              style={{ color: 'rgba(255,255,255,0.45)' }}
+              style={{ color: 'rgba(255,255,255,0.6)' }}
             >
               <input
                 type="checkbox"
