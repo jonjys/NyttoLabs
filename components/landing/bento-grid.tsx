@@ -2,7 +2,7 @@
 
 import type { CSSProperties, PointerEvent, ReactNode } from 'react'
 import { ArrowUpRight } from 'lucide-react'
-import { API_ENDPOINTS, LEGACY_ANCHORS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, endpointUrl, statusLabel } from './data'
+import { API_ENDPOINTS, LEGACY_ANCHORS, PRODUCT_ACCENTS, PRODUCT_ANCHORS, PRODUCT_CTA_LABELS, endpointUrl, statusLabel } from './data'
 import {
   CopyButton,
   DeployDoctorPreview,
@@ -95,11 +95,14 @@ function ProductTile({ product, notify }: { product: PublicProduct; notify: Noti
       <p className={s.tileDesc}>{product.description}</p>
       {preview}
       <div className={`${s.tileFoot} ${s.mono}`}>
-        <span>{product.primaryMarket}</span>
+        <span>
+          {product.primaryMarket}
+          {product.url && <span className={s.productHost}>{hostOf(product.url)}</span>}
+        </span>
         {/* Products without a published domain in the catalog render without a link. */}
         {product.url && (
-          <a href={product.url} target="_blank" rel="noreferrer" className={s.tileLink}>
-            {hostOf(product.url)} <ArrowUpRight size={14} aria-hidden="true" />
+          <a href={product.url} target="_blank" rel="noreferrer" className={`${s.tileLink} ${s.productCta}`}>
+            {PRODUCT_CTA_LABELS[product.slug] ?? `Open ${product.name}`} <ArrowUpRight size={14} aria-hidden="true" />
           </a>
         )}
       </div>
