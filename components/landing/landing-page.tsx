@@ -351,21 +351,22 @@ function Landing() {
                 </span>
                 <h1 id="hero-title" className={s.h1}>
                   <span className={s.h1Line}>
-                    <DecodeText text="Focused software." />
+                    <DecodeText text="Check VAT." />
                   </span>{' '}
-                  <span className={s.h1Alt}>Invisible infrastructure.</span>
+                  <span className={s.h1Line}>Catch deploy errors.</span>{' '}
+                  <span className={s.h1Alt}>Sell digital files.</span>
                 </h1>
                 <p className={s.lede}>
-                  We build small products that finish a job — VAT proof, reorder labels, Vercel deploy checks — and one routing
-                  layer underneath them that turns real intent into the right next action.
+                  Practical tools for EU VAT checks, Vercel deployment checks and digital file sales.
+                  Plus QR reorder labels and inventory sync. Choose the tool for the job and open it directly.
                 </p>
                 <div className={s.ctaRow}>
                   <a href="#products" className={s.btnPrimary}>
-                    What you can buy today <ArrowRight size={16} aria-hidden="true" />
+                    Find your tool <ArrowRight size={16} aria-hidden="true" />
                   </a>
-                  <a href="#relay" className={s.btnGhost}>
-                    How Relay works
-                  </a>
+                  <Link href="/products" className={s.btnGhost}>
+                    Compare products & pricing
+                  </Link>
                 </div>
                 <nav className={s.heroChips} aria-label="Products">
                   {products.map((p) => {
@@ -404,12 +405,13 @@ function Landing() {
                 <div>
                   <div className={`${s.eyebrow} ${s.mono}`}>Portfolio</div>
                   <h2 id="products-title" className={s.h2}>
-                    Each product lives under its own name.
+                    Pick a tool. Finish the job.
                   </h2>
                 </div>
                 <p className={s.sectionLede}>
-                  No bundles, no suite. {countWord(liveCount)} live products, each under its own name. Try the demos below
-                  — they run in your browser only.
+                  {countWord(liveCount)} live products. Preview a tool below, then open its site to use it.
+                  The demos use illustrative data and run in your browser only.{' '}
+                  <Link href="/products">Compare pricing and free options →</Link>
                 </p>
               </div>
               <BentoGrid products={products} notify={notify} />
@@ -419,7 +421,7 @@ function Landing() {
             <section id="relay" className={`${s.section} ${s.anchor}`} aria-labelledby="relay-title">
               <div className={s.relayPanel}>
                 <div>
-                  <div className={`${s.eyebrow} ${s.mono}`}>Relay · playground</div>
+                  <div className={`${s.eyebrow} ${s.mono}`}>For partners · Nytto Relay</div>
                   <h2 id="relay-title" className={s.h2}>
                     Intent in.{' '}
                     <span className={s.h1Alt} style={{ display: 'inline' }}>
@@ -427,9 +429,9 @@ function Landing() {
                     </span>
                   </h2>
                   <p className={s.sectionLede} style={{ marginTop: 14, maxWidth: '34rem' }}>
-                    Products create or detect commercial intent. Relay resolves it deterministically against an
-                    allowlist of approved partner destinations, records attribution, and fails closed when no good answer
-                    exists. Try it — pick an app, an action and a market, and watch the route resolve.
+                    Relay connects a product action to a relevant partner — for example, a reorder scan to a replacement
+                    search. It uses approved destinations and records referrals. If no approved match exists, it sends
+                    visitors nowhere. Try the simulation with an app, an action and a market.
                   </p>
                 </div>
 
