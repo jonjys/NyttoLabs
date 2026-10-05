@@ -13,6 +13,9 @@ const accent = ACCENT.products
 // Stripe account first.
 const STAYTAG_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
 // StayTag's own domain; cycletag.eu 308-redirects to it (checked 2026-09-30).
+// As of 2026-10-05 it has no DNS record (see lib/relay/catalog.js) — not
+// changed here since lib/site.test.js locks this exact literal; the homepage
+// grid is covered by the PRODUCT_URL_STAYTAG env override instead.
 const STAYTAG_BULK = 'https://staytag.nyttolabs.com/bulk'
 const STAYTAG_FREE = 'https://staytag.nyttolabs.com/#create'
 const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
