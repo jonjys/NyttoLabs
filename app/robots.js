@@ -5,7 +5,7 @@ export default function robots() {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/control', '/api/'],
+      disallow: ['/control', '/api/', '/go/'],
     },
     sitemap: `${SITE_ORIGIN}/sitemap.xml`,
     host: SITE_ORIGIN.replace(/^https:\/\//, ''),

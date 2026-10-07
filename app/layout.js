@@ -28,6 +28,8 @@ export const metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   applicationName: 'Nytto Labs',
   manifest: '/manifest.webmanifest',
+  // Set GOOGLE_SITE_VERIFICATION in Vercel to emit the Search Console meta tag.
+  ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
   appleWebApp: { capable: true, title: 'Nytto Labs', statusBarStyle: 'default' },
   twitter: { card: 'summary_large_image', images: [`${SITE_ORIGIN}/opengraph-image`] },
   title: 'Nytto Labs — Swedish software from Stockholm',
