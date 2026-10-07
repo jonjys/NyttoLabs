@@ -1,9 +1,9 @@
 'use client'
 
-// The landing page now lives in components/landing (TypeScript). This file is
-// kept so app/page.js and the existing public-copy tests keep their entry point.
-import LandingPage from '@/components/landing/landing-page'
+// Landing v2 — portal lobby, cursor-reactive intent field, Relay simulator.
+// The previous landing stays in components/landing for reference.
+import LandingV2 from '@/components/landing-v2/landing-v2'
 
 export default function HomeView() {
-  return <LandingPage />
+  return <LandingV2 />
 }
