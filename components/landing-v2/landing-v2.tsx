@@ -9,6 +9,7 @@ import { API_ENDPOINTS, HELLO_EMAIL, HELLO_HREF, PRODUCT_ANCHORS, PRODUCT_CTA_LA
 import type { PublicProduct } from '@/components/landing/types'
 import IntentField from './intent-field'
 import RelaySim from './relay-sim'
+import Wordmark from './wordmark'
 import s from './landing-v2.module.css'
 
 // Pricing / free-tier copy is marketing copy, not catalog data — kept here, keyed by catalog slug.
@@ -259,6 +260,7 @@ export default function LandingV2() {
         </section>
       </main>
 
+      <Wordmark />
       <SiteFooter accent="#00f5ff" />
     </div>
   )
