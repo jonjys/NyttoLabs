@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "skills": {
+    "moda-audio": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-audio/SKILL.md",
+      "computedHash": "42a20238fdefbb25447bdda6f42b14324472025bfa33d317251cf508f053305e"
+    },
+    "moda-automate": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-automate/SKILL.md",
+      "computedHash": "b1d1017ffbd4fb89ccf9d08c093b899dddf677a72d38b0903942f9e1ef93b318"
+    },
+    "moda-brand": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-brand/SKILL.md",
+      "computedHash": "18d3258b85266d30ca7274def9fe8153789c0cc1aaa1c537bbf29645327b87f3"
+    },
+    "moda-chart": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-chart/SKILL.md",
+      "computedHash": "3a96826ef611d95fb42a0ca90bb949073e0400279533724891b884c1c4103081"
+    },
+    "moda-context": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-context/SKILL.md",
+      "computedHash": "b4d35377bed9205c088451cda461e915f2a832b311ce42c6be7695c206e88a2b"
+    },
+    "moda-core": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-core/SKILL.md",
+      "computedHash": "469abf04b0e0a13478a880095853d168ace1cc6226916b87f3e0a9fb18213c96"
+    },
+    "moda-deck": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-deck/SKILL.md",
+      "computedHash": "e131a67864e06e874b5c54b31184aabf4db184c7b1c49ccd826d0bbafc56f42b"
+    },
+    "moda-deck-pptx": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-deck-pptx/SKILL.md",
+      "computedHash": "7e3131a7147e9472295f670aa28a759ed22c1d05c6ed5a00ef5e42c1fdaf369d"
+    },
+    "moda-deck-theme": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-deck-theme/SKILL.md",
+      "computedHash": "a5a0a06c26a887902c6a026b5ef435e555f8be3af17bf4146b75a16c4d4cd950"
+    },
+    "moda-diagram": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-diagram/SKILL.md",
+      "computedHash": "c89dcf7b14f451aed97e7a1f0cc6222b7b6907070d5e26ea749529d0d151be56"
+    },
+    "moda-document": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-document/SKILL.md",
+      "computedHash": "0eb9822adffd8ac8520647534e6a1edecc7bc1813d966f08a134607eccb0642b"
+    },
+    "moda-document-print": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-document-print/SKILL.md",
+      "computedHash": "2743a9d810ba0ab3a25f056ba01a93154533dd89bf3de8eb15d800ba42c988a2"
+    },
+    "moda-edit": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-edit/SKILL.md",
+      "computedHash": "ef42ac135f35b97330dffc2b06a25a2fc9adec0ddd3c32ae53d6048f2babe73c"
+    },
+    "moda-image": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-image/SKILL.md",
+      "computedHash": "a289a55b465ee74eddce0ffca7959642659104012a93899cf66205afb5ff23df"
+    },
+    "moda-library": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-library/SKILL.md",
+      "computedHash": "2f904b7d3640b64d129d4d2a5b021ce1a83914174ecd276e4f9b141d4deecd43"
+    },
+    "moda-mockup": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-mockup/SKILL.md",
+      "computedHash": "af47b583b24f4dbcb30e86c5117164b8813d12c6e9f0c40b1a91c9d455407162"
+    },
+    "moda-social": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-social/SKILL.md",
+      "computedHash": "b759244078ec2744683a48854c7de79619eec8a16f39add311fd4c06812192a7"
+    },
+    "moda-social-ads": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-social-ads/SKILL.md",
+      "computedHash": "d027b5d29e0e60dc5d5f25f148c026a9079c69cd724492ae98ba701a15617a6b"
+    },
+    "moda-social-instagram": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-social-instagram/SKILL.md",
+      "computedHash": "14339ce51e86d789f33c4b9418494ddc5de4ef5950d52aeb46f5e59b163b069a"
+    },
+    "moda-social-linkedin": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-social-linkedin/SKILL.md",
+      "computedHash": "f071c2b7ae73d8139323dc0973b7315a9fe295712b4c9e1b5aaa7a7923787b50"
+    },
+    "moda-social-tiktok": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-social-tiktok/SKILL.md",
+      "computedHash": "26e92ef58f2ad5228af05e5b62fefc469445eebd99a55b4ac168a624fc31d977"
+    },
+    "moda-social-youtube": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-social-youtube/SKILL.md",
+      "computedHash": "a52e01496e389635852ed44fc3fe58f7ba3df0848f958840cf005076dbbdf654"
+    },
+    "moda-templates": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-templates/SKILL.md",
+      "computedHash": "2513d708ce781b501524a0f65750029240323ebcec5780ef0f62b9885a026821"
+    },
+    "moda-video": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-video/SKILL.md",
+      "computedHash": "f4038de3c32d7d3c95f4ecee92850b74f77176d1d042cb02892eb01bd3b7c671"
+    },
+    "moda-video-clip": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-video-clip/SKILL.md",
+      "computedHash": "ebf378d3354795c615f7aaa7df6252090418f5412b217366a84ef809e70d298e"
+    },
+    "moda-video-footage": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-video-footage/SKILL.md",
+      "computedHash": "65da06b56456ae9f8b48e80c82c4156efd10e6169d4fd9151425a96cab822797"
+    },
+    "moda-video-motion": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-video-motion/SKILL.md",
+      "computedHash": "da178a063108e04f3ceeaabb98930fedf64793f61448f5f886a1377edcc32df2"
+    },
+    "moda-website": {
+      "source": "moda-design/moda",
+      "sourceType": "github",
+      "skillPath": "skills/moda-website/SKILL.md",
+      "computedHash": "b91ec6b48278b653aa690718c621b74645ef31507a1b1074bdf778c3e96dfbb2"
+    }
+  }
+}
