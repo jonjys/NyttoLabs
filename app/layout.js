@@ -3,6 +3,7 @@ import { Instrument_Sans, Instrument_Serif, IBM_Plex_Mono } from 'next/font/goog
 import { Providers } from './providers'
 import { OrganizationJsonLd } from '@/components/site/json-ld'
 import { HOME_DESCRIPTION, SITE_ORIGIN } from '@/lib/site'
+import { Analytics } from '@vercel/analytics/next'
 
 const sans = Instrument_Sans({
   subsets: ['latin'],
@@ -53,6 +54,7 @@ export default function RootLayout({ children }) {
       <body className="font-sans">
         <OrganizationJsonLd />
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   )
