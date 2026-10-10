@@ -4,9 +4,10 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   LayoutDashboard, Boxes, Zap, Handshake, Tags, MousePointerClick, BadgeDollarSign,
   FlaskConical, Inbox, Beaker, Settings as SettingsIcon, BookOpen, LogOut, Radio,
-  RefreshCw, Trash2, Download, ArrowUpRight, ShieldAlert, Activity,
+  RefreshCw, Trash2, Download, ArrowUpRight, ShieldAlert, Activity, Sparkles, Mail, Copy,
 } from 'lucide-react'
 import { formatMinor } from '@/lib/relay/money'
+import { defaultPublicProducts } from '@/lib/relay/catalog'
 
 // ---------- api helpers ----------
 const api = {
@@ -502,48 +503,215 @@ function Experiments() {
 }
 
 // ---------- Inquiries ----------
-function Inquiries() {
+const CATEGORY_STYLE = {
+  partner: 'bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30',
+  customer: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30',
+  support: 'bg-amber-500/15 text-amber-300 ring-amber-500/30',
+  press: 'bg-sky-500/15 text-sky-300 ring-sky-500/30',
+  spam: 'bg-stone-500/15 text-stone-400 ring-stone-500/30',
+  other: 'bg-stone-500/15 text-stone-300 ring-stone-500/30',
+}
+const PRIORITY_STYLE = {
+  high: 'bg-rose-500/15 text-rose-300 ring-rose-500/30',
+  normal: 'bg-white/5 text-stone-300 ring-white/15',
+  low: 'bg-white/5 text-stone-500 ring-white/10',
+}
+const TRIAGE_ERRORS = {
+  ai_not_configured: 'AI is not configured. Add ANTHROPIC_API_KEY in Vercel and redeploy.',
+  rate_limited: 'Too many requests. Wait a minute and try again.',
+  refused: 'The model declined this message. Handle it manually.',
+  auth: 'The Anthropic API key was rejected. Check ANTHROPIC_API_KEY.',
+  truncated: 'The answer was cut off. Try again.',
+  invalid_output: 'The answer could not be read. Try again.',
+  api_error: 'The Anthropic API returned an error (possibly the monthly spend limit). Try again later.',
+  network: 'Could not reach the Anthropic API.',
+}
+const productName = (slug) => defaultPublicProducts().find((p) => p.slug === slug)?.name || slug
+
+function Pill({ cls, children }) {
+  return <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ${cls}`}>{children}</span>
+}
+
+function InquiryInbox({ kind, endpoint, title, desc, empty, who, email, fields }) {
   const [items, setItems] = useState([])
-  useEffect(() => { api.get('/admin/inquiries').then((d) => setItems(d.items || [])) }, [])
+  const [aiConfigured, setAiConfigured] = useState(false)
+  const [busy, setBusy] = useState({})
+  const [errors, setErrors] = useState({})
+  const [open, setOpen] = useState(null)
+  const [drafts, setDrafts] = useState({})
+  const [running, setRunning] = useState(false)
+  const [copied, setCopied] = useState(null)
+
+  const load = useCallback(() => {
+    api.get(endpoint).then((d) => {
+      setItems(d.items || [])
+      setAiConfigured(!!d.aiConfigured)
+    })
+  }, [endpoint])
+  useEffect(() => { load() }, [load])
+
+  const analyze = async (id) => {
+    setBusy((b) => ({ ...b, [id]: true }))
+    setErrors((e) => ({ ...e, [id]: null }))
+    try {
+      const res = await fetch('/api/admin/triage', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind, id }),
+      })
+      const d = await res.json().catch(() => ({}))
+      if (res.ok && d.triage) {
+        setItems((list) => list.map((it) => (it.id === id ? { ...it, triage: d.triage } : it)))
+        setDrafts((m) => ({ ...m, [id]: undefined }))
+      } else {
+        setErrors((e) => ({ ...e, [id]: TRIAGE_ERRORS[d.reason] || TRIAGE_ERRORS[d.error] || 'Analysis failed.' }))
+      }
+    } catch {
+      setErrors((e) => ({ ...e, [id]: TRIAGE_ERRORS.network }))
+    } finally {
+      setBusy((b) => ({ ...b, [id]: false }))
+    }
+  }
+
+  const pending = items.filter((it) => !it.triage)
+  const analyzeAll = async () => {
+    setRunning(true)
+    for (const it of pending) {
+      // One at a time keeps the cost visible and stays well under rate limits.
+      // eslint-disable-next-line no-await-in-loop
+      await analyze(it.id)
+    }
+    setRunning(false)
+  }
+
+  const copy = async (id, text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(id)
+      setTimeout(() => setCopied(null), 1500)
+    } catch { /* clipboard blocked */ }
+  }
+
   return (
     <div>
-      <Head title="Partner inquiries" desc="Stored safely in the database. Email delivery is not configured \u2014 nothing is falsely marked as sent." />
-      <Table
-        empty="No inquiries yet."
-        rows={items}
-        cols={[
-          { k: 'created_at', label: 'When', render: (r) => new Date(r.created_at).toLocaleString() },
-          { k: 'company', label: 'Company' },
-          { k: 'contactName', label: 'Contact' },
-          { k: 'workEmail', label: 'Email' },
-          { k: 'markets', label: 'Markets' },
-          { k: 'categories', label: 'Categories' },
-          { k: 'proposedPartnership', label: 'Proposal' },
-        ]}
-      />
+      <Head title={title} desc={desc}>
+        <button className={btnGhost} onClick={load}><RefreshCw className="h-4 w-4" /> Refresh</button>
+        <button className={btn} disabled={!aiConfigured || running || pending.length === 0} onClick={analyzeAll}>
+          <Sparkles className="h-4 w-4" /> {running ? 'Analyzing…' : `Analyze new (${pending.length})`}
+        </button>
+      </Head>
+      {!aiConfigured && (
+        <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
+          AI triage is off. Add <code className="text-amber-100">ANTHROPIC_API_KEY</code> to the Vercel project (Production) and redeploy to turn it on.
+        </div>
+      )}
+      {!items.length && <div className="rounded-lg border border-dashed border-white/10 bg-[#1a1a17] p-8 text-center text-sm text-stone-500">{empty}</div>}
+      <ul className="space-y-3">
+        {items.map((it) => {
+          const t = it.triage
+          const isOpen = open === it.id
+          const draft = drafts[it.id] ?? t?.draft_reply ?? ''
+          const to = it[email]
+          const mailto = `mailto:${to}?subject=${encodeURIComponent('Re: your message to Nytto Labs')}&body=${encodeURIComponent(draft)}`
+          return (
+            <li key={it.id} className={card}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <button type="button" className="min-w-0 flex-1 text-left" onClick={() => setOpen(isOpen ? null : it.id)} aria-expanded={isOpen}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-medium text-white">{who(it)}</span>
+                    <span className="text-xs text-stone-500">{to}</span>
+                    {t && <Pill cls={CATEGORY_STYLE[t.category] || CATEGORY_STYLE.other}>{t.category}</Pill>}
+                    {t && <Pill cls={PRIORITY_STYLE[t.priority] || PRIORITY_STYLE.normal}>{t.priority}</Pill>}
+                    {t && t.product !== 'none' && <Pill cls="bg-white/5 text-stone-300 ring-white/15">{productName(t.product)}</Pill>}
+                  </div>
+                  <p className="mt-1.5 text-sm text-stone-300">
+                    {t ? t.summary_sv : String(it.message || it.proposedPartnership || '').slice(0, 220) || '—'}
+                  </p>
+                  <p className="mt-1 text-xs text-stone-500">{new Date(it.created_at).toLocaleString()}</p>
+                </button>
+                <button className={btnGhost} disabled={!aiConfigured || busy[it.id]} onClick={() => analyze(it.id)}>
+                  <Sparkles className="h-4 w-4" /> {busy[it.id] ? 'Analyzing…' : t ? 'Re-analyze' : 'Analyze'}
+                </button>
+              </div>
+              {errors[it.id] && <p className="mt-2 text-sm text-rose-300">{errors[it.id]}</p>}
+
+              {isOpen && (
+                <div className="mt-4 grid gap-4 border-t border-white/10 pt-4 lg:grid-cols-2">
+                  <dl className="space-y-2 text-sm">
+                    {fields.map(([k, label]) => it[k] ? (
+                      <div key={k}>
+                        <dt className="text-xs text-stone-500">{label}</dt>
+                        <dd className="whitespace-pre-wrap break-words text-stone-200">{String(it[k])}</dd>
+                      </div>
+                    ) : null)}
+                  </dl>
+                  <div>
+                    {t ? (
+                      <>
+                        <p className="text-xs text-stone-500">Suggested next step</p>
+                        <p className="mt-1 text-sm text-stone-200">{t.suggested_action_sv}</p>
+                        {t.category !== 'spam' && (
+                          <>
+                            <p className="mt-4 text-xs text-stone-500">Draft reply ({t.language}) — edit before sending</p>
+                            <textarea
+                              className={`${inputCls} mt-1 min-h-48 font-sans`}
+                              value={draft}
+                              onChange={(e) => setDrafts((m) => ({ ...m, [it.id]: e.target.value }))}
+                            />
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <a className={btn} href={mailto}><Mail className="h-4 w-4" /> Open in email</a>
+                              <button className={btnGhost} onClick={() => copy(it.id, draft)}>
+                                <Copy className="h-4 w-4" /> {copied === it.id ? 'Copied' : 'Copy'}
+                              </button>
+                            </div>
+                          </>
+                        )}
+                        <p className="mt-3 text-[11px] text-stone-500">AI-generated by {t.model}. Nothing is sent automatically.</p>
+                      </>
+                    ) : (
+                      <p className="text-sm text-stone-500">Not analyzed yet.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </li>
+          )
+        })}
+      </ul>
     </div>
+  )
+}
+
+function Inquiries() {
+  return (
+    <InquiryInbox
+      kind="partner"
+      endpoint="/admin/inquiries"
+      title="Partner inquiries"
+      desc="Stored in the database. Email delivery is not configured. AI triage runs only when you press Analyze."
+      empty="No inquiries yet."
+      who={(r) => `${r.company} · ${r.contactName}`}
+      email="workEmail"
+      fields={[
+        ['company', 'Company'], ['contactName', 'Contact'], ['workEmail', 'Email'], ['website', 'Website'],
+        ['markets', 'Markets'], ['categories', 'Categories'], ['affiliateNetwork', 'Affiliate network'],
+        ['proposedPartnership', 'Proposal'], ['message', 'Message'],
+      ]}
+    />
   )
 }
 
 // ---------- Contact messages ----------
 function ContactMessages() {
-  const [items, setItems] = useState([])
-  useEffect(() => { api.get('/admin/contact-inquiries').then((d) => setItems(d.items || [])) }, [])
   return (
-    <div>
-      <Head title="Contact messages" desc="Stored safely in the database. Email delivery is not configured — nothing is falsely marked as sent." />
-      <Table
-        empty="No messages yet."
-        rows={items}
-        cols={[
-          { k: 'created_at', label: 'When', render: (r) => new Date(r.created_at).toLocaleString() },
-          { k: 'name', label: 'Name' },
-          { k: 'email', label: 'Email' },
-          { k: 'reason', label: 'Reason' },
-          { k: 'message', label: 'Message' },
-        ]}
-      />
-    </div>
+    <InquiryInbox
+      kind="contact"
+      endpoint="/admin/contact-inquiries"
+      title="Contact messages"
+      desc="Stored in the database. Email delivery is not configured. AI triage runs only when you press Analyze."
+      empty="No messages yet."
+      who={(r) => r.name}
+      email="email"
+      fields={[['name', 'Name'], ['email', 'Email'], ['reason', 'Reason'], ['message', 'Message']]}
+    />
   )
 }
 

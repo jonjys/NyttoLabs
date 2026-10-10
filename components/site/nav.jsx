@@ -4,7 +4,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import { SITE_NAV_CTA, SITE_NAV_LINKS } from './nav-links'
+import { useLocale } from '@/hooks/use-locale'
+import LocaleToggle from './locale-toggle'
+import { SITE_NAV_CTA, SITE_NAV_LINKS, navLabel } from './nav-links'
 
 const links = SITE_NAV_LINKS
 
@@ -14,6 +16,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
   const [scrolled, setScrolled] = useState(false)
   const toggleRef = useRef(null)
   const pathname = usePathname()
+  const [locale] = useLocale()
 
   useEffect(() => { setOpen(false) }, [pathname])
 
@@ -58,7 +61,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
           <span className="font-mono text-xs tracking-[0.3em] text-white">NYTTO LABS</span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Company">
+        <nav className="hidden items-center gap-7 md:flex" aria-label={locale === 'sv' ? 'Företag' : 'Company'}>
           {links.map((l) => (
             <Link
               key={l.href}
@@ -67,7 +70,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
               className="inline-flex min-h-11 items-center text-sm transition-colors duration-200 hover:text-white"
               style={{ color: isActive(l.href) ? '#fff' : 'rgba(255,255,255,0.6)' }}
             >
-              {l.label}
+              {navLabel(l, locale)}
             </Link>
           ))}
           {showCta && (
@@ -76,9 +79,10 @@ export default function SiteNav({ accent = '#00f5ff' }) {
               className="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
               style={{ border: `1px solid ${accent}59`, color: accent }}
             >
-              {SITE_NAV_CTA.label}
+              {navLabel(SITE_NAV_CTA, locale)}
             </Link>
           )}
+          <LocaleToggle accent={accent} />
         </nav>
 
         <button
@@ -86,7 +90,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white md:hidden"
           onClick={() => setOpen(!open)}
-          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-label={open ? (locale === 'sv' ? 'Stäng menyn' : 'Close menu') : (locale === 'sv' ? 'Öppna menyn' : 'Open menu')}
           aria-expanded={open}
           aria-controls="mobile-nav"
         >
@@ -113,9 +117,12 @@ export default function SiteNav({ accent = '#00f5ff' }) {
               className="block min-h-11 py-3 text-sm font-medium"
               style={{ color: isActive(l.href) ? '#fff' : 'rgba(255,255,255,0.5)' }}
             >
-              {l.label}
+              {navLabel(l, locale)}
             </Link>
           ))}
+          <div className="py-3">
+            <LocaleToggle accent={accent} />
+          </div>
           {showCta && (
             <Link
               href={SITE_NAV_CTA.href}
@@ -123,7 +130,7 @@ export default function SiteNav({ accent = '#00f5ff' }) {
               className="mt-2 block rounded-full px-4 py-3 text-center text-sm font-bold"
               style={{ background: accent, color: '#03030c' }}
             >
-              {SITE_NAV_CTA.label}
+              {navLabel(SITE_NAV_CTA, locale)}
             </Link>
           )}
         </div>

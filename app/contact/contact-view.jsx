@@ -6,13 +6,56 @@ import { CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react'
 import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { FTAX_LINE, OPERATOR_LINE } from '@/lib/site'
 import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
+import { useLocale } from '@/hooks/use-locale'
 
 const accent = ACCENT.contact
 
-// hello@ is the only public contact address.
-const inboxes = [{ label: 'General & partnerships', email: PUBLIC_HELLO_EMAIL }]
+const COPY = {
+  en: {
+    eyebrow: 'Contact',
+    title: 'Get in touch.',
+    lead: `General questions and partnerships. ${OPERATOR_LINE} ${FTAX_LINE}`,
+    email: 'Email',
+    inbox: 'General & partnerships',
+    partnerForm: 'Open the partner inquiry form',
+    name: 'Name*',
+    emailField: 'Email*',
+    message: 'Message*',
+    consent: 'I consent to Nytto Labs storing this message to reply.',
+    send: 'Send message',
+    sending: 'Sending…',
+    ok: 'Message received.',
+    unavailable: `Messages can't be stored right now. Email ${PUBLIC_HELLO_EMAIL} instead.`,
+    invalid: 'Please complete the required fields and consent.',
+    failed: 'Something went wrong. Please try again.',
+    network: 'Network error. Please try again.',
+  },
+  sv: {
+    eyebrow: 'Kontakt',
+    title: 'Hör av dig.',
+    lead: 'Allmänna frågor och partnerskap. Nytto Labs drivs av Fredrik Kornelind (Sverige). Godkänd för F‑skatt.',
+    email: 'E-post',
+    inbox: 'Allmänt och partnerskap',
+    partnerForm: 'Öppna formuläret för partnerförfrågningar',
+    name: 'Namn*',
+    emailField: 'E-post*',
+    message: 'Meddelande*',
+    consent: 'Jag samtycker till att Nytto Labs sparar meddelandet för att kunna svara.',
+    send: 'Skicka meddelande',
+    sending: 'Skickar…',
+    ok: 'Meddelandet har tagits emot.',
+    unavailable: `Meddelanden kan inte sparas just nu. Mejla ${PUBLIC_HELLO_EMAIL} i stället.`,
+    invalid: 'Fyll i de obligatoriska fälten och ge ditt samtycke.',
+    failed: 'Något gick fel. Försök igen.',
+    network: 'Nätverksfel. Försök igen.',
+  },
+}
 
 export default function ContactView() {
+  const [locale] = useLocale()
+  const t = COPY[locale] || COPY.en
+  // hello@ is the only public contact address.
+  const inboxes = [{ label: t.inbox, email: PUBLIC_HELLO_EMAIL }]
   const [form, setForm] = useState({ name: '', email: '', reason: 'general', message: '', consent: false })
   const [status, setStatus] = useState(null)
   const [submitting, setSubmitting] = useState(false)
@@ -27,15 +70,15 @@ export default function ContactView() {
       })
       const data = await res.json()
       if (res.ok) {
-        setStatus({ ok: true, msg: 'Message received.' })
+        setStatus({ ok: true, msg: t.ok })
         setForm({ name: '', email: '', reason: 'general', message: '', consent: false })
       } else if (res.status === 503) {
-        setStatus({ ok: false, msg: `Messages can't be stored right now. Email ${PUBLIC_HELLO_EMAIL} instead.` })
+        setStatus({ ok: false, msg: t.unavailable })
       } else {
-        setStatus({ ok: false, msg: data.error === 'validation' ? 'Please complete the required fields and consent.' : 'Something went wrong. Please try again.' })
+        setStatus({ ok: false, msg: data.error === 'validation' ? t.invalid : t.failed })
       }
     } catch {
-      setStatus({ ok: false, msg: 'Network error. Please try again.' })
+      setStatus({ ok: false, msg: t.network })
     } finally {
       setSubmitting(false)
     }
@@ -70,15 +113,15 @@ export default function ContactView() {
     <PageShell
       accent={accent}
       wide
-      eyebrow="Contact"
-      title="Get in touch."
-      lead={`General questions and partnerships. ${OPERATOR_LINE} ${FTAX_LINE}`}
+      eyebrow={t.eyebrow}
+      title={t.title}
+      lead={t.lead}
     >
       <section className="mx-auto max-w-6xl px-5 py-10 2xl:max-w-[1560px]">
         <div className="grid gap-12 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <p className="font-mono text-[10px] uppercase tracking-[0.34em]" style={{ color: accent }}>
-              Email
+              {t.email}
             </p>
             <ul className="mt-5 divide-y" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
               {inboxes.map((item) => (
@@ -99,7 +142,7 @@ export default function ContactView() {
               className="mt-6 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium transition-colors hover:text-white"
               style={{ color: 'rgba(255,255,255,0.5)' }}
             >
-              Open the partner inquiry form <ArrowUpRight className="h-3.5 w-3.5" />
+              {t.partnerForm} <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
@@ -110,17 +153,17 @@ export default function ContactView() {
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <label className={labelCls} style={labelStyle}>
-                Name*
+                {t.name}
                 <input required {...text('name')} />
               </label>
               <label className={labelCls} style={labelStyle}>
-                Email*
+                {t.emailField}
                 <input required type="email" {...text('email')} />
               </label>
             </div>
 
             <label className={`mt-4 ${labelCls}`} style={labelStyle}>
-              Message*
+              {t.message}
               <textarea required rows={5} {...text('message')} />
             </label>
 
@@ -135,7 +178,7 @@ export default function ContactView() {
                 className="mt-0.5 h-5 w-5 shrink-0"
                 style={{ accentColor: accent }}
               />
-              <span>I consent to Nytto Labs storing this message to reply.</span>
+              <span>{t.consent}</span>
             </label>
 
             <button
@@ -144,7 +187,7 @@ export default function ContactView() {
               className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold transition-transform duration-200 hover:scale-[1.03] disabled:opacity-50 disabled:hover:scale-100"
               style={{ background: accent, color: '#03030c' }}
             >
-              {submitting ? 'Sending…' : 'Send message'}
+              {submitting ? t.sending : t.send}
             </button>
 
             {status && (
