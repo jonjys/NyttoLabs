@@ -13,6 +13,7 @@ import {
 } from '@/lib/relay/auth'
 import { clientKey, createRateLimiter } from '@/lib/security/rate-limit'
 import { isAiConfigured, triageInquiry, TriageError } from '@/lib/ai/triage'
+import { isEmailConfigured, sendInquiryNotification } from '@/lib/notify/inquiry-email'
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -272,8 +273,9 @@ async function handleRoute(request, context) {
         consent_timestamp: new Date(), status: 'new', created_at: new Date(),
       }
       await db.collection(COLLECTIONS.partnerInquiries).insertOne(doc)
-      // Email delivery is not configured — we store safely and surface in the dashboard.
-      return json({ ok: true, id: doc.id, stored: true, emailed: false })
+      // Stored first; the owner notification is best effort and never fails the form.
+      const mail = await sendInquiryNotification({ kind: 'partner', doc })
+      return json({ ok: true, id: doc.id, stored: true, emailed: mail.sent })
     }
 
     if (route === '/contact-inquiries' && method === 'POST') {
@@ -286,8 +288,9 @@ async function handleRoute(request, context) {
         consent_timestamp: new Date(), status: 'new', created_at: new Date(),
       }
       await db.collection(COLLECTIONS.contactInquiries).insertOne(doc)
-      // Email delivery is not configured — we store safely and surface in the dashboard.
-      return json({ ok: true, id: doc.id, stored: true, emailed: false })
+      // Stored first; the owner notification is best effort and never fails the form.
+      const mail = await sendInquiryNotification({ kind: 'contact', doc })
+      return json({ ok: true, id: doc.id, stored: true, emailed: mail.sent })
     }
 
     // ---- resolve (the engine) ----
@@ -509,11 +512,11 @@ async function handleRoute(request, context) {
       // ---- inquiries ----
       if (route === '/admin/inquiries' && method === 'GET') {
         const items = await db.collection(COLLECTIONS.partnerInquiries).find({}).sort({ created_at: -1 }).toArray()
-        return json({ items: clean(items), aiConfigured: isAiConfigured() })
+        return json({ items: clean(items), aiConfigured: isAiConfigured(), emailConfigured: isEmailConfigured() })
       }
       if (route === '/admin/contact-inquiries' && method === 'GET') {
         const items = await db.collection(COLLECTIONS.contactInquiries).find({}).sort({ created_at: -1 }).toArray()
-        return json({ items: clean(items), aiConfigured: isAiConfigured() })
+        return json({ items: clean(items), aiConfigured: isAiConfigured(), emailConfigured: isEmailConfigured() })
       }
 
       // ---- AI triage (admin-triggered only; never on form submission) ----
