@@ -12,6 +12,7 @@ import {
   adminEmailsAllow, verifyPasscode, createSession, getSessionFromRequest, destroySession, SESSION_COOKIE,
 } from '@/lib/relay/auth'
 import { clientKey, createRateLimiter } from '@/lib/security/rate-limit'
+import { isAiConfigured, triageInquiry, TriageError } from '@/lib/ai/triage'
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -508,11 +509,35 @@ async function handleRoute(request, context) {
       // ---- inquiries ----
       if (route === '/admin/inquiries' && method === 'GET') {
         const items = await db.collection(COLLECTIONS.partnerInquiries).find({}).sort({ created_at: -1 }).toArray()
-        return json({ items: clean(items) })
+        return json({ items: clean(items), aiConfigured: isAiConfigured() })
       }
       if (route === '/admin/contact-inquiries' && method === 'GET') {
         const items = await db.collection(COLLECTIONS.contactInquiries).find({}).sort({ created_at: -1 }).toArray()
-        return json({ items: clean(items) })
+        return json({ items: clean(items), aiConfigured: isAiConfigured() })
+      }
+
+      // ---- AI triage (admin-triggered only; never on form submission) ----
+      if (route === '/admin/triage' && method === 'POST') {
+        if (!isAiConfigured()) return json({ error: 'ai_not_configured' }, 503)
+        if (!rateLimit(request, 'triage', 30)) return json({ error: 'rate_limited' }, 429)
+        const body = await request.json().catch(() => ({}))
+        const kind = body?.kind
+        if ((kind !== 'partner' && kind !== 'contact') || typeof body?.id !== 'string') {
+          return json({ error: 'validation' }, 400)
+        }
+        const coll = db.collection(kind === 'partner' ? COLLECTIONS.partnerInquiries : COLLECTIONS.contactInquiries)
+        const doc = await coll.findOne({ id: body.id })
+        if (!doc) return json({ error: 'not_found' }, 404)
+        try {
+          const result = await triageInquiry({ kind, doc })
+          const triage = { ...result, created_at: new Date() }
+          await coll.updateOne({ id: body.id }, { $set: { triage } })
+          await audit(actor, 'triage', kind === 'partner' ? 'partner_inquiry' : 'contact_inquiry', body.id, { category: triage.category })
+          return json({ ok: true, triage })
+        } catch (error) {
+          if (error instanceof TriageError) return json({ error: 'ai_failed', reason: error.reason }, 502)
+          throw error
+        }
       }
 
       // ---- simulator ----

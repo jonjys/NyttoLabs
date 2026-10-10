@@ -69,7 +69,7 @@ const COPY = {
     partnerCta: 'Become a partner',
   },
   sv: {
-    eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
+    eyebrow: 'Produkter · Svensk mjukvara · F‑skatt',
     hero: 'Sex produkter, live nu.',
     lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout, Failclosed och CSV Rescue — live nu, ingen roadmap.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter.',
@@ -143,7 +143,7 @@ function PayCard({ name, price, note, body, features, actions, className = '' })
 }
 
 export default function ProductsView() {
-  const [locale, setLocale] = useLocale()
+  const [locale] = useLocale()
   const t = COPY[locale]
 
   const payBtn =
@@ -155,29 +155,6 @@ export default function ProductsView() {
   return (
     <PageShell accent={accent} wide eyebrow={t.eyebrow} title={t.hero} lead={t.lede}>
       <section className="mx-auto max-w-6xl px-5 pb-4 2xl:max-w-[1560px]">
-        <div className="mb-6 flex justify-end">
-          <div
-            className="inline-flex overflow-hidden rounded-full text-xs font-medium"
-            style={{ border: '1px solid rgba(255,255,255,0.14)' }}
-          >
-            {['en', 'sv'].map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setLocale(l)}
-                className="min-h-9 px-4 uppercase tracking-wider transition-colors"
-                style={
-                  locale === l
-                    ? { background: accent, color: '#03030c' }
-                    : { color: 'rgba(255,255,255,0.5)' }
-                }
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Five cards fill whole rows: 2 + 2 + 1 (full width) on tablets, 3 + 2 on desktops. */}
         <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-6">
           <PayCard

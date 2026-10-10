@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePublicProducts, usePublicSettings } from '@/hooks/use-public-catalog'
 import { FOOTER_IDENTITY_LINE } from '@/lib/site'
 import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
+import { useLocale } from '@/hooks/use-locale'
+import { PRODUCT_COPY_SV } from './product-copy'
 
 // Short descriptors for the footer list; the list itself comes from the catalog.
 const FOOTER_LABELS = {
@@ -15,7 +17,34 @@ const FOOTER_LABELS = {
   'csv-rescue': 'CSV Rescue file cleanup',
 }
 
+const COPY = {
+  en: {
+    about: 'Swedish software company. Each product lives under its own name and its own site.',
+    company: 'Company',
+    products: 'Products',
+    links: [['/', 'Home'], ['/products', 'Products'], ['/partners', 'Partners'], ['/contact', 'Contact'], ['/privacy', 'Privacy policy'], ['/terms', 'Terms']],
+    all: 'All products',
+    rights: 'All rights reserved.',
+    cookies: 'No analytics cookies. Payments via Stripe.',
+    privacy: 'Privacy →',
+  },
+  sv: {
+    about: 'Svenskt mjukvaruföretag. Varje produkt har sitt eget namn och sin egen sajt.',
+    company: 'Företaget',
+    products: 'Produkter',
+    links: [['/', 'Hem'], ['/products', 'Produkter'], ['/partners', 'Partner'], ['/contact', 'Kontakt'], ['/privacy', 'Integritetspolicy'], ['/terms', 'Villkor']],
+    all: 'Alla produkter',
+    rights: 'Alla rättigheter förbehållna.',
+    cookies: 'Inga analyskakor. Betalning via Stripe.',
+    privacy: 'Integritet →',
+    identity: 'Nytto Labs drivs av Fredrik Kornelind (Sverige). Godkänd för F‑skatt.',
+    disclosure: 'Vissa länkar i Nytto Labs produkter är partnerlänkar. Nytto Labs kan få ersättning när du väljer en partner, utan extra kostnad för dig om inget annat anges tydligt.',
+  },
+}
+
 export default function SiteFooter({ accent = '#00f5ff' }) {
+  const [locale] = useLocale()
+  const t = COPY[locale] || COPY.en
   const s = usePublicSettings()
   // Same set and order as the home page: live products only.
   const all = (usePublicProducts() || []).filter(Boolean)
@@ -43,34 +72,31 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
               <span className="font-mono text-xs tracking-[0.3em] text-white">NYTTO LABS</span>
             </div>
             <p className="mt-4 max-w-sm text-sm leading-relaxed" style={muted}>
-              Swedish software company. Each product lives under its own name and its own site.
+              {t.about}
             </p>
             <p className="mt-4 max-w-sm text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
-              {s.affiliateDisclosure}
+              {locale === 'sv' ? t.disclosure : s.affiliateDisclosure}
             </p>
           </div>
 
           <div>
             <div className="font-mono text-[9px] uppercase tracking-[0.26em]" style={{ color: accent }}>
-              Company
+              {t.company}
             </div>
             <ul className="mt-4 space-y-1.5 text-sm" style={muted}>
-              <li><Link href="/" className={linkCls}>Home</Link></li>
-              <li><Link href="/products" className={linkCls}>Products</Link></li>
-              <li><Link href="/partners" className={linkCls}>Partners</Link></li>
-              <li><Link href="/contact" className={linkCls}>Contact</Link></li>
-              <li><Link href="/privacy" className={linkCls}>Privacy policy</Link></li>
-              <li><Link href="/terms" className={linkCls}>Terms</Link></li>
+              {t.links.map(([href, label]) => (
+                <li key={href}><Link href={href} className={linkCls}>{label}</Link></li>
+              ))}
             </ul>
           </div>
 
           <div>
             <div className="font-mono text-[9px] uppercase tracking-[0.26em]" style={{ color: accent }}>
-              Products
+              {t.products}
             </div>
             <ul className="mt-4 space-y-1.5 text-sm" style={muted}>
               {listedProducts.map((p) => {
-                const label = FOOTER_LABELS[p.slug] || p.name
+                const label = (locale === 'sv' ? PRODUCT_COPY_SV[p.slug]?.footer : FOOTER_LABELS[p.slug]) || p.name
                 return (
                   <li key={p.slug}>
                     {p.url ? (
@@ -81,7 +107,7 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
                   </li>
                 )
               })}
-              <li><Link href="/products" className={linkCls}>All products</Link></li>
+              <li><Link href="/products" className={linkCls}>{t.all}</Link></li>
             </ul>
           </div>
         </div>
@@ -90,15 +116,15 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
           className="mt-12 flex flex-col gap-2 pt-6 text-xs md:flex-row md:items-center md:justify-between"
           style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.55)' }}
         >
-          <span>© {new Date().getFullYear()} Nytto Labs. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Nytto Labs. {t.rights}</span>
           <span>
-            No analytics cookies. Payments via Stripe.{' '}
+            {t.cookies}{' '}
             <Link href="/privacy" className="transition-colors duration-200 hover:text-white">
-              Privacy →
+              {t.privacy}
             </Link>
           </span>
           <span>
-            {FOOTER_IDENTITY_LINE}
+            {locale === 'sv' ? t.identity : FOOTER_IDENTITY_LINE}
             {' · '}
             <a href={`mailto:${helloEmail}`} className="transition-colors duration-200 hover:text-white">
               {helloEmail}

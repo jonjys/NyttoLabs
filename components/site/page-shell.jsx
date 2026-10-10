@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import SiteNav from './nav'
 import SiteFooter from './footer'
+import { useLocale } from '@/hooks/use-locale'
 
 // Each section keeps the colour of the portal it sits behind in the lobby, so
 // arriving on the page reads as a continuation of the room you walked into.
@@ -35,6 +36,7 @@ export default function PageShell({
   wide = false,
   children,
 }) {
+  const [locale] = useLocale()
   return (
     <div className="relative min-h-screen" style={{ background: '#03030c' }}>
       {/* Ambient backdrop: faint neon grid fading out, plus an accent bloom at
@@ -77,7 +79,7 @@ export default function PageShell({
                 className="mb-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.26em] transition-colors duration-200 hover:text-white"
                 style={{ color: 'rgba(255,255,255,0.55)' }}
               >
-                ← Back to home
+                {locale === 'sv' ? '← Till startsidan' : '← Back to home'}
               </Link>
               {eyebrow && <Eyebrow accent={accent}>{eyebrow}</Eyebrow>}
               {title && (
