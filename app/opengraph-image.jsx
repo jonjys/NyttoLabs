@@ -51,7 +51,7 @@ export default function Image() {
           }}
         >
           <span>Focused software.</span>
-          <span style={{ color: '#00f5ff' }}>Built to be used.</span>
+          <span style={{ color: '#00f5ff' }}>Invisible infrastructure.</span>
         </div>
 
         <div style={{ display: 'flex', gap: 14 }}>

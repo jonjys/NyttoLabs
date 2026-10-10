@@ -75,9 +75,9 @@ export default function PageShell({
               <Link
                 href="/"
                 className="mb-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.26em] transition-colors duration-200 hover:text-white"
-                style={{ color: 'rgba(255,255,255,0.3)' }}
+                style={{ color: 'rgba(255,255,255,0.55)' }}
               >
-                ← Back to the lobby
+                ← Back to home
               </Link>
               {eyebrow && <Eyebrow accent={accent}>{eyebrow}</Eyebrow>}
               {title && (
@@ -91,7 +91,7 @@ export default function PageShell({
               {lead && (
                 <p
                   className="mt-5 max-w-2xl text-[15px] leading-relaxed"
-                  style={{ color: 'rgba(255,255,255,0.45)' }}
+                  style={{ color: 'rgba(255,255,255,0.6)' }}
                 >
                   {lead}
                 </p>

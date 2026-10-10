@@ -2,7 +2,7 @@
 
 import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { FTAX_LINE, OPERATOR_LINE } from '@/lib/site'
-import { PUBLIC_PRIVACY_EMAIL } from '@/lib/relay/catalog'
+import { PRIVACY_EMAIL } from '@/lib/privacy'
 import { usePublicSettings } from '@/hooks/use-public-catalog'
 
 const body = { color: 'rgba(255,255,255,0.5)' }
@@ -28,7 +28,7 @@ export default function PrivacyView() {
             This policy covers the nyttolabs.com website, its routing infrastructure, and partner
             inquiries. Each product handles its own data under its own privacy policy — for example
             Vatidence processes the VAT numbers you submit, GateZero stores encrypted keys, and
-            Curl-to-Buy handles uploaded files and payments. See the individual product for the
+            Nytto Checkout handles uploaded files and payments. See the individual product for the
             details that apply when you use it.
           </p>
 
@@ -36,7 +36,7 @@ export default function PrivacyView() {
           <ul className="list-disc space-y-1.5 pl-5">
             <li>Names or email addresses of anonymous product users</li>
             <li>Full IP addresses or full user-agent strings</li>
-            <li>Complete QR payloads from CycleTag labels</li>
+            <li>Complete QR payloads from StayTag labels</li>
             <li>Personal document content, payment records, or VAT-number lists</li>
             <li>API keys or secrets belonging to product users</li>
           </ul>
@@ -54,7 +54,7 @@ export default function PrivacyView() {
             name, work email, and the partnership information you provide — solely to evaluate and
             respond to your inquiry. We keep it only as long as needed for that conversation and any
             resulting partnership, and you can ask us to delete it at any time by emailing{' '}
-            {PUBLIC_PRIVACY_EMAIL}.
+            {PRIVACY_EMAIL}.
           </p>
 
           <h2 className={h2}>Affiliate disclosure</h2>
@@ -66,9 +66,9 @@ export default function PrivacyView() {
             <a
               className="font-medium transition-opacity hover:opacity-80"
               style={{ color: ACCENT.home }}
-              href={`mailto:${PUBLIC_PRIVACY_EMAIL}`}
+              href={`mailto:${PRIVACY_EMAIL}`}
             >
-              {PUBLIC_PRIVACY_EMAIL}
+              {PRIVACY_EMAIL}
             </a>
             .
           </p>

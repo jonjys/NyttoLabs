@@ -11,6 +11,7 @@ import { loadPublicProducts, loadPublicSettings } from '@/lib/relay/public-site'
 import {
   adminEmailsAllow, verifyPasscode, createSession, getSessionFromRequest, destroySession, SESSION_COOKIE,
 } from '@/lib/relay/auth'
+import { clientKey, createRateLimiter } from '@/lib/security/rate-limit'
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -39,18 +40,9 @@ function baseUrl() {
   return (process.env.NEXT_PUBLIC_BASE_URL || '').replace(/\/$/, '')
 }
 
-// Simple in-memory rate limiter (transient, stores nothing personal).
-const rlStore = new Map()
-function rateLimit(key, limit = 60, windowMs = 60000) {
-  const now = Date.now()
-  const rec = rlStore.get(key)
-  if (!rec || now > rec.reset) {
-    rlStore.set(key, { count: 1, reset: now + windowMs })
-    return true
-  }
-  rec.count += 1
-  return rec.count <= limit
-}
+// Per-client in-memory rate limiter (hashed client address, nothing personal stored).
+const rateLimiter = createRateLimiter()
+const rateLimit = (request, bucket, limit, windowMs) => rateLimiter(bucket, clientKey(request.headers), limit, windowMs)
 
 function csv(rows, columns) {
   const esc = (v) => {
@@ -270,7 +262,7 @@ async function handleRoute(request, context) {
     // ================= PUBLIC =================
 
     if (route === '/partner-inquiries' && method === 'POST') {
-      if (!rateLimit('inquiry', 20)) return json({ error: 'rate_limited' }, 429)
+      if (!rateLimit(request, 'inquiry', 20)) return json({ error: 'rate_limited' }, 429)
       const body = await request.json()
       const parsed = partnerInquirySchema.safeParse(body)
       if (!parsed.success) return json({ error: 'validation', details: parsed.error.flatten() }, 400)
@@ -284,7 +276,7 @@ async function handleRoute(request, context) {
     }
 
     if (route === '/contact-inquiries' && method === 'POST') {
-      if (!rateLimit('contact', 20)) return json({ error: 'rate_limited' }, 429)
+      if (!rateLimit(request, 'contact', 20)) return json({ error: 'rate_limited' }, 429)
       const body = await request.json()
       const parsed = contactInquirySchema.safeParse(body)
       if (!parsed.success) return json({ error: 'validation', details: parsed.error.flatten() }, 400)
@@ -299,7 +291,7 @@ async function handleRoute(request, context) {
 
     // ---- resolve (the engine) ----
     if (route === '/resolve' && method === 'POST') {
-      if (!rateLimit('resolve', 120)) return json({ error: 'rate_limited' }, 429)
+      if (!rateLimit(request, 'resolve', 120)) return json({ error: 'rate_limited' }, 429)
       const body = await request.json()
       const parsed = resolveInputSchema.safeParse(body)
       if (!parsed.success) return json({ error: 'validation', details: parsed.error.flatten() }, 400)
@@ -342,7 +334,7 @@ async function handleRoute(request, context) {
 
     // ================= AUTH =================
     if (route === '/auth/login' && method === 'POST') {
-      if (!rateLimit('login', 10)) return json({ error: 'rate_limited' }, 429)
+      if (!rateLimit(request, 'login', 10)) return json({ error: 'rate_limited' }, 429)
       const { email, passcode } = await request.json()
       if (!adminEmailsAllow(email) || !verifyPasscode(passcode)) {
         return json({ error: 'invalid_credentials' }, 401)

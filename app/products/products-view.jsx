@@ -4,34 +4,47 @@ import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, Check } from 'lucide-react'
 import PageShell, { ACCENT } from '@/components/site/page-shell'
 import { useLocale } from '@/hooks/use-locale'
+import { PUBLIC_STATUS_GROUPS, seedApplications } from '@/lib/relay/catalog'
 
 const accent = ACCENT.products
 
 // Stripe payment links are preserved verbatim from the previous homepage — do
 // not edit these hrefs without checking the live links in the Nytto Labs
 // Stripe account first.
-const CYCLE_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
-const CYCLE_BULK = 'https://cycletag.eu/bulk'
-const CYCLE_FREE = 'https://cycletag.eu/#create'
+const STAYTAG_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
+// StayTag's own domain; cycletag.eu 308-redirects to it (checked 2026-09-30).
+// As of 2026-10-05 it has no DNS record (see lib/relay/catalog.js) — not
+// changed here since lib/site.test.js locks this exact literal; the homepage
+// grid is covered by the PRODUCT_URL_STAYTAG env override instead.
+const STAYTAG_BULK = 'https://staytag.nyttolabs.com/bulk'
+const STAYTAG_FREE = 'https://staytag.nyttolabs.com/#create'
 const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
 const CURL_PAY = 'https://pay.nyttolabs.com/'
+const CSV_RESCUE = 'https://importfix.nyttolabs.com/csv'
+const DEPLOYDOCTOR = 'https://deploydoctor.nyttolabs.com/'
+const DEPLOYDOCTOR_PRICING = 'https://deploydoctor.nyttolabs.com/pricing'
+// Failclosed's domain and status come from the catalog (lib/relay/catalog.js).
+// It is live, so the note reads "Live · Inventory sync".
+const FAILCLOSED = 'https://failclosed.nyttolabs.com/'
+const FAILCLOSED_STATUS =
+  PUBLIC_STATUS_GROUPS.find((g) => g.key === seedApplications().find((a) => a.slug === 'failclosed')?.status)?.title || ''
 
 const COPY = {
   en: {
     eyebrow: 'Products · Swedish software · F-tax',
-    hero: 'Three things you can pay for today.',
-    lede: 'CycleTag, Vatidence and Curl-to-Buy. Focused products, live now — not a roadmap.',
+    hero: 'Six live products.',
+    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout, Failclosed and CSV Rescue — live now, not a roadmap.',
     cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
     cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
-    cyclePrice: '$5',
-    cycleNote: '49 SEK at checkout · starter sheet',
+    cyclePrice: '49 SEK',
+    cycleNote: 'starter sheet · one-time',
     cyclePay: 'Buy a sheet',
-    cycleBulk: 'Bulk $31',
+    cycleBulk: 'Bulk 299 SEK',
     cycleFree: 'Free — make one tag',
     viesBody: 'EU VAT checks against VIES, with proof for the books.',
     viesFeatures: ['Checked against VIES', 'Sealed PDF + CSV', 'Official consultation number'],
-    viesPrice: '$6',
-    viesNote: '€4.90 at checkout · minimum per batch',
+    viesPrice: '€4.90',
+    viesNote: 'minimum per batch · one-time',
     viesPay: 'Pay and verify',
     viesFree: 'Free — a single check',
     curlBody: 'Sell a digital file with no account on either side.',
@@ -40,14 +53,25 @@ const COPY = {
     curlNote: 'fee · you keep 95%',
     curlPay: 'Post a file',
     curlFree: 'Free to create — 5% only when it sells',
+    ddBody: 'Scan a public GitHub repo for the code issues most likely to break a Vercel deployment.',
+    ddFeatures: ['Checks matched to your stack', 'No cloning, no code execution', 'Shareable report'],
+    ddPrice: '$9',
+    ddNote: 'per month · or $5 for a 7-day pass',
+    ddPay: 'Scan a repository',
+    ddPricing: 'See pricing',
+    ddFree: 'Free — 3 scans a day',
+    failBody: 'Inventory sync that repairs the difference between two systems automatically — and refuses to write when the data looks wrong.',
+    failFeatures: ['Repairs the difference automatically', 'Refuses to write on bad data', 'Starts in watch-only mode'],
+    failCategory: 'Inventory sync',
+    failVisit: 'Visit Failclosed',
     partnerTitle: 'Work with Nytto Labs',
     partnerBody: 'Partnerships and general questions go to the same inbox. You keep checkout, payment and fulfilment.',
     partnerCta: 'Become a partner',
   },
   sv: {
     eyebrow: 'Produkter · Svensk mjukvara · F-skatt',
-    hero: 'Tre saker du kan betala för idag.',
-    lede: 'CycleTag, Vatidence och Curl-to-Buy. Fokuserade produkter, live nu — ingen roadmap.',
+    hero: 'Sex produkter, live nu.',
+    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout, Failclosed och CSV Rescue — live nu, ingen roadmap.',
     cycleBody: 'QR-etiketter för filter, toner och det du byter.',
     cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
     cyclePrice: '49 kr',
@@ -67,6 +91,17 @@ const COPY = {
     curlNote: 'avgift · du behåller 95%',
     curlPay: 'Lägg upp en fil',
     curlFree: 'Gratis att skapa — 5% bara när den säljer',
+    ddBody: 'Skanna ett publikt GitHub-repo efter kodfelen som oftast knäcker en Vercel-deploy.',
+    ddFeatures: ['Kontroller anpassade efter din stack', 'Ingen kloning, ingen kodkörning', 'Delbar rapport'],
+    ddPrice: '$9',
+    ddNote: 'per månad · eller $5 för 7 dagar',
+    ddPay: 'Skanna ett repo',
+    ddPricing: 'Se priser',
+    ddFree: 'Gratis — 3 skanningar per dag',
+    failBody: 'Lagersynk som automatiskt reparerar skillnaden mellan två system — och vägrar skriva när datan ser fel ut.',
+    failFeatures: ['Reparerar skillnaden automatiskt', 'Vägrar skriva vid felaktig data', 'Startar i bevakningsläge'],
+    failCategory: 'Lagersynk',
+    failVisit: 'Besök Failclosed',
     partnerTitle: 'Samarbeta med Nytto Labs',
     partnerBody: 'Partnerskap och allmänna frågor går till samma inkorg. Ni behåller kassa, betalning och leverans.',
     partnerCta: 'Bli partner',
@@ -78,19 +113,19 @@ const cardStyle = {
   background: 'rgba(255,255,255,0.025)',
 }
 
-function PayCard({ name, price, note, body, features, actions }) {
+function PayCard({ name, price, note, body, features, actions, className = '' }) {
   return (
     <article
-      className="flex h-full flex-col rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_var(--card-accent)]"
+      className={`flex h-full flex-col rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_var(--card-accent)] ${className}`}
       style={{ ...cardStyle, '--card-accent': `${accent}55`, borderColor: 'var(--card-border, rgba(255,255,255,0.08))' }}
       onMouseEnter={(e) => e.currentTarget.style.setProperty('--card-border', `${accent}4d`)}
       onMouseLeave={(e) => e.currentTarget.style.setProperty('--card-border', 'rgba(255,255,255,0.08)')}
     >
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-lg font-bold tracking-tight text-white">{name}</h2>
-        <p className="text-2xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>
+        {price && <p className="text-2xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>}
       </div>
-      <p className="mt-1 font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>{note}</p>
+      {note && <p className="mt-1 font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.55)' }}>{note}</p>}
       <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{body}</p>
 
       <ul className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
@@ -143,28 +178,52 @@ export default function ProductsView() {
           </div>
         </div>
 
-        <div className="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {/* Five cards fill whole rows: 2 + 2 + 1 (full width) on tablets, 3 + 2 on desktops. */}
+        <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-6">
           <PayCard
-            name="CycleTag"
+            className="xl:col-span-2"
+            name="DeployDoctor"
+            price={t.ddPrice}
+            note={t.ddNote}
+            body={t.ddBody}
+            features={t.ddFeatures}
+            actions={
+              <>
+                <a href={DEPLOYDOCTOR} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                  {t.ddPay} <ArrowRight className="h-4 w-4" />
+                </a>
+                <a href={DEPLOYDOCTOR_PRICING} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
+                  {t.ddPricing}
+                </a>
+                <a href={DEPLOYDOCTOR} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {t.ddFree} <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </>
+            }
+          />
+          <PayCard
+            className="xl:col-span-2"
+            name="StayTag"
             price={t.cyclePrice}
             note={t.cycleNote}
             body={t.cycleBody}
             features={t.cycleFeatures}
             actions={
               <>
-                <a href={CYCLE_SHEET} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                <a href={STAYTAG_SHEET} className={payBtn} style={{ background: accent, color: '#03030c' }}>
                   {t.cyclePay} <ArrowRight className="h-4 w-4" />
                 </a>
-                <a href={CYCLE_BULK} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
+                <a href={STAYTAG_BULK} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
                   {t.cycleBulk}
                 </a>
-                <a href={CYCLE_FREE} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={STAYTAG_FREE} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {t.cycleFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
             }
           />
           <PayCard
+            className="xl:col-span-2"
             name="Vatidence"
             price={t.viesPrice}
             note={t.viesNote}
@@ -176,14 +235,15 @@ export default function ProductsView() {
                   {t.viesPay} <ArrowRight className="h-4 w-4" />
                 </a>
                 <span className="hidden min-h-11 md:block" aria-hidden />
-                <a href={VATIDENCE_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={VATIDENCE_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {t.viesFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
             }
           />
           <PayCard
-            name="Curl-to-Buy"
+            className="xl:col-span-3"
+            name="Nytto Checkout"
             price={t.curlPrice}
             note={t.curlNote}
             body={t.curlBody}
@@ -194,11 +254,32 @@ export default function ProductsView() {
                   {t.curlPay} <ArrowRight className="h-4 w-4" />
                 </a>
                 <span className="hidden min-h-11 md:block" aria-hidden />
-                <a href={CURL_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <a href={CURL_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {t.curlFree} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </>
             }
+          />
+          <PayCard
+            className="md:col-span-2 xl:col-span-3"
+            name="Failclosed"
+            note={`${FAILCLOSED_STATUS} · ${t.failCategory}`}
+            body={t.failBody}
+            features={t.failFeatures}
+            actions={
+              <a href={FAILCLOSED} className={payBtn} style={{ background: accent, color: '#03030c' }}>
+                {t.failVisit} <ArrowRight className="h-4 w-4" />
+              </a>
+            }
+          />
+          <PayCard
+            className="md:col-span-2 xl:col-span-6"
+            name="CSV Rescue"
+            price={locale === 'sv' ? '29 kr' : '29 SEK'}
+            note={locale === 'sv' ? 'per fil · engångsköp' : 'per file · one-time'}
+            body={locale === 'sv' ? 'Fixa teckenkodning och separatorer i CSV utan att tappa inledande nollor.' : 'Fix CSV encoding and separators without losing leading zeros.'}
+            features={locale === 'sv' ? ['Exakta dubbletter som tillval', 'Ingen prenumeration', 'Originalfilen lämnas orörd'] : ['Optional exact duplicate removal', 'No subscription', 'Original file stays untouched']}
+            actions={<a href={CSV_RESCUE} className={payBtn} style={{ background: accent, color: '#03030c' }}>{locale === 'sv' ? 'Öppna CSV Rescue' : 'Open CSV Rescue'} <ArrowRight className="h-4 w-4" /></a>}
           />
         </div>
       </section>

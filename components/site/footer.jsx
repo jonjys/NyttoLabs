@@ -1,16 +1,29 @@
 'use client'
 
 import Link from 'next/link'
-import { usePublicSettings } from '@/hooks/use-public-catalog'
+import { usePublicProducts, usePublicSettings } from '@/hooks/use-public-catalog'
 import { FOOTER_IDENTITY_LINE } from '@/lib/site'
 import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
 
+// Short descriptors for the footer list; the list itself comes from the catalog.
+const FOOTER_LABELS = {
+  deploydoctor: 'DeployDoctor Vercel checks',
+  cycletag: 'StayTag reorder labels',
+  viesproof: 'Vatidence VAT checks',
+  'curl-to-buy': 'Nytto Checkout file sales',
+  failclosed: 'Failclosed inventory sync',
+  'csv-rescue': 'CSV Rescue file cleanup',
+}
+
 export default function SiteFooter({ accent = '#00f5ff' }) {
   const s = usePublicSettings()
+  // Same set and order as the home page: live products only.
+  const all = (usePublicProducts() || []).filter(Boolean)
+  const listedProducts = all.filter((p) => p.status === 'live')
   const helloEmail = s.helloEmail || PUBLIC_HELLO_EMAIL
 
   const linkCls = 'inline-flex min-h-8 items-center transition-colors duration-200 hover:text-white'
-  const muted = { color: 'rgba(255,255,255,0.4)' }
+  const muted = { color: 'rgba(255,255,255,0.6)' }
 
   return (
     <footer
@@ -32,7 +45,7 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
             <p className="mt-4 max-w-sm text-sm leading-relaxed" style={muted}>
               Swedish software company. Each product lives under its own name and its own site.
             </p>
-            <p className="mt-4 max-w-sm text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.26)' }}>
+            <p className="mt-4 max-w-sm text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
               {s.affiliateDisclosure}
             </p>
           </div>
@@ -56,9 +69,18 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
               Products
             </div>
             <ul className="mt-4 space-y-1.5 text-sm" style={muted}>
-              <li><a href="https://cycletag.eu/" className={linkCls}>CycleTag reorder labels</a></li>
-              <li><a href="https://vatidence.nyttolabs.com/" className={linkCls}>Vatidence VAT checks</a></li>
-              <li><a href="https://pay.nyttolabs.com/" className={linkCls}>Curl-to-Buy file sales</a></li>
+              {listedProducts.map((p) => {
+                const label = FOOTER_LABELS[p.slug] || p.name
+                return (
+                  <li key={p.slug}>
+                    {p.url ? (
+                      <a href={p.url} className={linkCls}>{label}</a>
+                    ) : (
+                      <span className="inline-flex min-h-8 items-center">{label}</span>
+                    )}
+                  </li>
+                )
+              })}
               <li><Link href="/products" className={linkCls}>All products</Link></li>
             </ul>
           </div>
@@ -66,13 +88,13 @@ export default function SiteFooter({ accent = '#00f5ff' }) {
 
         <div
           className="mt-12 flex flex-col gap-2 pt-6 text-xs md:flex-row md:items-center md:justify-between"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.28)' }}
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.55)' }}
         >
           <span>© {new Date().getFullYear()} Nytto Labs. All rights reserved.</span>
           <span>
-            Inga analyskakor. Betalning via Stripe.{' '}
+            No analytics cookies. Payments via Stripe.{' '}
             <Link href="/privacy" className="transition-colors duration-200 hover:text-white">
-              Integritet →
+              Privacy →
             </Link>
           </span>
           <span>

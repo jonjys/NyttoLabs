@@ -30,10 +30,7 @@ export function usePublicSettings() {
             ...DEFAULT_PUBLIC_SETTINGS,
             ...safe,
             helloEmail: DEFAULT_PUBLIC_SETTINGS.helloEmail,
-            supportEmail: DEFAULT_PUBLIC_SETTINGS.supportEmail,
             partnerEmail: DEFAULT_PUBLIC_SETTINGS.partnerEmail,
-            privacyEmail: DEFAULT_PUBLIC_SETTINGS.privacyEmail,
-            billingEmail: DEFAULT_PUBLIC_SETTINGS.billingEmail,
           })
         }
       })
