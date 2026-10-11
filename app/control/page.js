@@ -534,7 +534,9 @@ function Pill({ cls, children }) {
 
 function InquiryInbox({ kind, endpoint, title, desc, empty, who, email, fields }) {
   const [items, setItems] = useState([])
-  const [aiConfigured, setAiConfigured] = useState(false)
+  // null until the first load answers, so the "AI is off" notice never flashes.
+  const [aiConfigured, setAiConfigured] = useState(null)
+  const [emailConfigured, setEmailConfigured] = useState(null)
   const [busy, setBusy] = useState({})
   const [errors, setErrors] = useState({})
   const [open, setOpen] = useState(null)
@@ -546,6 +548,7 @@ function InquiryInbox({ kind, endpoint, title, desc, empty, who, email, fields }
     api.get(endpoint).then((d) => {
       setItems(d.items || [])
       setAiConfigured(!!d.aiConfigured)
+      setEmailConfigured(!!d.emailConfigured)
     })
   }, [endpoint])
   useEffect(() => { load() }, [load])
@@ -592,13 +595,16 @@ function InquiryInbox({ kind, endpoint, title, desc, empty, who, email, fields }
 
   return (
     <div>
-      <Head title={title} desc={desc}>
+      <Head
+        title={title}
+        desc={`${desc} ${emailConfigured === null ? '' : emailConfigured ? 'New messages are emailed to you.' : 'Email notifications are off (RESEND_API_KEY missing).'}`.trim()}
+      >
         <button className={btnGhost} onClick={load}><RefreshCw className="h-4 w-4" /> Refresh</button>
         <button className={btn} disabled={!aiConfigured || running || pending.length === 0} onClick={analyzeAll}>
           <Sparkles className="h-4 w-4" /> {running ? 'Analyzing…' : `Analyze new (${pending.length})`}
         </button>
       </Head>
-      {!aiConfigured && (
+      {aiConfigured === false && (
         <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
           AI triage is off. Add <code className="text-amber-100">ANTHROPIC_API_KEY</code> to the Vercel project (Production) and redeploy to turn it on.
         </div>
@@ -686,7 +692,7 @@ function Inquiries() {
       kind="partner"
       endpoint="/admin/inquiries"
       title="Partner inquiries"
-      desc="Stored in the database. Email delivery is not configured. AI triage runs only when you press Analyze."
+      desc="Stored in the database. AI triage runs only when you press Analyze."
       empty="No inquiries yet."
       who={(r) => `${r.company} · ${r.contactName}`}
       email="workEmail"
@@ -706,7 +712,7 @@ function ContactMessages() {
       kind="contact"
       endpoint="/admin/contact-inquiries"
       title="Contact messages"
-      desc="Stored in the database. Email delivery is not configured. AI triage runs only when you press Analyze."
+      desc="Stored in the database. AI triage runs only when you press Analyze."
       empty="No messages yet."
       who={(r) => r.name}
       email="email"
