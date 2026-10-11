@@ -13,7 +13,7 @@ import {
 } from '@/lib/relay/auth'
 import { clientKey, createRateLimiter } from '@/lib/security/rate-limit'
 import { isAiConfigured, triageInquiry, TriageError } from '@/lib/ai/triage'
-import { isEmailConfigured, sendInquiryNotification } from '@/lib/notify/inquiry-email'
+import { emailKeyStatus, sendInquiryNotification } from '@/lib/notify/inquiry-email'
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -512,11 +512,11 @@ async function handleRoute(request, context) {
       // ---- inquiries ----
       if (route === '/admin/inquiries' && method === 'GET') {
         const items = await db.collection(COLLECTIONS.partnerInquiries).find({}).sort({ created_at: -1 }).toArray()
-        return json({ items: clean(items), aiConfigured: isAiConfigured(), emailConfigured: isEmailConfigured() })
+        return json({ items: clean(items), aiConfigured: isAiConfigured(), emailStatus: emailKeyStatus() })
       }
       if (route === '/admin/contact-inquiries' && method === 'GET') {
         const items = await db.collection(COLLECTIONS.contactInquiries).find({}).sort({ created_at: -1 }).toArray()
-        return json({ items: clean(items), aiConfigured: isAiConfigured(), emailConfigured: isEmailConfigured() })
+        return json({ items: clean(items), aiConfigured: isAiConfigured(), emailStatus: emailKeyStatus() })
       }
 
       // ---- AI triage (admin-triggered only; never on form submission) ----

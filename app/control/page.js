@@ -528,6 +528,12 @@ const TRIAGE_ERRORS = {
 }
 const productName = (slug) => defaultPublicProducts().find((p) => p.slug === slug)?.name || slug
 
+const EMAIL_STATUS = {
+  ok: 'New messages are emailed to you.',
+  missing: 'Email notifications are off (RESEND_API_KEY missing).',
+  invalid_format: 'Email notifications are off: RESEND_API_KEY has a line break, space or special character inside. Paste it again in Vercel.',
+}
+
 function Pill({ cls, children }) {
   return <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ${cls}`}>{children}</span>
 }
@@ -536,7 +542,7 @@ function InquiryInbox({ kind, endpoint, title, desc, empty, who, email, fields }
   const [items, setItems] = useState([])
   // null until the first load answers, so the "AI is off" notice never flashes.
   const [aiConfigured, setAiConfigured] = useState(null)
-  const [emailConfigured, setEmailConfigured] = useState(null)
+  const [emailStatus, setEmailStatus] = useState(null)
   const [busy, setBusy] = useState({})
   const [errors, setErrors] = useState({})
   const [open, setOpen] = useState(null)
@@ -548,7 +554,7 @@ function InquiryInbox({ kind, endpoint, title, desc, empty, who, email, fields }
     api.get(endpoint).then((d) => {
       setItems(d.items || [])
       setAiConfigured(!!d.aiConfigured)
-      setEmailConfigured(!!d.emailConfigured)
+      setEmailStatus(d.emailStatus || 'missing')
     })
   }, [endpoint])
   useEffect(() => { load() }, [load])
@@ -597,7 +603,7 @@ function InquiryInbox({ kind, endpoint, title, desc, empty, who, email, fields }
     <div>
       <Head
         title={title}
-        desc={`${desc} ${emailConfigured === null ? '' : emailConfigured ? 'New messages are emailed to you.' : 'Email notifications are off (RESEND_API_KEY missing).'}`.trim()}
+        desc={`${desc} ${EMAIL_STATUS[emailStatus] || ''}`.trim()}
       >
         <button className={btnGhost} onClick={load}><RefreshCw className="h-4 w-4" /> Refresh</button>
         <button className={btn} disabled={!aiConfigured || running || pending.length === 0} onClick={analyzeAll}>
