@@ -9,7 +9,7 @@ html {
 a:focus-visible,
 button:focus-visible,
 [tabindex]:focus-visible {
-    outline: 2px solid rgba(0, 245, 255, 0.85);
+    outline: 2px solid var(--nl-iris);
     outline-offset: 3px;
     border-radius: 4px;
 }
@@ -30,10 +30,26 @@ code {
 
 @layer base {
   :root {
-        /* The public site is dark end to end, so the page ground matches the
-           3D lobby rather than flashing white between routes. */
-        --background: 240 60% 3%;
-        --foreground: 0 0% 100%;
+        /* Public site palette. lib/site.test.js computes the text contrast of
+           these pairs from this block, so keep them here. */
+        --nl-canvas: #f6f6f3;
+        --nl-canvas-2: #ededea;
+        --nl-surface: #ffffff;
+        --nl-ink: #0c0c0e;
+        --nl-ink-2: #3a3a40;
+        --nl-faded: #64646c;
+        --nl-line: #e3e3de;
+        --nl-iris: #5b43f0;
+        --nl-iris-light: #a89bff;
+        --nl-live: #0f7a45;
+        --nl-on-ink: #f6f6f3;
+        --nl-on-ink-faded: #a3a3ab;
+        /* The AI colour: used only where Claude is doing something. */
+        --nl-ai: linear-gradient(110deg, #5b43f0 0%, #b04bff 35%, #ff5c8a 68%, #ffb547 100%);
+        --nl-shadow: 0 1px 2px rgba(12, 12, 14, 0.04), 0 10px 30px -14px rgba(12, 12, 14, 0.14);
+        --nl-shadow-lift: 0 1px 2px rgba(12, 12, 14, 0.05), 0 22px 48px -20px rgba(12, 12, 14, 0.24);
+        --background: 60 9% 96%;
+        --foreground: 240 8% 5%;
         --card: 0 0% 100%;
         --card-foreground: 222.2 84% 4.9%;
         --popover: 0 0% 100%;
@@ -48,9 +64,9 @@ code {
         --accent-foreground: 222.2 47.4% 11.2%;
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 210 40% 98%;
-        --border: 240 20% 14%;
-        --input: 240 20% 14%;
-        --ring: 187 100% 50%;
+        --border: 60 7% 88%;
+        --input: 60 7% 88%;
+        --ring: 249 85% 60%;
         --chart-1: 12 76% 61%;
         --chart-2: 173 58% 39%;
         --chart-3: 197 37% 24%;
@@ -113,48 +129,143 @@ code {
     }
 }
 
-/* A rare, brief RGB-split flicker behind the lobby title — the same signal-
-   glitch cue used by high-production WebGL studio sites, kept subtle and
-   infrequent so it reads as a polish detail, not noise. */
-@keyframes glitch-flicker {
-  0%, 92%, 100% { opacity: 0; transform: translate3d(0, 0, 0); }
-  92.5% { opacity: 0.55; transform: translate3d(-3px, 1px, 0); }
-  93.5% { opacity: 0; }
-  95% { opacity: 0.4; transform: translate3d(3px, -1px, 0); }
-  95.5% { opacity: 0; }
-}
-.glitch-layer {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  mix-blend-mode: screen;
-  pointer-events: none;
-  animation: glitch-flicker 7s infinite;
-  will-change: opacity, transform;
+/* Shared pieces of the public site: buttons, labels, fields, the AI glow,
+   and the scroll reveal. */
+@layer components {
+  .nl-canvas {
+    background-color: var(--nl-canvas);
+    color: var(--nl-ink);
+  }
+  .nl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 999px;
+    background: var(--nl-ink);
+    color: var(--nl-on-ink);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    line-height: 1.1;
+    letter-spacing: -0.005em;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 6px 16px -8px rgba(12, 12, 14, 0.5);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+  .nl-btn:hover { transform: translateY(-1px); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 12px 24px -10px rgba(12, 12, 14, 0.55); }
+  .nl-btn:active { transform: translateY(0) scale(0.985); }
+  .nl-btn:disabled { opacity: 0.5; transform: none; }
+  .nl-btn-ghost {
+    background: var(--nl-surface);
+    color: var(--nl-ink);
+    box-shadow: 0 0 0 1px var(--nl-line) inset, 0 1px 2px rgba(12, 12, 14, 0.04);
+  }
+  .nl-btn-ghost:hover { box-shadow: 0 0 0 1px #cfcfc9 inset, 0 8px 18px -12px rgba(12, 12, 14, 0.3); }
+  .nl-btn-light { background: var(--nl-on-ink); color: var(--nl-ink); }
+  .nl-btn-sm { min-height: 2.5rem; padding: 0.45rem 1rem; font-size: 0.875rem; }
+
+  .nl-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--nl-faded);
+  }
+  .nl-on-ink .nl-label { color: var(--nl-on-ink-faded); }
+
+  .nl-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.8rem 0.35rem 0.6rem;
+    border-radius: 999px;
+    background: var(--nl-surface);
+    box-shadow: 0 0 0 1px var(--nl-line) inset;
+    font-size: 0.8125rem;
+    color: var(--nl-ink-2);
+  }
+  .nl-live-dot {
+    position: relative;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--nl-live);
+    flex: none;
+  }
+  .nl-live-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1.5px solid var(--nl-live);
+    opacity: 0;
+    animation: nl-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  .nl-card {
+    border-radius: 22px;
+    background: var(--nl-surface);
+    box-shadow: 0 0 0 1px var(--nl-line) inset, var(--nl-shadow);
+  }
+
+  .nl-ai-text {
+    background: var(--nl-ai);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .nl-field {
+    margin-top: 0.45rem;
+    min-height: 2.9rem;
+    width: 100%;
+    border-radius: 12px;
+    background: var(--nl-surface);
+    box-shadow: 0 0 0 1px var(--nl-line) inset;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.9375rem;
+    color: var(--nl-ink);
+    outline: none;
+    transition: box-shadow 0.15s ease;
+  }
+  .nl-field::placeholder { color: var(--nl-faded); opacity: 0.75; }
+  .nl-field:focus { box-shadow: 0 0 0 1.5px var(--nl-ink) inset, 0 0 0 4px rgba(91, 67, 240, 0.14); }
+
+  .nl-link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(12, 12, 14, 0.3);
+    transition: text-decoration-color 0.15s ease;
+  }
+  .nl-link:hover { text-decoration-color: currentColor; }
 }
 
-/* Nytto Labs landing page — flat-scroll design animation set. */
-@keyframes nl-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes nl-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes nl-blink { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0.08; } 100% { opacity: 1; } }
-@keyframes nl-pulse { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.55); } }
-@keyframes nl-travel { 0% { transform: translateX(-6px); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateX(var(--nl-run, 220px)); opacity: 0; } }
-@keyframes nl-scan { 0% { transform: translateY(-110%); } 100% { transform: translateY(1100%); } }
-@keyframes nl-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes nl-drift { 0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: 0.5; } 50% { transform: translate3d(3%, -4%, 0) scale(1.12); opacity: 0.8; } }
-@keyframes nl-spin { to { transform: rotate(360deg); } }
-@keyframes nl-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes nl-ripple { 0% { transform: scale(0.82); opacity: 0.55; } 70% { opacity: 0; } 100% { transform: scale(1.35); opacity: 0; } }
-@keyframes nl-sweep { 0% { opacity: 0; transform: translateX(-100%); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateX(100%); } }
-
-.nl-reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.75s cubic-bezier(0.22,1,0.36,1), transform 0.75s cubic-bezier(0.22,1,0.36,1);
+@keyframes nl-ping {
+  0% { transform: scale(0.6); opacity: 0.7; }
+  80%, 100% { transform: scale(1.6); opacity: 0; }
 }
-.nl-reveal.nl-revealed {
-  opacity: 1;
-  transform: translateY(0);
+
+/* Sections rise in as they scroll into view. Pure CSS: browsers without
+   scroll-driven animations, or with reduced motion, show them at rest. */
+/* `translate`, not `transform`, so it never fights a hover lift. */
+@keyframes nl-rise {
+  from { opacity: 0; translate: 0 28px; }
+  to { opacity: 1; translate: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .nl-rise {
+      animation: nl-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

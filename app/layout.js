@@ -33,7 +33,7 @@ export const metadata = {
   ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
   appleWebApp: { capable: true, title: 'Nytto Labs', statusBarStyle: 'default' },
   twitter: { card: 'summary_large_image', images: [`${SITE_ORIGIN}/opengraph-image`] },
-  title: 'Nytto Labs — Swedish software from Stockholm',
+  title: 'Nytto Labs — small tools that finish the job',
   description: HOME_DESCRIPTION,
   openGraph: {
     title: 'Nytto Labs',
@@ -43,7 +43,7 @@ export const metadata = {
   },
 }
 
-export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#03030c' }
+export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#f6f6f3' }
 
 export default function RootLayout({ children }) {
   return (

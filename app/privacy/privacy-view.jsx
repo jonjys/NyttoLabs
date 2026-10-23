@@ -1,13 +1,12 @@
 'use client'
 
-import PageShell, { ACCENT } from '@/components/site/page-shell'
+import PageShell from '@/components/site/page-shell'
 import { FTAX_LINE, OPERATOR_LINE } from '@/lib/site'
 import { PRIVACY_EMAIL } from '@/lib/privacy'
 import { usePublicSettings } from '@/hooks/use-public-catalog'
 import { useLocale } from '@/hooks/use-locale'
 
-const body = { color: 'rgba(255,255,255,0.5)' }
-const h2 = 'mt-9 text-lg font-bold text-white'
+const h2 = 'pt-6 text-xl font-semibold tracking-[-0.02em] text-ink'
 
 const COPY = {
   en: {
@@ -32,9 +31,11 @@ const COPY = {
     inquiriesTitle: 'Partner inquiries and contact messages',
     inquiries:
       'When you submit the Partners or Contact form, we store the details you enter — for example company, name, email, and your message — solely to evaluate and respond to it. We keep it only as long as needed for that conversation and any resulting partnership, and you can ask us to delete it at any time by emailing',
-    aiTitle: 'AI-assisted replies',
+    aiTitle: 'AI on this site',
     ai:
       'To answer faster, we may have an AI model (Claude, from Anthropic) sort a message you sent us and draft a reply. This only happens when we choose to, never automatically when you submit the form, and a person reads and edits every reply before it is sent. Anthropic processes the message on our behalf and does not use it to train its models.',
+    finder:
+      'The tool finder on the home page sends the text you type to Claude to suggest a tool. We do not store or log that text, and Anthropic does not use it to train its models. Please leave out personal details.',
     disclosureTitle: 'Affiliate disclosure',
     contactTitle: 'Contact',
     contact: 'Questions about privacy? Email',
@@ -61,9 +62,11 @@ const COPY = {
     inquiriesTitle: 'Partnerförfrågningar och kontaktmeddelanden',
     inquiries:
       'När du skickar partner- eller kontaktformuläret sparar vi uppgifterna du fyller i — till exempel företag, namn, e-post och ditt meddelande — enbart för att kunna bedöma och besvara det. Vi sparar dem bara så länge som behövs för den konversationen och ett eventuellt samarbete, och du kan när som helst be oss radera dem genom att mejla',
-    aiTitle: 'AI-stöd för svar',
+    aiTitle: 'AI på den här sajten',
     ai:
       'För att svara snabbare kan vi låta en AI-modell (Claude, från Anthropic) sortera ett meddelande du skickat oss och skriva ett utkast till svar. Det sker bara när vi själva väljer det, aldrig automatiskt när du skickar formuläret, och en människa läser och redigerar varje svar innan det skickas. Anthropic behandlar meddelandet för vår räkning och använder det inte för att träna sina modeller.',
+    finder:
+      'Sökrutan på startsidan skickar texten du skriver till Claude för att föreslå ett verktyg. Vi sparar eller loggar inte texten, och Anthropic använder den inte för att träna sina modeller. Skriv inga personuppgifter.',
     disclosureTitle: 'Om partnerlänkar',
     disclosure:
       'Vissa länkar i Nytto Labs produkter är partnerlänkar. Nytto Labs kan få ersättning när du väljer en partner, utan extra kostnad för dig om inget annat anges tydligt.',
@@ -77,15 +80,15 @@ export default function PrivacyView() {
   const [locale] = useLocale()
   const t = COPY[locale] || COPY.en
   return (
-    <PageShell accent={ACCENT.home} eyebrow={t.eyebrow} title={t.title} lead={t.lead}>
-      <article className="mx-auto max-w-3xl px-5 pb-8 pt-4">
-        <div className="space-y-5 text-[15px] leading-relaxed" style={body}>
+    <PageShell eyebrow={t.eyebrow} title={t.title} lead={t.lead}>
+      <article className="mx-auto max-w-3xl px-5 pt-2">
+        <div className="nl-card space-y-5 p-6 text-[16px] leading-relaxed text-ink-2 sm:p-10">
           {t.intro.map((p) => (
             <p key={p.slice(0, 24)}>{p}</p>
           ))}
 
           <h2 className={h2}>{t.notStoredTitle}</h2>
-          <ul className="list-disc space-y-1.5 pl-5">
+          <ul className="list-disc space-y-1.5 pl-5 marker:text-faded">
             {t.notStored.map((item) => (
               <li key={item}>{item}</li>
             ))}
@@ -101,6 +104,7 @@ export default function PrivacyView() {
 
           <h2 className={h2}>{t.aiTitle}</h2>
           <p>{t.ai}</p>
+          <p>{t.finder}</p>
 
           <h2 className={h2}>{t.disclosureTitle}</h2>
           <p>{locale === 'sv' ? t.disclosure : s.affiliateDisclosure}</p>
@@ -109,8 +113,7 @@ export default function PrivacyView() {
           <p>
             {t.contact}{' '}
             <a
-              className="font-medium transition-opacity hover:opacity-80"
-              style={{ color: ACCENT.home }}
+              className="nl-link font-medium text-ink"
               href={`mailto:${PRIVACY_EMAIL}`}
             >
               {PRIVACY_EMAIL}

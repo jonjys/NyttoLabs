@@ -1,12 +1,11 @@
 'use client'
 
-import PageShell, { ACCENT } from '@/components/site/page-shell'
+import PageShell from '@/components/site/page-shell'
 import { LEGAL_OPERATOR_PARAGRAPH } from '@/lib/site'
 import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
 import { useLocale } from '@/hooks/use-locale'
 
-const body = { color: 'rgba(255,255,255,0.5)' }
-const h2 = 'mt-9 text-lg font-bold text-white'
+const h2 = 'pt-6 text-xl font-semibold tracking-[-0.02em] text-ink'
 
 const COPY = {
   en: {
@@ -40,9 +39,9 @@ export default function TermsView() {
   const [locale] = useLocale()
   const t = COPY[locale] || COPY.en
   return (
-    <PageShell accent={ACCENT.home} eyebrow={t.eyebrow} title={t.title} lead={t.lead}>
-      <article className="mx-auto max-w-3xl px-5 pb-8 pt-4">
-        <div className="space-y-5 text-[15px] leading-relaxed" style={body}>
+    <PageShell eyebrow={t.eyebrow} title={t.title} lead={t.lead}>
+      <article className="mx-auto max-w-3xl px-5 pt-2">
+        <div className="nl-card space-y-5 p-6 text-[16px] leading-relaxed text-ink-2 sm:p-10">
           <h2 className={h2}>{t.operator}</h2>
           <p>{t.operatorText}</p>
 
@@ -53,8 +52,7 @@ export default function TermsView() {
           <p>
             {t.email}{' '}
             <a
-              className="font-medium transition-opacity hover:opacity-80"
-              style={{ color: ACCENT.home }}
+              className="nl-link font-medium text-ink"
               href={`mailto:${PUBLIC_HELLO_EMAIL}`}
             >
               {PUBLIC_HELLO_EMAIL}

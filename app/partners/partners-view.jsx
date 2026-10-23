@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2, AlertCircle, Boxes, Handshake, BadgeCheck, Layers } from 'lucide-react'
-import PageShell, { ACCENT, Eyebrow } from '@/components/site/page-shell'
+import { Boxes, Handshake, BadgeCheck, Layers } from 'lucide-react'
+import PageShell, { StatusNote } from '@/components/site/page-shell'
 import { useLocale } from '@/hooks/use-locale'
 import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
-
-const accent = ACCENT.partners
 
 const ICONS = [Boxes, Handshake, BadgeCheck, Layers]
 
@@ -65,11 +63,6 @@ const COPY = {
   },
 }
 
-const cardStyle = {
-  border: '1px solid rgba(255,255,255,0.08)',
-  background: 'rgba(255,255,255,0.025)',
-}
-
 export default function PartnersView() {
   const [locale] = useLocale()
   const t = COPY[locale] || COPY.en
@@ -105,175 +98,105 @@ export default function PartnersView() {
     }
   }
 
-  const field =
-    'mt-1.5 min-h-11 w-full rounded-lg px-3 py-2 text-sm text-white outline-none transition-colors duration-200 placeholder:text-white/20'
-  const fieldStyle = {
-    border: '1px solid rgba(255,255,255,0.1)',
-    background: 'rgba(255,255,255,0.03)',
-  }
-  const labelCls = 'block text-xs font-medium'
-  const labelStyle = { color: 'rgba(255,255,255,0.55)' }
-
-  const onFocus = (e) => {
-    e.target.style.borderColor = `${accent}80`
-    e.target.style.background = 'rgba(255,255,255,0.05)'
-  }
-  const onBlur = (e) => {
-    e.target.style.borderColor = 'rgba(255,255,255,0.1)'
-    e.target.style.background = 'rgba(255,255,255,0.03)'
-  }
-
   const text = (key, extra = {}) => ({
     value: form[key],
     onChange: (e) => setForm({ ...form, [key]: e.target.value }),
-    className: field,
-    style: fieldStyle,
-    onFocus,
-    onBlur,
+    className: 'nl-field',
     ...extra,
   })
+  const labelCls = 'block text-[13px] font-medium text-ink-2'
 
   return (
     <PageShell
-      accent={accent}
       wide
       eyebrow={t.eyebrow}
       title={t.title}
       lead={t.lead}
     >
-      <section className="mx-auto max-w-6xl px-5 py-8 2xl:max-w-[1560px]">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="mx-auto max-w-6xl px-5 pt-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {points.map((p) => (
-            <div
-              key={p.title}
-              className="rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_var(--card-accent)]"
-              style={{ ...cardStyle, '--card-accent': `${accent}55`, borderColor: 'var(--card-border, rgba(255,255,255,0.08))' }}
-              onMouseEnter={(e) => e.currentTarget.style.setProperty('--card-border', `${accent}4d`)}
-              onMouseLeave={(e) => e.currentTarget.style.setProperty('--card-border', 'rgba(255,255,255,0.08)')}
-            >
-              <span
-                className="flex h-10 w-10 items-center justify-center rounded-lg"
-                style={{ border: `1px solid ${accent}3d`, background: `${accent}14`, color: accent }}
-              >
+            <div key={p.title} className="nl-card p-6 transition-transform duration-300 hover:-translate-y-1">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-canvas-2 text-ink">
                 <p.icon className="h-5 w-5" />
               </span>
-              <h2 className="mt-4 text-base font-bold text-white">{p.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                {p.body}
-              </p>
+              <h2 className="mt-5 text-[17px] font-semibold tracking-[-0.015em] text-ink">{p.title}</h2>
+              <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{p.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-10 2xl:max-w-[1560px]">
+      <section className="mx-auto max-w-6xl px-5 pt-20">
         <div className="grid gap-10 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <Eyebrow accent={accent}>{t.formEyebrow}</Eyebrow>
-            <h2 className="mt-3 text-2xl font-bold text-white">{t.formTitle}</h2>
-            <p className="mt-4 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            <p className="nl-label">{t.formEyebrow}</p>
+            <h2 className="mt-4 text-[34px] font-semibold leading-[1.05] tracking-[-0.035em] text-ink">{t.formTitle}</h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-ink-2">
               {t.formBody}{' '}
-              <a
-                className="break-all font-medium transition-opacity hover:opacity-80"
-                style={{ color: accent }}
-                href={`mailto:${PUBLIC_HELLO_EMAIL}`}
-              >
+              <a className="nl-link break-all font-medium text-ink" href={`mailto:${PUBLIC_HELLO_EMAIL}`}>
                 {PUBLIC_HELLO_EMAIL}
               </a>
               .
             </p>
           </div>
 
-          <form
-            onSubmit={submit}
-            className="rounded-2xl p-6 backdrop-blur-sm lg:col-span-3"
-            style={cardStyle}
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className={labelCls} style={labelStyle}>
+          <form onSubmit={submit} className="nl-card p-6 sm:p-8 lg:col-span-3">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className={labelCls}>
                 {t.company}
                 <input required {...text('company')} />
               </label>
-              <label className={labelCls} style={labelStyle}>
+              <label className={labelCls}>
                 {t.contactName}
                 <input required {...text('contactName')} />
               </label>
-              <label className={labelCls} style={labelStyle}>
+              <label className={labelCls}>
                 {t.workEmail}
                 <input required type="email" {...text('workEmail')} />
               </label>
-              <label className={labelCls} style={labelStyle}>
+              <label className={labelCls}>
                 {t.website}
                 <input {...text('website', { placeholder: 'https://' })} />
               </label>
-              <label className={labelCls} style={labelStyle}>
+              <label className={labelCls}>
                 {t.markets}
                 <input {...text('markets', { placeholder: t.marketsPh })} />
               </label>
-              <label className={labelCls} style={labelStyle}>
+              <label className={labelCls}>
                 {t.categories}
                 <input {...text('categories', { placeholder: t.categoriesPh })} />
               </label>
-              <label className={labelCls} style={labelStyle}>
+              <label className={labelCls}>
                 {t.affiliateNetwork}
                 <input {...text('affiliateNetwork', { placeholder: t.networkPh })} />
               </label>
-              <label className={labelCls} style={labelStyle}>
+              <label className={labelCls}>
                 {t.proposed}
-                <input
-                  {...text('proposedPartnership', {
-                    placeholder: t.proposedPh,
-                  })}
-                />
+                <input {...text('proposedPartnership', { placeholder: t.proposedPh })} />
               </label>
             </div>
 
-            <label className={`mt-4 ${labelCls}`} style={labelStyle}>
+            <label className={`mt-5 ${labelCls}`}>
               {t.message}
               <textarea rows={4} {...text('message')} />
             </label>
 
-            <label
-              className="mt-5 flex items-start gap-2.5 text-sm"
-              style={{ color: 'rgba(255,255,255,0.6)' }}
-            >
+            <label className="mt-5 flex items-start gap-3 text-[15px] text-ink-2">
               <input
                 type="checkbox"
                 checked={form.consent}
                 onChange={(e) => setForm({ ...form, consent: e.target.checked })}
-                className="mt-0.5 h-5 w-5 shrink-0"
-                style={{ accentColor: accent }}
+                className="mt-0.5 h-5 w-5 shrink-0 accent-[#0c0c0e]"
               />
               <span>{t.consent}</span>
             </label>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold transition-transform duration-200 hover:scale-[1.03] disabled:opacity-50 disabled:hover:scale-100"
-              style={{ background: accent, color: '#03030c' }}
-            >
+            <button type="submit" disabled={submitting} className="nl-btn mt-7">
               {submitting ? t.sending : t.submit}
             </button>
 
-            {status && (
-              <div
-                role="status"
-                className="mt-5 flex items-start gap-2 rounded-lg px-3.5 py-3 text-sm"
-                style={{
-                  border: `1px solid ${status.ok ? '#00ff9d4d' : '#ff4d6d4d'}`,
-                  background: status.ok ? '#00ff9d12' : '#ff4d6d12',
-                  color: status.ok ? '#00ff9d' : '#ff8095',
-                }}
-              >
-                {status.ok ? (
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
-                ) : (
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                )}
-                <span>{status.msg}</span>
-              </div>
-            )}
+            <StatusNote status={status} />
           </form>
         </div>
       </section>
