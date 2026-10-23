@@ -12,20 +12,20 @@ import ToolVisual from './tool-visuals'
 import s from './home.module.css'
 
 // Cards that take two columns in the bento, so every row is full.
-const WIDE = new Set(['DeployDoctor', 'Failclosed', 'AIklart', 'Expanse'])
+const WIDE = new Set(['DeployDoctor', 'Failclosed'])
 
 const COPY = {
   en: {
     pill: `${TOOLS.length} tools live · Made in Stockholm`,
     title: ['Small tools that ', 'finish', ' the job.'],
-    lead: 'Eight focused tools, each on its own site with a free way in. Describe what you need done and the finder points you to the right one.',
+    lead: 'Fix a failed deploy, check EU VAT numbers, label moving boxes or sell a digital file. Describe what you need done and the finder points you to the right one.',
     toolsLabel: 'The tools',
-    toolsTitle: ['Eight tools. ', 'One job each.'],
-    toolsLead: 'Every tool runs on its own site and starts free. You pay for the job you came to do, in the currency shown.',
+    toolsTitle: [`${TOOLS.length} tools. `, 'One job each.'],
+    toolsLead: 'Choose a tool, see its price and go straight to its own site. You pay for the job you came to do, in the currency shown.',
     priceList: 'See the price list',
     live: 'Live',
     suggested: 'Suggested',
-    free: 'Free:',
+    free: 'Start:',
     buildLabel: 'How we build',
     buildTitle: ['Built to be used, ', 'not learned.'],
     rules: [
@@ -60,14 +60,14 @@ const COPY = {
   sv: {
     pill: `${TOOLS.length} verktyg live · Byggt i Stockholm`,
     title: ['Små verktyg som ', 'gör klart', ' jobbet.'],
-    lead: 'Åtta fokuserade verktyg, vart och ett på sin egen sajt och med en gratis väg in. Beskriv vad du behöver få gjort, så pekar sökrutan ut rätt verktyg.',
+    lead: 'Fixa en trasig deploy, kontrollera EU-momsnummer, märk flyttlådor eller sälj en digital fil. Beskriv vad du behöver få gjort, så pekar sökrutan ut rätt verktyg.',
     toolsLabel: 'Verktygen',
-    toolsTitle: ['Åtta verktyg. ', 'Ett jobb var.'],
-    toolsLead: 'Varje verktyg körs på sin egen sajt och börjar gratis. Du betalar för jobbet du kom för, i valutan som visas.',
+    toolsTitle: [`${TOOLS.length} verktyg. `, 'Ett jobb var.'],
+    toolsLead: 'Välj ett verktyg, se priset och gå direkt till dess egen sajt. Du betalar för jobbet du kom för, i valutan som visas.',
     priceList: 'Se prislistan',
     live: 'Live',
     suggested: 'Föreslaget',
-    free: 'Gratis:',
+    free: 'Börja här:',
     buildLabel: 'Så bygger vi',
     buildTitle: ['Byggt för att användas, ', 'inte läras in.'],
     rules: [
@@ -104,7 +104,7 @@ const COPY = {
 function ToolCard({ tool, locale, t, picked }) {
   const c = toolCopy(tool, locale)
   return (
-    <a href={tool.url} className={`${s.card} ${WIDE.has(tool.name) ? s.wide : ''} nl-rise`} data-picked={picked}>
+    <a id={`tool-${tool.slug}`} href={tool.url} className={`${s.card} ${WIDE.has(tool.name) ? s.wide : ''} nl-rise`} data-picked={picked}>
       <div className={s.visual} aria-hidden>
         <ToolVisual name={tool.name} locale={locale} />
       </div>
@@ -127,7 +127,7 @@ function ToolCard({ tool, locale, t, picked }) {
           <span className={s.fact}>{c.price}</span>
         </div>
         <div className={s.cardFoot}>
-          <span className={s.host}>{toolHost(tool)}</span>
+          <span className={s.host}>{c.cta} <span className={s.cardHost}>{toolHost(tool)}</span></span>
           <span className={s.go} aria-hidden>
             <ArrowUpRight className="h-4 w-4" />
           </span>
@@ -163,6 +163,9 @@ export default function HomePage() {
           </h1>
           <p className={s.lead}>{t.lead}</p>
           <ToolFinder locale={locale} onPicks={setPicks} />
+          <a href="#tools" className="nl-link mt-6 inline-flex min-h-11 items-center gap-2">
+            {locale === 'sv' ? 'Se alla verktyg och priser' : 'Browse all tools and prices'} <ArrowRight className="h-4 w-4" />
+          </a>
         </div>
       </section>
 
@@ -194,10 +197,33 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+          <nav className={s.toolNav} aria-label={locale === 'sv' ? 'Välj vad du vill göra' : 'Choose your task'}>
+            {TOOLS.map((tool) => <a key={tool.slug} href={`#tool-${tool.slug}`}>{toolCopy(tool, locale).category}</a>)}
+          </nav>
           <div className={s.bento}>
             {TOOLS.map((tool) => (
               <ToolCard key={tool.name} tool={tool} locale={locale} t={t} picked={picks.includes(tool.name)} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={s.section} aria-labelledby="questions-title">
+        <div className={s.wrap}>
+          <p className="nl-label">{locale === 'sv' ? 'Bra att veta' : 'Before you start'}</p>
+          <h2 id="questions-title" className={s.h2}>{locale === 'sv' ? 'Rätt verktyg. Tydliga villkor.' : 'The right tool. Clear terms.'}</h2>
+          <div className={s.faq}>
+            {(locale === 'sv' ? [
+              ['Vad kan jag göra med NyttoLabs?', 'Kontrollera Vercel-byggen med DeployDoctor, EU-momsnummer med Vatidence och flyttlådor med StayTag. Nytto Checkout hjälper dig sälja via en länk, CSV Rescue städar CSV-filer och Failclosed bevakar lagersynk.'],
+              ['Är alla verktyg gratis?', 'Nej. Flera har ett gratis första steg. Produktkorten visar vad som ingår och priset för nästa steg. CSV Rescue kostar 29 SEK per fil.'],
+              ['Vilken valuta betalar jag i?', 'Priset visas i verktygets betalvaluta: SEK, USD eller EUR. Kontrollera slutbelopp och eventuell moms i respektive kassa innan du betalar.'],
+              ['Behöver jag ett gemensamt konto?', 'Nej, NyttoLabs är en väg till verktygen. Varje produkt har sina egna kontokrav, betalning och villkor.']
+            ] : [
+              ['What can I do with NyttoLabs?', 'Check Vercel builds with DeployDoctor, EU VAT numbers with Vatidence and moving boxes with StayTag. Nytto Checkout helps you sell through a link, CSV Rescue cleans CSV files and Failclosed monitors inventory sync.'],
+              ['Are all the tools free?', 'No. Several offer a free first step. Each card explains what is included and the price for the next step. CSV Rescue costs SEK 29 per file.'],
+              ['Which currency will I pay in?', 'Prices use the currency charged by each tool: SEK, USD or EUR. Check the final total and any VAT in that tool’s checkout before paying.'],
+              ['Do I need a shared account?', 'No. NyttoLabs helps you find the tools. Each product has its own account requirements, checkout and terms.']
+            ]).map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}
           </div>
         </div>
       </section>
