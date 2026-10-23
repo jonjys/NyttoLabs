@@ -18,6 +18,15 @@ module.exports = {
       },
       extend: {
         colors: {
+          // Public site palette (app/globals.css --nl-*).
+          canvas: { DEFAULT: 'var(--nl-canvas)', 2: 'var(--nl-canvas-2)' },
+          surface: 'var(--nl-surface)',
+          ink: { DEFAULT: 'var(--nl-ink)', 2: 'var(--nl-ink-2)' },
+          faded: 'var(--nl-faded)',
+          line: 'var(--nl-line)',
+          iris: { DEFAULT: 'var(--nl-iris)', light: 'var(--nl-iris-light)' },
+          live: 'var(--nl-live)',
+          'on-ink': { DEFAULT: 'var(--nl-on-ink)', faded: 'var(--nl-on-ink-faded)' },
           border: 'hsl(var(--border))',
           input: 'hsl(var(--input))',
           ring: 'hsl(var(--ring))',

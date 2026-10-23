@@ -6,7 +6,7 @@ const organization = {
   name: 'Nytto Labs',
   url: SITE_ORIGIN,
   email: 'hello@nyttolabs.com',
-  description: 'Swedish software company. DeployDoctor Vercel readiness scans, StayTag QR reorder labels, Vatidence EU VAT checks, Nytto Checkout digital file sales, Failclosed inventory sync and CSV Rescue file cleanup.',
+  description: 'Swedish software company making small tools that finish the job: DeployDoctor Vercel checks, Vatidence EU VAT checks, StayTag QR moving box labels, Nytto Checkout one-link sales, CSV Rescue file cleanup, Failclosed inventory sync, AIklart and the Expanse product map.',
   founder: { '@type': 'Person', name: 'Fredrik Kornelind' },
   address: { '@type': 'PostalAddress', addressCountry: 'SE' },
 }

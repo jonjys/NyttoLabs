@@ -1,280 +1,142 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight, Check } from 'lucide-react'
-import PageShell, { ACCENT } from '@/components/site/page-shell'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import PageShell from '@/components/site/page-shell'
 import { useLocale } from '@/hooks/use-locale'
-import { PUBLIC_STATUS_GROUPS, seedApplications } from '@/lib/relay/catalog'
+import { PUBLIC_HELLO_EMAIL } from '@/lib/relay/catalog'
+import { TOOLS, toolCopy, toolHost } from '@/lib/tools'
 
-const accent = ACCENT.products
-
-// Stripe payment links are preserved verbatim from the previous homepage — do
-// not edit these hrefs without checking the live links in the Nytto Labs
-// Stripe account first.
-const STAYTAG_SHEET = 'https://buy.stripe.com/aFafZgculf7o8uA7aZ8og0r'
-// StayTag's own domain; cycletag.eu 308-redirects to it (checked 2026-09-30).
-// As of 2026-10-05 it has no DNS record (see lib/relay/catalog.js) — not
-// changed here since lib/site.test.js locks this exact literal; the homepage
-// grid is covered by the PRODUCT_URL_STAYTAG env override instead.
-const STAYTAG_BULK = 'https://staytag.nyttolabs.com/bulk'
-const STAYTAG_FREE = 'https://staytag.nyttolabs.com/#create'
-const VATIDENCE_PAY = 'https://vatidence.nyttolabs.com/'
-const CURL_PAY = 'https://pay.nyttolabs.com/'
-const CSV_RESCUE = 'https://importfix.nyttolabs.com/csv'
-const DEPLOYDOCTOR = 'https://deploydoctor.nyttolabs.com/'
-const DEPLOYDOCTOR_PRICING = 'https://deploydoctor.nyttolabs.com/pricing'
-// Failclosed's domain and status come from the catalog (lib/relay/catalog.js).
-// It is live, so the note reads "Live · Inventory sync".
-const FAILCLOSED = 'https://failclosed.nyttolabs.com/'
-const FAILCLOSED_STATUS =
-  PUBLIC_STATUS_GROUPS.find((g) => g.key === seedApplications().find((a) => a.slug === 'failclosed')?.status)?.title || ''
-
+// The price list. Every row comes from lib/tools.js, so the prices here are
+// the same as on the home page, in the currency each tool charges.
 const COPY = {
   en: {
-    eyebrow: 'Products · Swedish software · F-tax',
-    hero: 'Six live products.',
-    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout, Failclosed and CSV Rescue — live now, not a roadmap.',
-    cycleBody: 'QR reorder labels for filters, toner and the things you replace.',
-    cycleFeatures: ['Print, stick, scan', 'No app required', 'Any printer, any label'],
-    cyclePrice: '49 SEK',
-    cycleNote: 'starter sheet · one-time',
-    cyclePay: 'Buy a sheet',
-    cycleBulk: 'Bulk 299 SEK',
-    cycleFree: 'Free — make one tag',
-    viesBody: 'EU VAT checks against VIES, with proof for the books.',
-    viesFeatures: ['Checked against VIES', 'Sealed PDF + CSV', 'Official consultation number'],
-    viesPrice: '€4.90',
-    viesNote: 'minimum per batch · one-time',
-    viesPay: 'Pay and verify',
-    viesFree: 'Free — a single check',
-    curlBody: 'Sell a digital file with no account on either side.',
-    curlFeatures: ['No account, either side', 'Any file, up to 100 MB', 'Unlimited free links'],
-    curlPrice: '5%',
-    curlNote: 'fee · you keep 95%',
-    curlPay: 'Post a file',
-    curlFree: 'Free to create — 5% only when it sells',
-    ddBody: 'Scan a public GitHub repo for the code issues most likely to break a Vercel deployment.',
-    ddFeatures: ['Checks matched to your stack', 'No cloning, no code execution', 'Shareable report'],
-    ddPrice: '$9',
-    ddNote: 'per month · or $5 for a 7-day pass',
-    ddPay: 'Scan a repository',
-    ddPricing: 'See pricing',
-    ddFree: 'Free — 3 scans a day',
-    failBody: 'Inventory sync that repairs the difference between two systems automatically — and refuses to write when the data looks wrong.',
-    failFeatures: ['Repairs the difference automatically', 'Refuses to write on bad data', 'Starts in watch-only mode'],
-    failCategory: 'Inventory sync',
-    failVisit: 'Visit Failclosed',
-    partnerTitle: 'Work with Nytto Labs',
-    partnerBody: 'Partnerships and general questions go to the same inbox. You keep checkout, payment and fulfilment.',
+    eyebrow: 'Price list',
+    hero: 'Eight tools. One price list.',
+    lede: 'Each tool runs on its own site and starts free. These are the prices you pay there, in the currency you are charged.',
+    cols: ['Tool', 'Free way in', 'Price'],
+    free: 'Free way in',
+    price: 'Price',
+    note: 'Prices as listed on each tool’s own site, October 2026.',
+    customName: 'Custom work',
+    customCategory: 'Sites, scripts and fixes',
+    customJob: 'Something no tool here does yet. Describe the job and what done looks like.',
+    customFree: 'Asking costs nothing',
+    customPrice: 'A fixed quote per job',
+    customCta: 'Send the job',
+    subject: 'Fix this',
+    partnerTitle: 'Selling something our users need?',
+    partnerBody: 'You keep checkout, payment and delivery. We send relevant buyers your way and disclose every sponsored placement.',
     partnerCta: 'Become a partner',
   },
   sv: {
-    eyebrow: 'Produkter · Svensk mjukvara · F‑skatt',
-    hero: 'Sex produkter, live nu.',
-    lede: 'DeployDoctor, StayTag, Vatidence, Nytto Checkout, Failclosed och CSV Rescue — live nu, ingen roadmap.',
-    cycleBody: 'QR-etiketter för filter, toner och det du byter.',
-    cycleFeatures: ['Skriv ut, klistra, skanna', 'Ingen app krävs', 'Vilken skrivare som helst'],
-    cyclePrice: '49 kr',
-    cycleNote: 'startark · engångsköp',
-    cyclePay: 'Köp ett ark',
-    cycleBulk: 'Bulk 299 kr',
-    cycleFree: 'Gratis — gör en tagg',
-    viesBody: 'EU-momskontroll mot VIES, med bevis till bokföringen.',
-    viesFeatures: ['Kontrolleras mot VIES', 'Förseglad PDF + CSV', 'Officiellt konsultationsnummer'],
-    viesPrice: '4,90 €',
-    viesNote: 'minimum per batch · engångsköp',
-    viesPay: 'Betala och verifiera',
-    viesFree: 'Gratis — enstaka kontroll',
-    curlBody: 'Sälj en digital fil utan konto på någon sida.',
-    curlFeatures: ['Inget konto, någon sida', 'Valfri fil, upp till 100 MB', 'Obegränsat med gratis länkar'],
-    curlPrice: '5%',
-    curlNote: 'avgift · du behåller 95%',
-    curlPay: 'Lägg upp en fil',
-    curlFree: 'Gratis att skapa — 5% bara när den säljer',
-    ddBody: 'Skanna ett publikt GitHub-repo efter kodfelen som oftast knäcker en Vercel-deploy.',
-    ddFeatures: ['Kontroller anpassade efter din stack', 'Ingen kloning, ingen kodkörning', 'Delbar rapport'],
-    ddPrice: '$9',
-    ddNote: 'per månad · eller $5 för 7 dagar',
-    ddPay: 'Skanna ett repo',
-    ddPricing: 'Se priser',
-    ddFree: 'Gratis — 3 skanningar per dag',
-    failBody: 'Lagersynk som automatiskt reparerar skillnaden mellan två system — och vägrar skriva när datan ser fel ut.',
-    failFeatures: ['Reparerar skillnaden automatiskt', 'Vägrar skriva vid felaktig data', 'Startar i bevakningsläge'],
-    failCategory: 'Lagersynk',
-    failVisit: 'Besök Failclosed',
-    partnerTitle: 'Samarbeta med Nytto Labs',
-    partnerBody: 'Partnerskap och allmänna frågor går till samma inkorg. Ni behåller kassa, betalning och leverans.',
+    eyebrow: 'Prislista',
+    hero: 'Åtta verktyg. En prislista.',
+    lede: 'Varje verktyg körs på sin egen sajt och börjar gratis. Här är priserna du betalar där, i valutan du debiteras i.',
+    cols: ['Verktyg', 'Gratis väg in', 'Pris'],
+    free: 'Gratis väg in',
+    price: 'Pris',
+    note: 'Priser enligt respektive verktygs egen sajt, oktober 2026.',
+    customName: 'Uppdrag',
+    customCategory: 'Sajter, skript och lagningar',
+    customJob: 'Något som inget verktyg här gör ännu. Beskriv jobbet och hur det ser ut när det är klart.',
+    customFree: 'Att fråga kostar inget',
+    customPrice: 'Fast offert per jobb',
+    customCta: 'Skicka uppdraget',
+    subject: 'Fixa det här',
+    partnerTitle: 'Säljer ni något våra användare behöver?',
+    partnerBody: 'Ni behåller kassa, betalning och leverans. Vi skickar relevanta köpare till er och redovisar varje sponsrad placering.',
     partnerCta: 'Bli partner',
   },
 }
 
-const cardStyle = {
-  border: '1px solid rgba(255,255,255,0.08)',
-  background: 'rgba(255,255,255,0.025)',
-}
+const ROW = 'grid gap-4 px-5 py-6 sm:px-7 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_12.5rem] md:items-center md:gap-6'
 
-function PayCard({ name, price, note, body, features, actions, className = '' }) {
+function Row({ serial, name, category, job, host, free, price, cta, href, labels }) {
   return (
-    <article
-      className={`flex h-full flex-col rounded-2xl p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_var(--card-accent)] ${className}`}
-      style={{ ...cardStyle, '--card-accent': `${accent}55`, borderColor: 'var(--card-border, rgba(255,255,255,0.08))' }}
-      onMouseEnter={(e) => e.currentTarget.style.setProperty('--card-border', `${accent}4d`)}
-      onMouseLeave={(e) => e.currentTarget.style.setProperty('--card-border', 'rgba(255,255,255,0.08)')}
-    >
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-lg font-bold tracking-tight text-white">{name}</h2>
-        {price && <p className="text-2xl font-black leading-none tracking-tight" style={{ color: accent }}>{price}</p>}
+    <article className={`${ROW} border-t border-line transition-colors first:border-t-0 hover:bg-[rgba(246,246,243,0.6)]`}>
+      <div>
+        <div className="flex items-baseline gap-3">
+          <span className="font-mono text-[11px] text-faded">{serial}</span>
+          <h2 className="text-[21px] font-semibold tracking-[-0.025em] text-ink">{name}</h2>
+        </div>
+        <p className="mt-1 font-mono text-[10.5px] uppercase tracking-[0.13em] text-iris">{category}</p>
+        <p className="mt-2 max-w-md text-[15px] leading-relaxed text-ink-2">{job}</p>
+        {host && <p className="mt-2 font-mono text-[11.5px] text-faded">{host}</p>}
       </div>
-      {note && <p className="mt-1 font-mono text-[10px] tracking-wide" style={{ color: 'rgba(255,255,255,0.55)' }}>{note}</p>}
-      <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{body}</p>
-
-      <ul className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-        {features.map((f) => (
-          <li key={f} className="flex items-center gap-2 text-[13px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            <Check className="h-3.5 w-3.5 shrink-0" style={{ color: accent }} />
-            {f}
-          </li>
-        ))}
-      </ul>
-
-      <div className="mt-5 flex flex-1 flex-col justify-end gap-2.5">{actions}</div>
+      <div>
+        <p className="nl-label md:hidden">{labels.free}</p>
+        <p className="mt-1 text-[15px] leading-snug text-ink-2 md:mt-0">{free}</p>
+      </div>
+      <div>
+        <p className="nl-label md:hidden">{labels.price}</p>
+        <p className="mt-1 text-[15px] font-semibold leading-snug text-ink md:mt-0">{price}</p>
+      </div>
+      <div className="md:justify-self-end">
+        <a href={href} className="nl-btn nl-btn-ghost nl-btn-sm whitespace-nowrap">
+          {cta} <ArrowUpRight className="h-4 w-4" />
+        </a>
+      </div>
     </article>
   )
 }
 
 export default function ProductsView() {
   const [locale] = useLocale()
-  const t = COPY[locale]
-
-  const payBtn =
-    'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-bold transition-transform hover:scale-[1.02]'
-  const ghostBtn =
-    'inline-flex min-h-11 items-center justify-center rounded-lg px-5 py-3 text-sm font-medium transition-colors hover:text-white'
-  const freeBtn = 'inline-flex min-h-11 items-center justify-center gap-1 text-sm transition-colors hover:text-white'
+  const t = COPY[locale] || COPY.en
+  const mail = `mailto:${PUBLIC_HELLO_EMAIL}?subject=${encodeURIComponent(t.subject)}`
 
   return (
-    <PageShell accent={accent} wide eyebrow={t.eyebrow} title={t.hero} lead={t.lede}>
-      <section className="mx-auto max-w-6xl px-5 pb-4 2xl:max-w-[1560px]">
-        {/* Five cards fill whole rows: 2 + 2 + 1 (full width) on tablets, 3 + 2 on desktops. */}
-        <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-6">
-          <PayCard
-            className="xl:col-span-2"
-            name="DeployDoctor"
-            price={t.ddPrice}
-            note={t.ddNote}
-            body={t.ddBody}
-            features={t.ddFeatures}
-            actions={
-              <>
-                <a href={DEPLOYDOCTOR} className={payBtn} style={{ background: accent, color: '#03030c' }}>
-                  {t.ddPay} <ArrowRight className="h-4 w-4" />
-                </a>
-                <a href={DEPLOYDOCTOR_PRICING} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
-                  {t.ddPricing}
-                </a>
-                <a href={DEPLOYDOCTOR} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
-                  {t.ddFree} <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              </>
-            }
-          />
-          <PayCard
-            className="xl:col-span-2"
-            name="StayTag"
-            price={t.cyclePrice}
-            note={t.cycleNote}
-            body={t.cycleBody}
-            features={t.cycleFeatures}
-            actions={
-              <>
-                <a href={STAYTAG_SHEET} className={payBtn} style={{ background: accent, color: '#03030c' }}>
-                  {t.cyclePay} <ArrowRight className="h-4 w-4" />
-                </a>
-                <a href={STAYTAG_BULK} className={ghostBtn} style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}>
-                  {t.cycleBulk}
-                </a>
-                <a href={STAYTAG_FREE} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
-                  {t.cycleFree} <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              </>
-            }
-          />
-          <PayCard
-            className="xl:col-span-2"
-            name="Vatidence"
-            price={t.viesPrice}
-            note={t.viesNote}
-            body={t.viesBody}
-            features={t.viesFeatures}
-            actions={
-              <>
-                <a href={VATIDENCE_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>
-                  {t.viesPay} <ArrowRight className="h-4 w-4" />
-                </a>
-                <span className="hidden min-h-11 md:block" aria-hidden />
-                <a href={VATIDENCE_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
-                  {t.viesFree} <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              </>
-            }
-          />
-          <PayCard
-            className="xl:col-span-3"
-            name="Nytto Checkout"
-            price={t.curlPrice}
-            note={t.curlNote}
-            body={t.curlBody}
-            features={t.curlFeatures}
-            actions={
-              <>
-                <a href={CURL_PAY} className={payBtn} style={{ background: accent, color: '#03030c' }}>
-                  {t.curlPay} <ArrowRight className="h-4 w-4" />
-                </a>
-                <span className="hidden min-h-11 md:block" aria-hidden />
-                <a href={CURL_PAY} className={freeBtn} style={{ color: 'rgba(255,255,255,0.6)' }}>
-                  {t.curlFree} <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              </>
-            }
-          />
-          <PayCard
-            className="md:col-span-2 xl:col-span-3"
-            name="Failclosed"
-            note={`${FAILCLOSED_STATUS} · ${t.failCategory}`}
-            body={t.failBody}
-            features={t.failFeatures}
-            actions={
-              <a href={FAILCLOSED} className={payBtn} style={{ background: accent, color: '#03030c' }}>
-                {t.failVisit} <ArrowRight className="h-4 w-4" />
-              </a>
-            }
-          />
-          <PayCard
-            className="md:col-span-2 xl:col-span-6"
-            name="CSV Rescue"
-            price={locale === 'sv' ? '29 kr' : '29 SEK'}
-            note={locale === 'sv' ? 'per fil · engångsköp' : 'per file · one-time'}
-            body={locale === 'sv' ? 'Fixa teckenkodning och separatorer i CSV utan att tappa inledande nollor.' : 'Fix CSV encoding and separators without losing leading zeros.'}
-            features={locale === 'sv' ? ['Exakta dubbletter som tillval', 'Ingen prenumeration', 'Originalfilen lämnas orörd'] : ['Optional exact duplicate removal', 'No subscription', 'Original file stays untouched']}
-            actions={<a href={CSV_RESCUE} className={payBtn} style={{ background: accent, color: '#03030c' }}>{locale === 'sv' ? 'Öppna CSV Rescue' : 'Open CSV Rescue'} <ArrowRight className="h-4 w-4" /></a>}
+    <PageShell wide eyebrow={t.eyebrow} title={t.hero} lead={t.lede}>
+      <section className="mx-auto max-w-6xl px-5">
+        <div className="nl-card overflow-hidden">
+          <div className={`${ROW} hidden border-b border-line bg-canvas py-3.5 md:grid`}>
+            {t.cols.map((c) => (
+              <p key={c} className="nl-label">{c}</p>
+            ))}
+            <span />
+          </div>
+          {TOOLS.map((tool, i) => {
+            const c = toolCopy(tool, locale)
+            return (
+              <Row
+                key={tool.name}
+                serial={String(i + 1).padStart(2, '0')}
+                name={tool.name}
+                category={c.category}
+                job={c.job}
+                host={toolHost(tool)}
+                free={c.free}
+                price={c.price}
+                cta={c.cta}
+                href={tool.url}
+                labels={t}
+              />
+            )
+          })}
+          <Row
+            serial="—"
+            name={t.customName}
+            category={t.customCategory}
+            job={t.customJob}
+            host={PUBLIC_HELLO_EMAIL}
+            free={t.customFree}
+            price={t.customPrice}
+            cta={t.customCta}
+            href={mail}
+            labels={t}
           />
         </div>
+        <p className="mt-4 text-sm text-faded">{t.note}</p>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-12 2xl:max-w-[1560px]">
-        <div
-          className="flex flex-col items-start justify-between gap-6 rounded-2xl p-8 backdrop-blur-sm md:flex-row md:items-center"
-          style={cardStyle}
-        >
+      <section className="mx-auto mt-16 max-w-6xl px-5">
+        <div className="nl-card flex flex-col items-start justify-between gap-6 p-8 md:flex-row md:items-center">
           <div className="max-w-xl">
-            <h2 className="text-2xl font-bold text-white">{t.partnerTitle}</h2>
-            <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{t.partnerBody}</p>
+            <h2 className="text-2xl font-semibold tracking-[-0.03em] text-ink">{t.partnerTitle}</h2>
+            <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{t.partnerBody}</p>
           </div>
-          <Link
-            href="/partners"
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-6 py-3 text-sm font-bold transition-transform hover:scale-[1.03]"
-            style={{ background: accent, color: '#03030c' }}
-          >
+          <Link href="/partners" className="nl-btn shrink-0">
             {t.partnerCta} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

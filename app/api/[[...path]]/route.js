@@ -14,6 +14,7 @@ import {
 import { clientKey, createRateLimiter } from '@/lib/security/rate-limit'
 import { isAiConfigured, triageInquiry, TriageError } from '@/lib/ai/triage'
 import { emailKeyStatus, sendInquiryNotification } from '@/lib/notify/inquiry-email'
+import { createDailyBudget, finderDailyLimit, findTools, normalizeQuery } from '@/lib/ai/finder'
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -45,6 +46,29 @@ function baseUrl() {
 // Per-client in-memory rate limiter (hashed client address, nothing personal stored).
 const rateLimiter = createRateLimiter()
 const rateLimit = (request, bucket, limit, windowMs) => rateLimiter(bucket, clientKey(request.headers), limit, windowMs)
+
+// The tool finder's daily Claude budget: counted in MongoDB when it is
+// configured (shared by every instance), otherwise per instance.
+const finderBudgetFallback = createDailyBudget()
+async function takeFinderBudget() {
+  const limit = finderDailyLimit()
+  if (!isAiConfigured() || limit === 0) return false
+  if (isMongoConfigured()) {
+    try {
+      const db = await getDb()
+      const day = new Date().toISOString().slice(0, 10)
+      const doc = await db.collection(COLLECTIONS.finderUsage).findOneAndUpdate(
+        { _id: day },
+        { $inc: { count: 1 } },
+        { upsert: true, returnDocument: 'after' },
+      )
+      return (doc?.count ?? Infinity) <= limit
+    } catch (error) {
+      console.error('Tool finder budget check failed:', error?.name || 'Error')
+    }
+  }
+  return finderBudgetFallback(limit)
+}
 
 function csv(rows, columns) {
   const esc = (v) => {
@@ -252,6 +276,21 @@ async function handleRoute(request, context) {
 
     if (route === '/public/settings' && method === 'GET') {
       return json(await loadPublicSettings())
+    }
+
+    // ---- tool finder (home page). Claude within a daily budget, else a
+    // keyword match. The visitor's text is not stored or logged. ----
+    if (route === '/finder' && method === 'GET') {
+      return json({ ai: isAiConfigured() && finderDailyLimit() > 0 })
+    }
+    if (route === '/finder' && method === 'POST') {
+      if (!rateLimit(request, 'finder', 12, 10 * 60_000)) return json({ error: 'rate_limited' }, 429)
+      const body = await request.json().catch(() => ({}))
+      const query = normalizeQuery(body?.q)
+      if (query.length < 3) return json({ error: 'validation' }, 400)
+      const locale = body?.locale === 'sv' ? 'sv' : 'en'
+      const allowAi = await takeFinderBudget()
+      return json(await findTools({ query, locale, allowAi }))
     }
 
     if (!isMongoConfigured()) {

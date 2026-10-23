@@ -6,12 +6,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { useLocale } from '@/hooks/use-locale'
 import LocaleToggle from './locale-toggle'
+import Logo from './logo'
 import { SITE_NAV_CTA, SITE_NAV_LINKS, navLabel } from './nav-links'
 
-const links = SITE_NAV_LINKS
-
-
-export default function SiteNav({ accent = '#00f5ff' }) {
+export default function SiteNav() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const toggleRef = useRef(null)
@@ -21,21 +19,19 @@ export default function SiteNav({ accent = '#00f5ff' }) {
   useEffect(() => { setOpen(false) }, [pathname])
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 16)
+    const h = () => setScrolled(window.scrollY > 8)
     h()
     window.addEventListener('scroll', h, { passive: true })
     return () => window.removeEventListener('scroll', h)
   }, [])
 
-  const isActive = (href) => (href === '/' ? pathname === '/' : pathname?.startsWith(href))
+  const isActive = (href) => pathname?.startsWith(href)
   const showCta = pathname !== SITE_NAV_CTA.href
 
   return (
-    // A floating glass capsule, inset from the top edge, so the chrome reads
-    // the same way on every page — including the 3D lobby's own header —
-    // rather than a full-width bar that only appears once you scroll.
+    // A floating bar that sharpens once the page scrolls under it.
     <header
-      className="sticky top-4 z-40 px-4 sm:top-6"
+      className="sticky top-0 z-40 px-3 pt-3 sm:px-5"
       onKeyDown={(event) => {
         if (event.key === 'Escape' && open) {
           setOpen(false)
@@ -44,97 +40,79 @@ export default function SiteNav({ accent = '#00f5ff' }) {
       }}
     >
       <div
-        className="mx-auto flex h-14 max-w-4xl items-center justify-between rounded-full px-5 backdrop-blur-xl transition-shadow duration-300 sm:px-6 2xl:max-w-[1100px]"
-        style={{
-          border: '1px solid rgba(255,255,255,0.09)',
-          background: 'rgba(3,3,12,0.6)',
-          boxShadow: scrolled || open ? '0 12px 40px rgba(0,0,0,0.4)' : '0 6px 24px rgba(0,0,0,0.25)',
-        }}
+        className={`mx-auto max-w-6xl rounded-[22px] backdrop-blur-xl transition-all duration-300 ${
+          scrolled || open
+            ? 'bg-[rgba(255,255,255,0.82)] shadow-[0_0_0_1px_var(--nl-line),0_12px_32px_-18px_rgba(12,12,14,0.3)]'
+            : 'bg-[rgba(255,255,255,0)] shadow-[0_0_0_1px_rgba(227,227,222,0)]'
+        }`}
       >
-        <Link href="/" className="flex min-h-11 items-center gap-2.5">
-          <span
-            className="flex h-6 w-6 items-center justify-center rounded"
-            style={{ background: accent, boxShadow: `0 0 14px ${accent}99` }}
-          >
-            <span className="block h-2 w-2 rounded-full" style={{ background: '#03030c' }} />
-          </span>
-          <span className="font-mono text-xs tracking-[0.3em] text-white">NYTTO LABS</span>
-        </Link>
+        <div className="flex h-14 items-center justify-between gap-4 pl-4 pr-2 sm:pl-5">
+          <Link href="/" className="flex min-h-11 items-center" aria-label={locale === 'sv' ? 'Nytto Labs, startsidan' : 'Nytto Labs, home'}>
+            <Logo />
+          </Link>
 
-        <nav className="hidden items-center gap-7 md:flex" aria-label={locale === 'sv' ? 'Företag' : 'Company'}>
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              aria-current={isActive(l.href) ? 'page' : undefined}
-              className="inline-flex min-h-11 items-center text-sm transition-colors duration-200 hover:text-white"
-              style={{ color: isActive(l.href) ? '#fff' : 'rgba(255,255,255,0.6)' }}
-            >
-              {navLabel(l, locale)}
-            </Link>
-          ))}
-          {showCta && (
-            <Link
-              href={SITE_NAV_CTA.href}
-              className="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
-              style={{ border: `1px solid ${accent}59`, color: accent }}
-            >
-              {navLabel(SITE_NAV_CTA, locale)}
-            </Link>
-          )}
-          <LocaleToggle accent={accent} />
-        </nav>
+          <nav className="hidden items-center gap-1 md:flex" aria-label={locale === 'sv' ? 'Huvudmeny' : 'Main'}>
+            {SITE_NAV_LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={isActive(l.href) ? 'page' : undefined}
+                className={`inline-flex min-h-10 items-center rounded-full px-3.5 text-[14.5px] transition-colors ${
+                  isActive(l.href) ? 'bg-canvas-2 text-ink' : 'text-ink-2 hover:bg-canvas-2 hover:text-ink'
+                }`}
+              >
+                {navLabel(l, locale)}
+              </Link>
+            ))}
+          </nav>
 
-        <button
-          ref={toggleRef}
-          type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white md:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label={open ? (locale === 'sv' ? 'Stäng menyn' : 'Close menu') : (locale === 'sv' ? 'Öppna menyn' : 'Open menu')}
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-        >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-
-      {open && (
-        <div
-          id="mobile-nav"
-          className="mx-auto mt-2 max-w-4xl rounded-2xl px-5 py-3 backdrop-blur-xl md:hidden"
-          style={{
-            border: '1px solid rgba(255,255,255,0.09)',
-            background: 'rgba(3,3,12,0.82)',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
-          }}
-        >
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              aria-current={isActive(l.href) ? 'page' : undefined}
-              onClick={() => setOpen(false)}
-              className="block min-h-11 py-3 text-sm font-medium"
-              style={{ color: isActive(l.href) ? '#fff' : 'rgba(255,255,255,0.5)' }}
-            >
-              {navLabel(l, locale)}
-            </Link>
-          ))}
-          <div className="py-3">
-            <LocaleToggle accent={accent} />
+          <div className="hidden items-center gap-2 md:flex">
+            <LocaleToggle />
+            {showCta && (
+              <Link href={SITE_NAV_CTA.href} className="nl-btn nl-btn-sm">
+                {navLabel(SITE_NAV_CTA, locale)}
+              </Link>
+            )}
           </div>
-          {showCta && (
-            <Link
-              href={SITE_NAV_CTA.href}
-              onClick={() => setOpen(false)}
-              className="mt-2 block rounded-full px-4 py-3 text-center text-sm font-bold"
-              style={{ background: accent, color: '#03030c' }}
-            >
-              {navLabel(SITE_NAV_CTA, locale)}
-            </Link>
-          )}
+
+          <button
+            ref={toggleRef}
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink transition-colors hover:bg-canvas-2 md:hidden"
+            onClick={() => setOpen(!open)}
+            aria-label={open ? (locale === 'sv' ? 'Stäng menyn' : 'Close menu') : (locale === 'sv' ? 'Öppna menyn' : 'Open menu')}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
-      )}
+
+        {open && (
+          <div id="mobile-nav" className="px-4 pb-4 md:hidden">
+            {SITE_NAV_LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={isActive(l.href) ? 'page' : undefined}
+                onClick={() => setOpen(false)}
+                className="flex min-h-12 items-center justify-between border-t border-line text-[17px] font-medium text-ink"
+              >
+                {navLabel(l, locale)}
+                <span aria-hidden className="text-faded">→</span>
+              </Link>
+            ))}
+            <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-4">
+              <LocaleToggle />
+              {showCta && (
+                <Link href={SITE_NAV_CTA.href} onClick={() => setOpen(false)} className="nl-btn nl-btn-sm">
+                  {navLabel(SITE_NAV_CTA, locale)}
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </header>
   )
 }

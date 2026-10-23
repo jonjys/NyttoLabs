@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/site'
 import { BreadcrumbJsonLd } from '@/components/site/json-ld'
 
 export const metadata = pageMetadata({
-  title: 'Fix this — Nytto Labs',
+  title: 'Custom work — Nytto Labs',
   description: 'Need a site, a script, or a Gmail fix? Nytto Labs builds and repairs small jobs. Email hello@nyttolabs.com.',
   path: '/fix',
 })
@@ -11,7 +11,7 @@ export const metadata = pageMetadata({
 export default function Page() {
   return (
     <>
-      <BreadcrumbJsonLd name="Fix this" path="/fix" />
+      <BreadcrumbJsonLd name="Custom work" path="/fix" />
       <FixView />
     </>
   )

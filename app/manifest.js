@@ -1,14 +1,14 @@
 export default function manifest() {
   return {
     id: '/',
-    name: 'Nytto Labs — Product toolbox',
+    name: 'Nytto Labs',
     short_name: 'Nytto Labs',
-    description: 'Find and bookmark the independent tools from Nytto Labs.',
-    start_url: '/products',
+    description: 'Small tools that finish the job.',
+    start_url: '/',
     scope: '/',
     display: 'standalone',
-    background_color: '#03030c',
-    theme_color: '#03030c',
+    background_color: '#f6f6f3',
+    theme_color: '#f6f6f3',
     lang: 'en',
     icons: [
       { src: '/portal-icon/192', sizes: '192x192', type: 'image/png', purpose: 'any' },

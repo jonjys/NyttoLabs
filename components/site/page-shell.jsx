@@ -5,106 +5,68 @@ import SiteNav from './nav'
 import SiteFooter from './footer'
 import { useLocale } from '@/hooks/use-locale'
 
-// Each section keeps the colour of the portal it sits behind in the lobby, so
-// arriving on the page reads as a continuation of the room you walked into.
-export const ACCENT = {
-  home: '#00f5ff',
-  partners: '#ff2bd1',
-  products: '#00ff9d',
-  contact: '#ff8a1e',
-}
-
-export const glassCard = 'rounded-2xl backdrop-blur-sm transition-colors duration-300'
-export const glassCardStyle = {
-  border: '1px solid rgba(255,255,255,0.08)',
-  background: 'rgba(255,255,255,0.025)',
-}
-
-export function Eyebrow({ accent, children }) {
+// Every public page: the shared header and footer around the content, and an
+// optional page header (breadcrumb, title, lead). The home page renders its
+// own hero, so it passes no title.
+export default function PageShell({ eyebrow, title, lead, wide = false, aside = null, children }) {
+  const [locale] = useLocale()
+  const width = wide ? 'max-w-6xl' : 'max-w-3xl'
   return (
-    <p className="font-mono text-[10px] uppercase tracking-[0.34em]" style={{ color: accent }}>
-      {children}
-    </p>
+    <div className="nl-canvas relative flex min-h-screen flex-col">
+      <SiteNav />
+
+      <main className="flex-1">
+        {(eyebrow || title) && (
+          <header className="relative overflow-hidden">
+            {/* A soft wash of the AI colours behind the title. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-40 right-[-10%] h-[420px] w-[620px] rounded-full opacity-[0.16] blur-[90px]"
+              style={{ background: 'var(--nl-ai)' }}
+            />
+            <div className={`relative mx-auto ${width} px-5 pb-12 pt-12 sm:pt-20`}>
+              <nav aria-label={locale === 'sv' ? 'Brödsmulor' : 'Breadcrumb'} className="nl-label">
+                <Link href="/" className="inline-flex min-h-9 items-center text-ink-2 transition-colors hover:text-ink">Nytto Labs</Link>
+                <span aria-hidden className="text-line">/</span>
+                <span>{eyebrow}</span>
+              </nav>
+              <div className={aside ? 'mt-5 grid items-end gap-8 lg:grid-cols-[1fr_auto]' : 'mt-5'}>
+                <div>
+                  {title && (
+                    <h1
+                      className="max-w-4xl font-semibold leading-[1] tracking-[-0.04em] text-ink"
+                      style={{ fontSize: 'clamp(2.5rem, 6.2vw, 4.75rem)' }}
+                    >
+                      {title}
+                    </h1>
+                  )}
+                  {lead && <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-ink-2">{lead}</p>}
+                </div>
+                {aside}
+              </div>
+            </div>
+          </header>
+        )}
+        {children}
+      </main>
+
+      <SiteFooter />
+    </div>
   )
 }
 
-export default function PageShell({
-  accent = ACCENT.home,
-  eyebrow,
-  title,
-  lead,
-  wide = false,
-  children,
-}) {
-  const [locale] = useLocale()
+// The result of a form submission.
+export function StatusNote({ status }) {
+  if (!status) return null
   return (
-    <div className="relative min-h-screen" style={{ background: '#03030c' }}>
-      {/* Ambient backdrop: faint neon grid fading out, plus an accent bloom at
-          the top so the page never reads as a flat slab after the 3D lobby. */}
-      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ zIndex: 0 }}>
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(0,180,216,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(0,180,216,0.07) 1px, transparent 1px)',
-            backgroundSize: '64px 64px',
-            maskImage: 'radial-gradient(ellipse 90% 55% at 50% 0%, #000 30%, transparent 100%)',
-            WebkitMaskImage:
-              'radial-gradient(ellipse 90% 55% at 50% 0%, #000 30%, transparent 100%)',
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `radial-gradient(ellipse 70% 42% at 50% -8%, ${accent}24 0%, transparent 72%)`,
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 60% 50% at 50% 50%, transparent 40%, rgba(0,0,0,0.5) 100%)',
-          }}
-        />
-      </div>
-
-      <div className="relative flex min-h-screen flex-col" style={{ zIndex: 1 }}>
-        <SiteNav accent={accent} />
-
-        <main className="flex-1">
-          {(eyebrow || title) && (
-            <header className={`mx-auto ${wide ? 'max-w-6xl 2xl:max-w-[1560px]' : 'max-w-3xl'} px-5 pb-4 pt-16`}>
-              <Link
-                href="/"
-                className="mb-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.26em] transition-colors duration-200 hover:text-white"
-                style={{ color: 'rgba(255,255,255,0.55)' }}
-              >
-                {locale === 'sv' ? '← Till startsidan' : '← Back to home'}
-              </Link>
-              {eyebrow && <Eyebrow accent={accent}>{eyebrow}</Eyebrow>}
-              {title && (
-                <h1
-                  className="mt-4 font-black leading-[1.05] tracking-tight text-white"
-                  style={{ fontSize: 'clamp(2.1rem, 5.5vw, 3.4rem)' }}
-                >
-                  {title}
-                </h1>
-              )}
-              {lead && (
-                <p
-                  className="mt-5 max-w-2xl text-[15px] leading-relaxed"
-                  style={{ color: 'rgba(255,255,255,0.6)' }}
-                >
-                  {lead}
-                </p>
-              )}
-            </header>
-          )}
-          {children}
-        </main>
-
-        <SiteFooter accent={accent} />
-      </div>
-    </div>
+    <p
+      role="status"
+      className={`mt-5 flex items-start gap-2.5 rounded-2xl px-4 py-3 text-[15px] ${
+        status.ok ? 'bg-[rgba(15,122,69,0.08)] text-live' : 'bg-[rgba(200,40,60,0.07)] text-[#b42335]'
+      }`}
+    >
+      <span aria-hidden className="mt-px font-semibold">{status.ok ? '✓' : '!'}</span>
+      <span>{status.msg}</span>
+    </p>
   )
 }

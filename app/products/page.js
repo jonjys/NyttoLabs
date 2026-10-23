@@ -3,7 +3,7 @@ import { PRODUCTS_DESCRIPTION, pageMetadata } from '@/lib/site'
 import { BreadcrumbJsonLd } from '@/components/site/json-ld'
 
 export const metadata = pageMetadata({
-  title: 'Products — Nytto Labs',
+  title: 'Price list — Nytto Labs',
   description: PRODUCTS_DESCRIPTION,
   path: '/products',
 })
@@ -11,7 +11,7 @@ export const metadata = pageMetadata({
 export default function Page() {
   return (
     <>
-      <BreadcrumbJsonLd name="Products" path="/products" />
+      <BreadcrumbJsonLd name="Price list" path="/products" />
       <ProductsView />
     </>
   )
