@@ -1,4 +1,5 @@
 import { SITE_ORIGIN, siteUrl } from '@/lib/site'
+import { TOOLS } from '@/lib/tools'
 
 const organization = {
   '@context': 'https://schema.org',
@@ -6,7 +7,7 @@ const organization = {
   name: 'Nytto Labs',
   url: SITE_ORIGIN,
   email: 'hello@nyttolabs.com',
-  description: 'Swedish software company making small tools that finish the job: DeployDoctor Vercel checks, Vatidence EU VAT checks, StayTag QR moving box labels, Nytto Checkout one-link sales, CSV Rescue file cleanup, Failclosed inventory sync, AIklart and the Expanse product map.',
+  description: 'Swedish software company making small tools that finish the job: DeployDoctor Vercel checks, Vatidence EU VAT checks, StayTag QR moving box labels, Nytto Checkout one-link sales, CSV Rescue file cleanup and Failclosed inventory sync.',
   founder: { '@type': 'Person', name: 'Fredrik Kornelind' },
   address: { '@type': 'PostalAddress', addressCountry: 'SE' },
 }
@@ -35,4 +36,19 @@ export function BreadcrumbJsonLd({ name, path }) {
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
   )
+}
+
+// Describes the visible directory, not unverified prices, reviews or ratings.
+export function ToolDirectoryJsonLd() {
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Nytto Labs tools',
+    numberOfItems: TOOLS.length,
+    itemListElement: TOOLS.map((tool, index) => ({
+      '@type': 'ListItem', position: index + 1,
+      item: { '@type': 'WebApplication', name: tool.name, url: tool.url, description: tool.en.job, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Web browser' },
+    })),
+  }
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\\u003c') }} />
 }

@@ -1,3 +1,4 @@
+import { ToolDirectoryJsonLd } from '@/components/site/json-ld'
 import HomeView from './home-view'
 import { HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from '@/lib/site'
 
@@ -8,5 +9,5 @@ export const metadata = pageMetadata({
 })
 
 export default function Page() {
-  return <HomeView />
+  return <><ToolDirectoryJsonLd /><HomeView /></>
 }

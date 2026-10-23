@@ -804,3 +804,15 @@
     animation: none;
   }
 }
+
+/* Task navigation works without JavaScript; anchors clear the sticky header. */
+.card { scroll-margin-top: 7rem; }
+.cardHost { display: block; margin-top: .35rem; font-size: .72rem; color: var(--nl-faded); overflow-wrap: anywhere; }
+.toolNav { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0 0 1.5rem; }
+.toolNav a { padding: .75rem 1rem; border: 1px solid var(--nl-line); border-radius: 99px; background: var(--nl-surface); font-size: .85rem; color: var(--nl-ink); }
+.toolNav a:hover { border-color: var(--nl-iris); color: var(--nl-iris); }
+.toolNav a:focus-visible, .faq summary:focus-visible { outline: 2px solid var(--nl-iris); outline-offset: 4px; }
+.faq { margin-top: 2rem; max-width: 52rem; }
+.faq details { border-bottom: 1px solid var(--nl-line); padding: 1.25rem 0; }
+.faq summary { cursor: pointer; font-size: 1.1rem; font-weight: 600; color: var(--nl-ink); }
+.faq p { padding-top: .8rem; line-height: 1.7; color: var(--nl-ink-2); }
