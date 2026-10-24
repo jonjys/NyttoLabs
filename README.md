@@ -36,11 +36,13 @@ The reference spec suggests Supabase Postgres. **This deployment runs on MongoDB
 The **public website** (product grid, settings, health) works without Mongo: it serves the in-code catalog. Relay (`/api/resolve`, `/go`, `/control`, partner inquiries) needs `MONGO_URL`.
 
 ## Run locally
+Use Node.js 24.x and Yarn 1.22.22. `yarn.lock` is the authoritative lockfile; do not generate an npm lockfile. Vercel explicitly uses the same Yarn version for installation and builds.
+
 ```bash
-yarn install
+npx --yes yarn@1.22.22 install --frozen-lockfile
 # copy env.example → .env.local and fill in values
-yarn test       # catalog + Mongo URI guards (no database required)
-yarn dev        # http://localhost:3000
+npx --yes yarn@1.22.22 test       # catalog + Mongo URI guards (no database required)
+npx --yes yarn@1.22.22 dev        # http://localhost:3000
 ```
 Applications self-seed on first API call that uses Mongo. DEMO partners/offers seed only when `DEMO_MODE=true`.
 
