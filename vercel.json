@@ -1,4 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "installCommand": "npx --yes yarn@1.22.22 install --frozen-lockfile",
+  "buildCommand": "npx --yes yarn@1.22.22 run build"
 }
